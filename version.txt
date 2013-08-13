@@ -1,4 +1,9 @@
-Current version 2.7
+Current version 2.8
+
+2.8     *) Live auth sso parameter is now not converted to int, because it can be 'false' which is not casted automatically
+
+        +) .gitignore - ignore *.swp which vim spams with
+
 
 2.7     +) Lifetime Credits output for every account
 

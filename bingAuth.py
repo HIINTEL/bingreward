@@ -163,7 +163,7 @@ class BingAuth:
         s = page.index(",W:")
         s += len(",W:")
         e = page.index(",", s)
-        sso = int(page[s:e])
+        sso = page[s:e]
 
 # generate ClientLoginTime
         clt = 20000 + int(random.uniform(0, 1000))
@@ -192,7 +192,7 @@ class BingAuth:
             "PPSX"          : PPSX,
             "idsbho"        : "1",
             "LoginOptions"  : "3",
-            "sso"           : str(sso),
+            "sso"           : sso,
             "NewUser"       : "1",
             "i1"            : "0",                  # ClientUserSaved
             "i2"            : "1",                  # ClientMode
