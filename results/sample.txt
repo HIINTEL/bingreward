@@ -1,142 +1,79 @@
-Reward 1/5:
------------
-name        : Earn 1 credit
-url         : http://www.bing.com/rewardsapp/redirect?url=http%3a%2f%2fwww.bing.com%2fsearch%3fq%3ddecember%2b21st%2bmayan%2bcalendar%26form%3dMFESRP%26publ%3dRewardsDO%26crea%3dTEXT_MFESRP_DailyOffers_Search_41263_1x20&id=a211112254&hash=4ceef6996ac622ce7670c78627a971fd&state=Active&rcid=0&aid=urlreward&bruid=98081A55-3EBB-4F3B-B854-640E4C3D7F20&ml=ExpandedWebLayout&nid=
-description : Some believe the world ends tomorrow. Do your friends have plans?
+2013-08-20 10:53:16.8 -  1/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunm
+2013-08-20 10:53:19.6 -  2/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+Th
+2013-08-20 10:53:21.5 -  3/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The
+2013-08-20 10:53:23.3 -  4/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sped+p
+2013-08-20 10:53:27.1 -  5/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+spe
+2013-08-20 10:53:31.2 -  6/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sped+past+on+motorcy
+2013-08-20 10:53:35.0 -  7/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sped
+2013-08-20 10:53:37.1 -  8/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sped+past+on+moto
+2013-08-20 10:53:40.0 -  9/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen
+2013-08-20 10:53:44.1 - 10/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gun
+2013-08-20 10:53:48.6 - 11/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sped+past+on+motorcyc
+2013-08-20 10:53:51.0 - 12/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sped+past+on+motorcyc
+2013-08-20 10:53:55.2 - 13/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sped+past+on+motorc
+2013-08-20 10:53:58.2 - 14/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sped+past+on+motor
+2013-08-20 10:54:01.3 - 15/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sped+pa
+2013-08-20 10:54:03.5 - 16/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+s
+2013-08-20 10:54:07.2 - 17/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sped+past+on
+2013-08-20 10:54:13.5 - 18/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunme
+2013-08-20 10:54:17.5 - 19/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sped+past+on+m
+2013-08-20 10:54:19.3 - 20/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sped+past
+2013-08-20 10:54:21.5 - 21/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sped+past+on+mo
+2013-08-20 10:54:25.3 - 22/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sped+past+on+motorcyc
+2013-08-20 10:54:27.9 - 23/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+g
+2013-08-20 10:54:30.8 - 24/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sped+pas
+2013-08-20 10:54:32.7 - 25/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sped+past+on+motorcyc
+2013-08-20 10:54:36.4 - 26/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sp
+2013-08-20 10:54:39.1 - 27/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sped+past+on+mot
+2013-08-20 10:54:41.9 - 28/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt
+2013-08-20 10:54:45.7 - 29/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+T
+2013-08-20 10:54:49.4 - 30/30 - Requesting: http://www.bing.com/search?q=HELWAN+Egypt+The+gunmen+sped+past+o
 
-Reward 2/5:
------------
-name        : Search and Earn
-url         : http://www.bing.com/search?q=weather&bnprt=searchandearn
-progressCur : 0
-progressMax : 15
-progress %  : 0.00%
-description : Earn 1 credit per 3 Bing searches up to 15 credits a day.
+Live - s...@hotmail.com
 
-Reward 3/5:
------------
-name        : Your goal
-progressCur : 614
-progressMax : 679
-progress %  : 90.43%
-description : 1 Month Xbox LIVE Gold Membership
-
-Reward 4/5:
------------
-name        : Refer-A-Friend
-url         : http://www.bing.com/rewards/share
-progressCur : 0
-progressMax : 100
-progress %  : 0.00%
-description : Your friends are our friends. Get 10 credits each for 10 who join.
-
-Reward 5/5:
------------
-name        : Maintain Gold
-progressCur : 150
-progressMax : 150
-progress %  : 100.00%
-description : Do 150 searches monthly up to 20 a day.
-
-2012-12-19 22:06:44.9 -  1/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parli
-2012-12-19 22:06:47.0 -  2/45 - Requesting: http://www.bing.com/search?q=MOSCOW+
-2012-12-19 22:06:49.1 -  3/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+v
-2012-12-19 22:06:51.4 -  4/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+voted+overwhelmingl
-2012-12-19 22:06:53.4 -  5/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian
-2012-12-19 22:06:55.3 -  6/45 - Requesting: http://www.bing.com/search?q=MOSCOW
-2012-12-19 22:06:57.7 -  7/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+voted+ov
-2012-12-19 22:07:00.0 -  8/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+P
-2012-12-19 22:07:02.0 -  9/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russia
-2012-12-19 22:07:04.2 - 10/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+voted+overwhelmi
-2012-12-19 22:07:06.4 - 11/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+R
-2012-12-19 22:07:08.4 - 12/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+voted+overwh
-2012-12-19 22:07:10.3 - 13/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliame
-2012-12-19 22:07:12.7 - 14/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+
-2012-12-19 22:07:14.7 - 15/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parl
-2012-12-19 22:07:16.7 - 16/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Par
-2012-12-19 22:07:18.7 - 17/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+voted+overwhelming
-2012-12-19 22:07:20.7 - 18/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russ
-2012-12-19 22:07:22.9 - 19/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parlia
-2012-12-19 22:07:24.9 - 20/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+voted+overw
-2012-12-19 22:07:26.8 - 21/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliam
-2012-12-19 22:07:29.0 - 22/45 - Requesting: http://www.bing.com/search?q=MOSCOW+Th
-2012-12-19 22:07:31.1 - 23/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+voted+ove
-2012-12-19 22:07:33.2 - 24/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliamen
-2012-12-19 22:07:35.6 - 25/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The
-2012-12-19 22:07:37.4 - 26/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+voted
-2012-12-19 22:07:39.4 - 27/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+vo
-2012-12-19 22:07:41.4 - 28/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Rus
-2012-12-19 22:07:43.7 - 29/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament
-2012-12-19 22:07:45.6 - 30/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+voted+over
-2012-12-19 22:07:47.8 - 31/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+vote
-2012-12-19 22:07:50.2 - 32/45 - Requesting: http://www.bing.com/search?q=MOSCOW+T
-2012-12-19 22:07:52.2 - 33/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+voted+o
-2012-12-19 22:07:54.5 - 34/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+voted+overwhe
-2012-12-19 22:07:56.7 - 35/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+voted+overwhel
-2012-12-19 22:07:58.6 - 36/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russi
-2012-12-19 22:08:00.9 - 37/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Pa
-2012-12-19 22:08:03.0 - 38/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+voted+overwhelm
-2012-12-19 22:08:05.0 - 39/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Ru
-2012-12-19 22:08:06.9 - 40/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+voted+overwhelmingly
-2012-12-19 22:08:08.7 - 41/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+voted+
-2012-12-19 22:08:10.8 - 42/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+voted+overwhelmin
-2012-12-19 22:08:13.1 - 43/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+vot
-2012-12-19 22:08:15.1 - 44/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+Parliament+
-2012-12-19 22:08:17.2 - 45/45 - Requesting: http://www.bing.com/search?q=MOSCOW+The+Russian+
+Points before:       277
+Points after:        293
+Points earned:        16
+Lifetime Credits:    973
 
 --------------------------------------------------------------------------------
+2013-08-20 10:54:54.3 -  1/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pakistani+court+indi
+2013-08-20 10:54:58.7 -  2/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pakista
+2013-08-20 10:55:02.7 -  3/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pak
+2013-08-20 10:55:06.4 -  4/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+P
+2013-08-20 10:55:10.1 -  5/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan
+2013-08-20 10:55:13.4 -  6/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakista
+2013-08-20 10:55:16.3 -  7/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pakistani+court
+2013-08-20 10:55:19.5 -  8/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pakistani+court+in
+2013-08-20 10:55:22.0 -  9/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pakistani+cour
+2013-08-20 10:55:23.8 - 10/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakist
+2013-08-20 10:55:26.3 - 11/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Paki
+2013-08-20 10:55:29.0 - 12/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pakistani+court+indicted
+2013-08-20 10:55:32.9 - 13/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pakistani+court+indicte
+2013-08-20 10:55:36.3 - 14/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pak
+2013-08-20 10:55:38.3 - 15/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pakist
+2013-08-20 10:55:41.3 - 16/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pakistani+court+i
+2013-08-20 10:55:45.0 - 17/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pakistani+court+indict
+2013-08-20 10:55:46.8 - 18/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A
+2013-08-20 10:55:50.3 - 19/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Paki
+2013-08-20 10:55:54.1 - 20/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pakistani
+2013-08-20 10:55:58.7 - 21/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pakistan
+2013-08-20 10:56:00.9 - 22/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pakistani+court+ind
+2013-08-20 10:56:06.0 - 23/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pa
+2013-08-20 10:56:10.4 - 24/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pakistani+c
+2013-08-20 10:56:14.7 - 25/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pakistani+court+indic
+2013-08-20 10:56:17.5 - 26/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pa
+2013-08-20 10:56:21.3 - 27/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pakis
+2013-08-20 10:56:24.9 - 28/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+P
+2013-08-20 10:56:29.1 - 29/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakistan+A+Pakistani+co
+2013-08-20 10:56:32.2 - 30/30 - Requesting: http://www.bing.com/search?q=ISLAMABAD+Pakis
 
-Result 1/5:
------------
-name        : Earn 1 credit
-url         : http://www.bing.com/rewardsapp/redirect?url=http%3a%2f%2fwww.bing.com%2fsearch%3fq%3ddecember%2b21st%2bmayan%2bcalendar%26form%3dMFESRP%26publ%3dRewardsDO%26crea%3dTEXT_MFESRP_DailyOffers_Search_41263_1x20&id=a211112254&hash=4ceef6996ac622ce7670c78627a971fd&state=Active&rcid=0&aid=urlreward&bruid=98081A55-3EBB-4F3B-B854-640E4C3D7F20&ml=ExpandedWebLayout&nid=
-description : Some believe the world ends tomorrow. Do your friends have plans?
-   Message  :
-   Action   : hit
+Live - n...@hotmail.com
 
-Result 2/5:
------------
-name        : Search and Earn
-url         : http://www.bing.com/search?q=weather&bnprt=searchandearn
-progressCur : 0
-progressMax : 15
-progress %  : 0.00%
-description : Earn 1 credit per 3 Bing searches up to 15 credits a day.
-   Message  : All 45 were successfully processed
-   Action   : search
+Points before:       277
+Points after:        293
+Points earned:        16
+Lifetime Credits:    973
 
-Result 3/5:
------------
-name        : Your goal
-progressCur : 614
-progressMax : 679
-progress %  : 90.43%
-description : 1 Month Xbox LIVE Gold Membership
-   Message  :
-   Action   : inform
-
-Result 4/5:
------------
-name        : Refer-A-Friend
-url         : http://www.bing.com/rewards/share
-progressCur : 0
-progressMax : 100
-progress %  : 0.00%
-description : Your friends are our friends. Get 10 credits each for 10 who join.
-   Message  :
-   Action   : pass
-
-Result 5/5:
------------
-name        : Maintain Gold
-progressCur : 150
-progressMax : 150
-progress %  : 100.00%
-description : Do 150 searches monthly up to 20 a day.
-   Message  :
-   Action   : inform
-
-
-Points before: 614
-Points after:  630
-Points delta:  16
+--------------------------------------------------------------------------------
+Total points earned: 32
