@@ -28,8 +28,7 @@ class RewardsReport:
         self.lifetimeCredits = 0
 
 def earnRewards(reportItem, password):
-    """Earns Bing! reward points and returnes how many points has been earned"""
-    pointsEarned = 0
+    """Earns Bing! reward points and populates reportItem"""
     noException = False
     try:
         if reportItem is None: raise ValueError("reportItem is None")
@@ -90,7 +89,6 @@ def earnRewards(reportItem, password):
             print "For: %s - %s" % (reportItem.accountType, reportItem.accountLogin)
             print
             print "-" * 80
-        return pointsEarned
 
 def usage():
     print "Usage:"
@@ -173,7 +171,8 @@ if __name__ == "__main__":
             reportItem.accountType = account.get("type")
             reportItem.accountLogin = account.find("login").text
             password = account.find("password").text
-            totalPoints += earnRewards(reportItem, password)
+            earnRewards(reportItem, password)
+            totalPoints += reportItem.pointsEarned
             report.append(reportItem)
 
     #

@@ -1,4 +1,6 @@
-Current version 2.9
+Current version 2.9.1
+
+2.9.1   *) Fixed bug with reporting zero total points
 
 2.9     +) Full report added. Script options [-r, --full-report].
            Report is automatically triggered if more than one account was processed and cumulative points earned was more than zero.
