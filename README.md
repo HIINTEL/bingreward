@@ -11,3 +11,9 @@ http://sealemar.blogspot.com/2013/04/bing-rewards-points-to-cash.html
 
 Bing! Rewards Automation version 2.0
 http://sealemar.blogspot.com/2013/06/bing-rewards-automation-version-2.html
+
+Bing! Rewards Automation version 3.0 (added events support - notifications and retries)
+http://sealemar.blogspot.com/2013/10/bing-rewards-automation-version-30.html
+
+Configuration for Bing! Rewards Automation script
+http://sealemar.blogspot.com/2013/10/configuration-for-bing-rewards.html

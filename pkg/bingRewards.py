@@ -18,11 +18,6 @@ import bingHistory
 import helpers
 from bingQueriesGenerator import BingQueriesGenerator, BING_NEWS_URL
 
-# sleep that amound of seconds (can be float) + some random(0, SLEEP_BETWEEN_BING_QUERIES_SALT) milliseconds
-SLEEP_BETWEEN_BING_QUERIES = 1.0
-# this random number of milliseconds will be added to SLEEP_BETWEEN_BING_QUERIES to get the resulting sleep time
-SLEEP_BETWEEN_BING_QUERIES_SALT = 3000
-
 # extend urllib.addinfourl like it defines @contextmanager (to use with "with" keyword)
 urllib.addinfourl.__enter__ = lambda self: self
 urllib.addinfourl.__exit__  = lambda self, type, value, traceback: self.close()
@@ -52,7 +47,15 @@ class BingRewards:
 
     BING_FLYOUT_PAGE = "http://www.bing.com/rewardsapp/flyoutpage?style=v2"
 
-    def __init__(self):
+    def __init__(self, betweenQueriesInterval, betweenQueriesSalt):
+        """
+        _betweenQueriesInterval_ - (double) - how many seconds the script should wait between queries
+        _betweenQueriesSalt_     - (double) - up to how many seconds to wait on top of _betweenQueriesInterval_ (rand(0, salt))
+        """
+
+        self.betweenQueriesInterval = float(betweenQueriesInterval)
+        self.betweenQueriesSalt     = float(betweenQueriesSalt)
+
         cookies = cookielib.CookieJar()
         self.opener = urllib2.build_opener(#urllib2.HTTPSHandler(debuglevel = 1),     # be verbose on HTTPS
                                            #urllib2.HTTPHandler(debuglevel = 1),      # be verbose on HTTP
@@ -191,7 +194,7 @@ class BingRewards:
         for query in queries:
             if i > 1:
 # sleep some time between queries (don't worry Bing! ;) )
-                t = SLEEP_BETWEEN_BING_QUERIES + (random.uniform(0, SLEEP_BETWEEN_BING_QUERIES_SALT) / 1000)
+                t = self.betweenQueriesInterval + random.uniform(0, self.betweenQueriesInterval)
                 time.sleep(t)
 
             url = BING_QUERY_URL + urllib.quote_plus(query)

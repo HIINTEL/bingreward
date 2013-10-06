@@ -4,30 +4,30 @@
 # developed by Sergey Markelov (2013)
 #
 
+from __future__ import absolute_import
+
 import HTMLParser
 import getopt
 import sys
+import time
 import urllib2
-import xml.etree.ElementTree as et
+
+sys.path.append("pkg")
 
 from bingAuth import BingAuth, AuthenticationError
 from bingRewards import BingRewards
+from config import BingRewardsReportItem, Config, ConfigError
+from eventsProcessor import EventsProcessor
 import bingCommon
 import bingFlyoutParser as bfp
 import helpers
 
 verbose = False
+totalPoints = 0
 
-class RewardsReport:
-    def __init__(self):
-        self.accountType     = ""
-        self.accountLogin    = ""
-        self.oldPoints       = 0
-        self.newPoints       = 0
-        self.pointsEarned    = 0
-        self.lifetimeCredits = 0
+SCRIPT_VERSION = "3.0"
 
-def earnRewards(reportItem, password):
+def earnRewards(config, reportItem, password):
     """Earns Bing! reward points and populates reportItem"""
     noException = False
     try:
@@ -36,7 +36,11 @@ def earnRewards(reportItem, password):
         if reportItem.accountLogin is None: raise ValueError("reportItem.accountLogin is None")
         if password is None: raise ValueError("password is None")
 
-        bingRewards = BingRewards()
+        del reportItem.error
+        reportItem.error = None
+        reportItem.pointsEarned = 0
+
+        bingRewards = BingRewards(config.general.betweenQueriesInterval, config.general.betweenQueriesSalt)
         bingAuth    = BingAuth(bingRewards.opener)
         bingAuth.authenticate(reportItem.accountType, reportItem.accountLogin, password)
         reportItem.oldPoints = bingRewards.getRewardsPoints()
@@ -56,6 +60,7 @@ def earnRewards(reportItem, password):
         reportItem.newPoints = bingRewards.getRewardsPoints()
         reportItem.lifetimeCredits = bingRewards.getLifetimeCredits()
         reportItem.pointsEarned = reportItem.newPoints - reportItem.oldPoints
+        reportItem.pointsEarnedRetrying += reportItem.pointsEarned
         print
         print "%s - %s" % (reportItem.accountType, reportItem.accountLogin)
         print
@@ -70,16 +75,20 @@ def earnRewards(reportItem, password):
         noException = True
 
     except AuthenticationError, e:
+        reportItem.error = e
         print "AuthenticationError:\n%s" % e
 
     except HTMLParser.HTMLParseError, e:
+        reportItem.error = e
         print "HTMLParserError: %s" % e
 
     except urllib2.HTTPError, e:
+        reportItem.error = e
         print "The server couldn't fulfill the request."
         print "Error code: ", e.code
 
     except urllib2.URLError, e:
+        reportItem.error = e
         print "Failed to reach the server."
         print "Reason: ", e.reason
 
@@ -90,14 +99,29 @@ def earnRewards(reportItem, password):
             print
             print "-" * 80
 
+
 def usage():
     print "Usage:"
     print "    -h, --help               show this help"
+    print
     print "    -f, --configFile=file    use specific config file. Default is config.xml"
+    print
     print "    -r, --full-report        force printing complete report at the end. Note: complete report will be"
     print "                             printed anyway if more than one account was processed and cumulative"
     print "                             points earned is more than zero"
+    print
     print "    -v, --verbose            print verbose output"
+    print
+    print "        --version            print version info"
+
+def printVersion():
+    print "Bing! Rewards Automation script: <http://sealemar.blogspot.com/2012/12/bing-rewards-automation.html>"
+    print "Version: " + SCRIPT_VERSION
+    print "See 'version.txt' for the list of changes"
+    print "This code is published under LGPL v3 <http://www.gnu.org/licenses/lgpl-3.0.html>"
+    print "There is NO WARRANTY, to the extent permitted by law."
+    print
+    print "Developed by: Sergey Markelov"
 
 def __stringifyAccount(reportItem, strLen):
     if strLen < 15:
@@ -123,9 +147,72 @@ def __stringifyAccount(reportItem, strLen):
 
     return s
 
+
+def __processAccount(config, reportItem, accountPassword):
+    global totalPoints
+    eventsProcessor = EventsProcessor(config, reportItem)
+    while True:
+        reportItem.retries += 1
+
+        if reportItem.retries > 1:
+            print "retry #" + str(reportItem.retries)
+
+        earnRewards(config, reportItem, accountPassword)
+        totalPoints += reportItem.pointsEarned
+
+        result, extra = eventsProcessor.processReportItem()
+        if result == EventsProcessor.OK:
+            break
+        elif result == EventsProcessor.RETRY:
+            time.sleep(extra)
+        else:
+            # TODO: implement as Utils.warn() or something
+            print "Unexpected result from eventsProcessor.processReportItem() = ( %s, %s )" % (result, extra)
+            break
+
+def __run(config):
+    report = list()
+    for key, account in config.accounts.iteritems():
+        if account.disabled:
+            continue
+
+        reportItem = BingRewardsReportItem()
+        reportItem.accountType  = account.accountType
+        reportItem.accountLogin = account.accountLogin
+
+        __processAccount(config, reportItem, account.password)
+
+        report.append(reportItem)
+
+    EventsProcessor.onScriptComplete(config)
+
+    #
+    # trigger full report if needed
+    #
+
+    if showFullReport or totalPoints > 0 and len(report) > 1:
+        print
+        print " -=-=-=-=-=-=-=-=-=-=--=-=- FULL REPORT -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-="
+        print
+        print "          Account          | Before | After  | Earned | Retries | Lifetime Credits"
+        print "---------------------------+--------+--------+--------+---------+-----------------"
+
+        for r in report:
+            print " %25s | %6d | %6d | %6d | %7d | %16d" % (__stringifyAccount(r, 25), r.oldPoints, r.newPoints, r.pointsEarnedRetrying, r.retries, r.lifetimeCredits)
+
+        print
+
+    #
+    # print footer
+    #
+
+    print "Total points earned: %d" % totalPoints
+    print
+    print "%s - script ended" % helpers.getLoggingTime()
+
 if __name__ == "__main__":
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hf:rv", ["help", "configFile=", "full-report", "verbose"])
+        opts, args = getopt.getopt(sys.argv[1:], "hf:rv", ["help", "configFile=", "full-report", "verbose", "version"])
     except getopt.GetoptError, e:
         print "getopt.GetoptError: %s" % e
         usage()
@@ -143,6 +230,9 @@ if __name__ == "__main__":
             showFullReport = True
         elif o in ("-v", "--verbose"):
             verbose = True
+        elif o == "--version":
+            printVersion()
+            sys.exit()
         else:
             raise NotImplementedError("option '" + o + "' is not implemented")
 
@@ -152,49 +242,18 @@ if __name__ == "__main__":
 
     helpers.createResultsDir(__file__)
 
+    config = Config()
+
     try:
-        tree = et.parse(configFile)
+        config.parseFromFile(configFile)
     except IOError, e:
         print "IOError: %s" % e
         sys.exit(2)
+    except ConfigError, e:
+        print "ConfigError: %s" % e
+        sys.exit(2)
 
-    totalPoints = 0
-    report = list()
-    root = tree.getroot()
-    for accounts in root.findall("accounts"):
-        for account in accounts.findall("account"):
-            isDisabled = True if account.get("disabled", "false").lower() == "true" else False
-            if isDisabled:
-                continue
-
-            reportItem = RewardsReport()
-            reportItem.accountType = account.get("type")
-            reportItem.accountLogin = account.find("login").text
-            password = account.find("password").text
-            earnRewards(reportItem, password)
-            totalPoints += reportItem.pointsEarned
-            report.append(reportItem)
-
-    #
-    # trigger full report if needed
-    #
-
-    if showFullReport or totalPoints > 0 and len(report) > 1:
-        print
-        print " -=-=-=-=-=-=-=-=-=-=--=-=- FULL REPORT -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-"
-        print
-        print "          Account          | Before | After  | Earned | Lifetime Credits"
-        print "---------------------------+--------+--------+--------+------------------"
-
-        for r in report:
-            print " %25s | %6d | %6d | %6d | %16d" % (__stringifyAccount(r, 25), r.oldPoints, r.newPoints, r.pointsEarned, r.lifetimeCredits)
-
-        print
-
-    #
-    # print footer
-    #
-
-    print "Total points earned: %d" % totalPoints
-    print
-    print "%s - script ended" % helpers.getLoggingTime()
+    try:
+        __run(config)
+    except BaseException, e:
+        EventsProcessor.onScriptFailure(config, e)

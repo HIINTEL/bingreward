@@ -258,6 +258,7 @@ class BingAuth:
 
         try:
             authMethod = getattr(self, "_" + self.__class__.__name__ + "__authenticate" + authType)
-            authMethod(login, password)
         except AttributeError:
             raise AuthenticationError("Configuration Error: authentication type " + authType + " is not supported")
+
+        authMethod(login, password)

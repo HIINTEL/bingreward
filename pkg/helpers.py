@@ -10,8 +10,18 @@ import gzip
 import os
 import errno
 from datetime import datetime
+import sys
 
-RESULTS_DIR = "results/"
+RESULTS_DIR = "result/"
+
+def getXmlChildNodes(xmlNode):
+    childNodes = None
+    version = sys.version_info
+    if version[0] == 2 and version[1] < 7:
+        childNodes = xmlNode.getChildren()
+    else:
+        childNodes = list(xmlNode)
+    return childNodes
 
 def getLoggingTime():
     dt = datetime.now()

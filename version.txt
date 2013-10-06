@@ -1,4 +1,16 @@
-Current version 2.9.1
+Current version 3.0
+
+3.0     +) events support in config.xml to automize retries and notifications based on optional conditions
+        +) new section in config.xml - <general betweenQueriesInterval="2.0" betweenQueriesSalt="3.0" />
+        +) --version - outputs version information
+        +) test/ut_config.py - unit tests config.xml parsing
+        *) project's folder structure redesigned:
+            /       - main.py and config.xml
+            pkg/    - all the rest of the code
+            notify/ - notification scripts
+            test/   - unit tests
+            results/ -> result/ - script results and errors
+
 
 2.9.1   *) Fixed bug with reporting zero total points
 
