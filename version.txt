@@ -1,4 +1,7 @@
-Current version 3.0
+Current version 3.0.1
+
+3.0.1   *) pkg/helpers.py - xml.etree.ElementTree.getChildren() -> xml.etree.ElementTree.getchildren()
+           typo in method name for Python < 2.7
 
 3.0     +) events support in config.xml to automize retries and notifications based on optional conditions
         +) new section in config.xml - <general betweenQueriesInterval="2.0" betweenQueriesSalt="3.0" />

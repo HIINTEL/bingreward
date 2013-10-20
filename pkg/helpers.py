@@ -18,7 +18,7 @@ def getXmlChildNodes(xmlNode):
     childNodes = None
     version = sys.version_info
     if version[0] == 2 and version[1] < 7:
-        childNodes = xmlNode.getChildren()
+        childNodes = xmlNode.getchildren()
     else:
         childNodes = list(xmlNode)
     return childNodes
