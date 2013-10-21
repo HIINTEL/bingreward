@@ -8,11 +8,12 @@ from __future__ import absolute_import
 
 import HTMLParser
 import getopt
+import os
 import sys
 import time
 import urllib2
 
-sys.path.append("pkg")
+sys.path.append(os.path.join(os.path.dirname(__file__), "pkg"))
 
 from bingAuth import BingAuth, AuthenticationError
 from bingRewards import BingRewards
@@ -25,7 +26,7 @@ import helpers
 verbose = False
 totalPoints = 0
 
-SCRIPT_VERSION = "3.0.1"
+SCRIPT_VERSION = "3.0.2"
 
 def earnRewards(config, reportItem, password):
     """Earns Bing! reward points and populates reportItem"""
@@ -218,7 +219,7 @@ if __name__ == "__main__":
         usage()
         sys.exit(1)
 
-    configFile = "config.xml"
+    configFile = os.path.join(os.path.dirname(__file__), "config.xml")
     showFullReport = False
     for o, a in opts:
         if o in ("-h", "--help"):

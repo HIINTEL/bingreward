@@ -8,7 +8,7 @@ import os
 import unittest
 import sys
 
-sys.path.append("../pkg")
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "pkg"))
 
 from config import AccountKey, BingRewardsReportItem, Config, ConfigError
 

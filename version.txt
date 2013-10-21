@@ -1,4 +1,7 @@
-Current version 3.0.1
+Current version 3.0.2
+
+3.0.2   *) the script now looks for default config.xml in the directory where it is located
+        *) "pkg" project subfolder is now searched under the script directory
 
 3.0.1   *) pkg/helpers.py - xml.etree.ElementTree.getChildren() -> xml.etree.ElementTree.getchildren()
            typo in method name for Python < 2.7
