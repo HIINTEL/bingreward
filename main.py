@@ -9,6 +9,7 @@ from __future__ import absolute_import
 import HTMLParser
 import getopt
 import os
+import random
 import sys
 import time
 import urllib2
@@ -26,7 +27,7 @@ import helpers
 verbose = False
 totalPoints = 0
 
-SCRIPT_VERSION = "3.0.3"
+SCRIPT_VERSION = "3.1"
 
 def earnRewards(config, reportItem, password):
     """Earns Bing! reward points and populates reportItem"""
@@ -173,9 +174,18 @@ def __processAccount(config, reportItem, accountPassword):
 
 def __run(config):
     report = list()
+
+    accountIndex = 0
+
     for key, account in config.accounts.iteritems():
         if account.disabled:
             continue
+
+# sleep between two accounts logins
+        if accountIndex > 0:
+            isFirstAccount = False
+            extra = config.general.betweenAccountsInterval + random.uniform(0, config.general.betweenAccountsSalt)
+            time.sleep(extra)
 
         reportItem = BingRewardsReportItem()
         reportItem.accountType  = account.accountType
@@ -184,6 +194,8 @@ def __run(config):
         __processAccount(config, reportItem, account.password)
 
         report.append(reportItem)
+
+        accountIndex += 1
 
     EventsProcessor.onScriptComplete(config)
 

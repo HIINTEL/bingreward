@@ -47,8 +47,10 @@ class Config:
 
     class General:
         def __init__(self):
-            self.betweenQueriesInterval = 1.0   # default to this number of seconds
-            self.betweenQueriesSalt     = 3.0   # default to this number of seconds
+            self.betweenQueriesInterval  = 1.0    # default to this number of seconds
+            self.betweenQueriesSalt      = 3.0    # default to this number of seconds
+            self.betweenAccountsInterval = 30.0   # default to this number of seconds
+            self.betweenAccountsSalt     = 35.5   # default to this number of seconds
 
     class Account(AccountKey):
         "Data model representing config.xml account"
@@ -284,13 +286,7 @@ class Config:
         if retry.interval < 0:
             raise ConfigError("EVENTS.RETRY.interval MUST BE >= 0")
 
-        val = xmlEventRetryNode.get("salt", 0.0)
-        try:
-            retry.salt = float(val)
-        except ValueError:
-            raise ConfigError("EVENTS.RETRY.salt must be (double): " + val)
-        if retry.salt < 0:
-            raise ConfigError("EVENTS.RETRY.salt MUST BE >= 0")
+        retry.salt = self.__parseFloatAttr(xmlEventRetryNode, "salt", 0.0, "EVENTS.RETRY.salt")
 
         val = xmlEventRetryNode.get("count")
         if val is None:
@@ -365,24 +361,28 @@ class Config:
 
         return ifStatement
 
+    def __parseFloatAttr(self, xmlNode, attr, default, attrName):
+        result = 0
+        val = xmlNode.get(attr, default)
+        try:
+            result = float(val)
+        except ValueError:
+            raise ConfigError(attrName + " must be (double): " + val)
+        if result < 0:
+            raise ConfigError(attrName + " MUST BE >= 0")
+
+        return result
+
     def __parseGeneral(self, xmlGeneralNode):
         """
         Parses Config.General section
         """
         g = Config.General()
 
-        val = xmlGeneralNode.get("betweenQueriesInterval", g.betweenQueriesInterval)
-        try:
-            g.betweenQueriesInterval = float(val)
-        except ValueError:
-            raise ConfigError("general.betweenQueriesInterval must be (double): " + val)
-
-
-        val = xmlGeneralNode.get("betweenQueriesSalt", g.betweenQueriesSalt)
-        try:
-            g.betweenQueriesSalt = float(val)
-        except ValueError:
-            raise ConfigError("general.betweenQueriesSalt must be (double): " + val)
+        g.betweenQueriesInterval  = self.__parseFloatAttr(xmlGeneralNode, "betweenQueriesInterval",  g.betweenQueriesInterval,  "general.betweenQueriesInterval")
+        g.betweenQueriesSalt      = self.__parseFloatAttr(xmlGeneralNode, "betweenQueriesSalt",      g.betweenQueriesSalt,      "general.betweenQueriesSalt")
+        g.betweenAccountsInterval = self.__parseFloatAttr(xmlGeneralNode, "betweenAccountsInterval", g.betweenAccountsInterval, "general.betweenAccountsInterval")
+        g.betweenAccountsSalt     = self.__parseFloatAttr(xmlGeneralNode, "betweenAccountsSalt",     g.betweenAccountsSalt,     "general.betweenAccountsSalt")
 
         self.general = g
 

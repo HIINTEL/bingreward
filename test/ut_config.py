@@ -17,7 +17,11 @@ class UTConfig(unittest.TestCase):
         self.config = Config()
         self.configXMLString = """
 <configuration>
-    <general betweenQueriesInterval="12.271" betweenQueriesSalt="5.7" />
+    <general
+        betweenQueriesInterval="12.271"
+        betweenQueriesSalt="5.7"
+        betweenAccountsInterval="404.1"
+        betweenAccountsSalt="40.52" />
 
     <accounts>
         <account type="Facebook" disabled="false">
@@ -126,6 +130,8 @@ class UTConfig(unittest.TestCase):
     def __checkGeneral(self):
         self.assertEqual(self.config.general.betweenQueriesInterval, 12.271)
         self.assertEqual(self.config.general.betweenQueriesSalt, 5.7)
+        self.assertEqual(self.config.general.betweenAccountsInterval, 404.1)
+        self.assertEqual(self.config.general.betweenAccountsSalt, 40.52)
 
     def test_event_parse_populatesConfigCorrectly(self):
         self.__checkGeneral()

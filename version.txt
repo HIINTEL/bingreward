@@ -1,4 +1,6 @@
-Current version 3.0.3
+Current version 3.1
+
+3.1     +) config.xml - general.betweenAccountsInterval and general.betweenAccountsSalt - time to sleep between two accounts - not to annoy Bing!
 
 3.0.3   *) commenting the referer in BingFlyoutParser, because on 10/25/2013 Bing! started to return an empty flyout page if referer is other than http://www.bing.com
 

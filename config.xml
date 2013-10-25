@@ -1,7 +1,11 @@
 <?xml version="1.0"?>
 
 <configuration>
-    <general betweenQueriesInterval="2.0" betweenQueriesSalt="3.0" />
+    <general
+        betweenQueriesInterval="2.0"
+        betweenQueriesSalt="3.0"
+        betweenAccountsInterval="40"
+        betweenAccountsSalt="40.5" />
 
     <accounts>
         <account type="Facebook" disabled="false">
