@@ -70,7 +70,10 @@ class BingRewards:
         """
         url = self.BING_FLYOUT_PAGE
         request = urllib2.Request(url = url, headers = bingCommon.HEADERS)
-        request.add_header("Referer", "http://www.bing.com/rewards/dashboard")
+
+# commenting the line below, because on 10/25/2013 Bing! started to return an empty flyout page if referer is other than http://www.bing.com
+        #request.add_header("Referer", "http://www.bing.com/rewards/dashboard")
+
         with self.opener.open(request) as response:
             page = helpers.getResponseBody(response)
         return page

@@ -1,4 +1,6 @@
-Current version 3.0.2
+Current version 3.0.3
+
+3.0.3   *) commenting the referer in BingFlyoutParser, because on 10/25/2013 Bing! started to return an empty flyout page if referer is other than http://www.bing.com
 
 3.0.2   *) the script now looks for default config.xml in the directory where it is located
         *) "pkg" project subfolder is now searched under the script directory

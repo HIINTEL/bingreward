@@ -74,6 +74,8 @@ def dumpErrorPage(page):
     Dumps page into a file. The resulting file is placed into RESULTS_DIR subfolder
     with error_dtStr.html name, where dtStr is current date and time with
     microseconds precision
+
+    returns filename
     """
     if page is None: raise TypeError("page is None")
 
