@@ -27,7 +27,8 @@ import helpers
 verbose = False
 totalPoints = 0
 
-SCRIPT_VERSION = "3.1"
+SCRIPT_VERSION = "3.1.1"
+SCRIPT_DATE = "November 08, 2013"
 
 def earnRewards(config, reportItem, password):
     """Earns Bing! reward points and populates reportItem"""
@@ -118,7 +119,7 @@ def usage():
 
 def printVersion():
     print "Bing! Rewards Automation script: <http://sealemar.blogspot.com/2012/12/bing-rewards-automation.html>"
-    print "Version: " + SCRIPT_VERSION
+    print "Version: " + SCRIPT_VERSION + " from " + SCRIPT_DATE
     print "See 'version.txt' for the list of changes"
     print "This code is published under LGPL v3 <http://www.gnu.org/licenses/lgpl-3.0.html>"
     print "There is NO WARRANTY, to the extent permitted by law."
