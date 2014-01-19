@@ -2,10 +2,10 @@
 
 <configuration>
     <general
-        betweenQueriesInterval="2.0"
-        betweenQueriesSalt="3.0"
-        betweenAccountsInterval="40"
-        betweenAccountsSalt="40.5" />
+        betweenQueriesInterval="10.0"
+        betweenQueriesSalt="5.0"
+        betweenAccountsInterval="300"
+        betweenAccountsSalt="600" />
 
     <accounts>
         <account type="Facebook" disabled="false">
@@ -28,11 +28,11 @@
 
     <events>
         <onError>
-            <retry interval="5" salt="3.5" count="3" />
+            <retry interval="15" salt="13.5" count="3" />
             <notify cmd="/home/BingRewards/bin/BingRewards/notify/onError.sh %a %p %r %P %l %i %e" />
         </onError>
         <onComplete>
-            <retry if="%p lt 16" interval="5" salt="3.5" count="3" />
+            <retry if="%p lt 16" interval="15" salt="13.5" count="3" />
             <notify if="%l gt 3000"
                     cmd='/home/BingRewards/bin/BingRewards/notify/onComplete_reached.sh %a %p %r %P %l %i "reached %l Life Credits"' />
             <notify if="%p ne 16"
@@ -41,7 +41,7 @@
                     cmd="/home/BingRewards/bin/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
 
             <account ref="Live_gogo@hotmail.com">
-                <retry if="%p lt 16" interval="5" salt="3.5" count="3" />
+                <retry if="%p lt 16" interval="15" salt="13.5" count="3" />
                 <notify if="%l gt 750"
                         cmd='/home/BingRewards/bin/BingRewards/notify/onComplete_reached.sh %a %p %r %P %l %i "Gold with %l Life Credits"' />
                 <notify if="%p ne 16"
@@ -50,7 +50,7 @@
                         cmd="/home/BingRewards/bin/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
             </account>
             <account ref="Facebook_john.smith@gmail.com">
-                <retry if="%p lt 31" interval="5" salt="3.5" count="3" />
+                <retry if="%p lt 31" interval="15" salt="13.5" count="3" />
                 <notify if="%l gt 10000"
                         cmd='/home/BingRewards/bin/BingRewards/notify/onComplete_reached.sh %a %p %r %P %l %i "reached %l Life Credits"' />
                 <notify if="%p ne 31"

@@ -1,4 +1,6 @@
-Current version 3.1.1
+Current version 3.1.2
+
+3.1.2   *) Increased intervals in config.xml. It looks like Bing! black lists an IP if it abuses with frequent requests.
 
 3.1.1   *) Bing! authentication URL both for LiveId and Facebook now contains escape characters (http:// is http\x3a\x2f\x2f, for example). Those need to be converted back to normal URL. See [http://docs.python.org/2/library/codecs.html#python-specific-encodings]
         +) Script current version date is now outputed with "--version" argument
