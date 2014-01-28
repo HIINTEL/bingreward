@@ -90,14 +90,12 @@ class BingRewards:
             page = helpers.getResponseBody(response)
 
 # parse dashboard page
-        s = page.index('<div class="user-balance')
-        s += len('<div class="user-balance')
-        s = page.index("Lifetime Credits</span>", s)
-        s += len("Lifetime Credits</span>")
-        s = page.index('<span class="data-value-text', s)
-        s += len('<span class="data-value-text')
+        s = page.index('<div class="credits-right')
+        s += len('<div class="credits-right')
+        s = page.index('<div class="credits')
+        s += len('<div class="credits')
         s = page.index(">", s) + 1
-        e = page.index("</span>", s)
+        e = page.index('</div>', s)
 
         result = int(page[s:e])
         return result

@@ -1,4 +1,6 @@
-Current version 3.1.2
+Current version 3.1.3
+
+3.1.3   *) As per https://github.com/sealemar/BingRewards/issues/13 - Bing! Dashboard HTML was changed. This fix accounts for the change.
 
 3.1.2   *) Increased intervals in config.xml. It looks like Bing! black lists an IP if it abuses with frequent requests.
 
