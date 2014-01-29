@@ -92,7 +92,7 @@ class BingRewards:
 # parse dashboard page
         s = page.index('<div class="credits-right')
         s += len('<div class="credits-right')
-        s = page.index('<div class="credits')
+        s = page.index('<div class="credits', s)
         s += len('<div class="credits')
         s = page.index(">", s) + 1
         e = page.index('</div>', s)
