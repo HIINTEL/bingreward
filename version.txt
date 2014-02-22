@@ -1,4 +1,6 @@
-Current version 3.1.4
+Current version 3.1.5
+
+3.1.5   *) Fixed Live auth. Credits to jbrobst (GitHub). https://github.com/sealemar/BingRewards/issues/18
 
 3.1.4   *) Fixed a bug in lifetime credits parser. https://github.com/sealemar/BingRewards/issues/13
 

@@ -27,8 +27,8 @@ import helpers
 verbose = False
 totalPoints = 0
 
-SCRIPT_VERSION = "3.1.4"
-SCRIPT_DATE = "January 29, 2014"
+SCRIPT_VERSION = "3.1.5"
+SCRIPT_DATE = "February 21, 2014"
 
 def earnRewards(config, reportItem, password):
     """Earns Bing! reward points and populates reportItem"""

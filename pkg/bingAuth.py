@@ -163,10 +163,12 @@ class BingAuth:
         PPFT = page[s:e]
 
 # get PPSX parameter
-        s = page.index(",g:'")
-        s += len(",g:'")
-        e = page.index("'", s)
+        s = page.index(",g:")
+        s += len(",g:")
+        e = page.index(",", s)
         PPSX = page[s:e]
+        if PPSX[0] == "'":
+            PPSX = PPSX[1:-1]
 
 # get sso parameter
         s = page.index(",W:")
@@ -198,7 +200,7 @@ class BingAuth:
             "SI"            : "Sign in",
             "type"          : "11",
             "PPFT"          : PPFT,
-            "PPSX"          : PPSX,
+            "PPSX"          : str(PPSX),
             "idsbho"        : "1",
             "LoginOptions"  : "3",
             "sso"           : sso,
