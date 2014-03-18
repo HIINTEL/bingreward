@@ -1,7 +1,7 @@
 BingRewards
 ===========
 
-Automation to earn Bing reward points with facebook credentials.
+Automation to earn Bing reward points with Facebook and Live credentials.
 
 *) For more information, including how to use this, please, take a look at my blog post:
 http://sealemar.blogspot.com/2012/12/bing-rewards-automation.html
