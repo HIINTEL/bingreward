@@ -1,6 +1,15 @@
-Current version 3.1.6
+Current version 3.2
 
-3.1.6   *) Case insensitive match on flyout strings
+3.2     +) "User-Agent" HTTP header from a predefined list of most commonly used user agents.
+           A new user agent is chosen for each account at random. All searches on one account use the same user agent.
+           Looks like it solves the problem discussed here https://github.com/sealemar/BingRewards/issues/17
+
+        *) Changed
+           BING_QUERY_SUCCESSFULL_RESULT_MARKER = '<div id="results_container">'
+           to
+           BING_QUERY_SUCCESSFULL_RESULT_MARKER = '<div id="b_content">'
+
+3.1.6   *) Case insensitive match on flyout strings. Bing! changed "Search and Earn" to "Search and earn"
 
 3.1.5   *) Fixed Live auth. Credits to jbrobst (GitHub). https://github.com/sealemar/BingRewards/issues/18
 

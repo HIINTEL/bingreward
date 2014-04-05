@@ -27,10 +27,10 @@ import helpers
 verbose = False
 totalPoints = 0
 
-SCRIPT_VERSION = "3.1.6"
+SCRIPT_VERSION = "3.2"
 SCRIPT_DATE = "April 4, 2014"
 
-def earnRewards(config, reportItem, password):
+def earnRewards(config, httpHeaders, reportItem, password):
     """Earns Bing! reward points and populates reportItem"""
     noException = False
     try:
@@ -43,8 +43,8 @@ def earnRewards(config, reportItem, password):
         reportItem.error = None
         reportItem.pointsEarned = 0
 
-        bingRewards = BingRewards(config.general.betweenQueriesInterval, config.general.betweenQueriesSalt)
-        bingAuth    = BingAuth(bingRewards.opener)
+        bingRewards = BingRewards(httpHeaders, config.general.betweenQueriesInterval, config.general.betweenQueriesSalt)
+        bingAuth    = BingAuth(httpHeaders, bingRewards.opener)
         bingAuth.authenticate(reportItem.accountType, reportItem.accountLogin, password)
         reportItem.oldPoints = bingRewards.getRewardsPoints()
         rewards = bfp.parseFlyoutPage(bingRewards.requestFlyoutPage(), bingCommon.BING_URL)
@@ -151,7 +151,7 @@ def __stringifyAccount(reportItem, strLen):
     return s
 
 
-def __processAccount(config, reportItem, accountPassword):
+def __processAccount(config, httpHeaders, reportItem, accountPassword):
     global totalPoints
     eventsProcessor = EventsProcessor(config, reportItem)
     while True:
@@ -160,7 +160,7 @@ def __processAccount(config, reportItem, accountPassword):
         if reportItem.retries > 1:
             print "retry #" + str(reportItem.retries)
 
-        earnRewards(config, reportItem, accountPassword)
+        earnRewards(config, httpHeaders, reportItem, accountPassword)
         totalPoints += reportItem.pointsEarned
 
         result, extra = eventsProcessor.processReportItem()
@@ -173,30 +173,34 @@ def __processAccount(config, reportItem, accountPassword):
             print "Unexpected result from eventsProcessor.processReportItem() = ( %s, %s )" % (result, extra)
             break
 
+def __processAccountUserAgent(config, account, userAgents, doSleep):
+# sleep between two accounts logins
+    if doSleep:
+        extra = config.general.betweenAccountsInterval + random.uniform(0, config.general.betweenAccountsSalt)
+        time.sleep(extra)
+
+    reportItem = BingRewardsReportItem()
+    reportItem.accountType  = account.accountType
+    reportItem.accountLogin = account.accountLogin
+
+    httpHeaders = bingCommon.HEADERS
+    httpHeaders["User-Agent"] = userAgents[ random.randint(0, len(userAgents) - 1) ]
+    __processAccount(config, httpHeaders, reportItem, account.password)
+
+    return reportItem
+
 def __run(config):
     report = list()
 
-    accountIndex = 0
+    doSleep = False
 
     for key, account in config.accounts.iteritems():
         if account.disabled:
             continue
 
-# sleep between two accounts logins
-        if accountIndex > 0:
-            isFirstAccount = False
-            extra = config.general.betweenAccountsInterval + random.uniform(0, config.general.betweenAccountsSalt)
-            time.sleep(extra)
-
-        reportItem = BingRewardsReportItem()
-        reportItem.accountType  = account.accountType
-        reportItem.accountLogin = account.accountLogin
-
-        __processAccount(config, reportItem, account.password)
-
+        reportItem = __processAccountUserAgent(config, account, bingCommon.USER_AGENTS_PC, doSleep)
         report.append(reportItem)
-
-        accountIndex += 1
+        doSleep = True
 
     EventsProcessor.onScriptComplete(config)
 
@@ -206,7 +210,7 @@ def __run(config):
 
     if showFullReport or totalPoints > 0 and len(report) > 1:
         print
-        print " -=-=-=-=-=-=-=-=-=-=--=-=- FULL REPORT -=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-="
+        print " -=-=-=-=-=-=-=-=-=-=--=-=- FULL REPORT -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"
         print
         print "          Account          | Before | After  | Earned | Retries | Lifetime Credits"
         print "---------------------------+--------+--------+--------+---------+-----------------"

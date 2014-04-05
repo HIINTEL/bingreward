@@ -47,7 +47,7 @@ class BingRewards:
 
     BING_FLYOUT_PAGE = "http://www.bing.com/rewardsapp/flyoutpage?style=v2"
 
-    def __init__(self, betweenQueriesInterval, betweenQueriesSalt):
+    def __init__(self, httpHeaders, betweenQueriesInterval, betweenQueriesSalt):
         """
         _betweenQueriesInterval_ - (double) - how many seconds the script should wait between queries
         _betweenQueriesSalt_     - (double) - up to how many seconds to wait on top of _betweenQueriesInterval_ (rand(0, salt))
@@ -61,6 +61,7 @@ class BingRewards:
                                            #urllib2.HTTPHandler(debuglevel = 1),      # be verbose on HTTP
                                            HTTPRefererHandler,                       # add Referer header on redirect
                                            urllib2.HTTPCookieProcessor(cookies))     # keep cookies
+        self.httpHeaders = httpHeaders
 
     def requestFlyoutPage(self):
         """
@@ -69,7 +70,7 @@ class BingRewards:
         order to earn Bing points
         """
         url = self.BING_FLYOUT_PAGE
-        request = urllib2.Request(url = url, headers = bingCommon.HEADERS)
+        request = urllib2.Request(url = url, headers = self.httpHeaders)
 
 # commenting the line below, because on 10/25/2013 Bing! started to return an empty flyout page if referer is other than http://www.bing.com
         #request.add_header("Referer", "http://www.bing.com/rewards/dashboard")
@@ -84,7 +85,7 @@ class BingRewards:
         The number of credits earned since day one of the account
         """
         url = "http://www.bing.com/rewards/dashboard"
-        request = urllib2.Request(url = url, headers = bingCommon.HEADERS)
+        request = urllib2.Request(url = url, headers = self.httpHeaders)
         request.add_header("Referer", bingCommon.BING_URL)
         with self.opener.open(request) as response:
             page = helpers.getResponseBody(response)
@@ -107,7 +108,7 @@ class BingRewards:
 # report activity
         postFields = urllib.urlencode( { "url" : bingCommon.BING_URL, "V" : "web" } )
         url = "http://www.bing.com/rewardsapp/reportActivity"
-        request = urllib2.Request(url, postFields, bingCommon.HEADERS)
+        request = urllib2.Request(url, postFields, self.httpHeaders)
         request.add_header("Referer", bingCommon.BING_URL)
         with self.opener.open(request) as response:
             page = helpers.getResponseBody(response)
@@ -125,7 +126,7 @@ class BingRewards:
         """Processes bfp.Reward.Type.Action.HIT and returns self.RewardResult"""
         res = self.RewardResult(reward)
         pointsEarned = self.getRewardsPoints()
-        request = urllib2.Request(url = reward.url, headers = bingCommon.HEADERS)
+        request = urllib2.Request(url = reward.url, headers = self.httpHeaders)
         with self.opener.open(request) as response:
             page = helpers.getResponseBody(response)
         pointsEarned = self.getRewardsPoints() - pointsEarned
@@ -146,7 +147,7 @@ class BingRewards:
         """Processes bfp.Reward.Type.Action.SEARCH and returns self.RewardResult"""
 
         BING_QUERY_URL = 'http://www.bing.com/search?q='
-        BING_QUERY_SUCCESSFULL_RESULT_MARKER = '<div id="results_container">'
+        BING_QUERY_SUCCESSFULL_RESULT_MARKER = '<div id="b_content">'
 
         res = self.RewardResult(reward)
         if reward.isAchieved():
@@ -161,7 +162,7 @@ class BingRewards:
 
 # get a set of queries from today's Bing! history
         url = bingHistory.getBingHistoryTodayURL()
-        request = urllib2.Request(url = url, headers = bingCommon.HEADERS)
+        request = urllib2.Request(url = url, headers = self.httpHeaders)
         with self.opener.open(request) as response:
             page = helpers.getResponseBody(response)
         history = bingHistory.parse(page)
@@ -176,7 +177,7 @@ class BingRewards:
 # adjust to the current progress
         searchesCount -= reward.progressCurrent * rewardCost
 
-        request = urllib2.Request(url = BING_NEWS_URL, headers = bingCommon.HEADERS)
+        request = urllib2.Request(url = BING_NEWS_URL, headers = self.httpHeaders)
         with self.opener.open(request) as response:
             page = helpers.getResponseBody(response)
 

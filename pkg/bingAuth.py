@@ -31,7 +31,7 @@ class HTMLFormInputsParser(HTMLParser.HTMLParser):
                 self.inputs[name] = value.encode("utf-8")
 
 class BingAuth:
-    def __init__(self, opener):
+    def __init__(self, httpHeaders, opener):
         """
         @param opener is an instance of urllib2.OpenerDirector
         """
@@ -39,6 +39,7 @@ class BingAuth:
             raise TypeError("opener is not an instance of urllib2.OpenerDirector")
 
         self.opener = opener
+        self.httpHeaders = httpHeaders
 
     def __authenticateFacebook(self, login, password):
         """
@@ -53,7 +54,7 @@ class BingAuth:
 #        print "Requesting bing.com"
 
 # request http://www.bing.com
-        request = urllib2.Request(url = bingCommon.BING_URL, headers = bingCommon.HEADERS)
+        request = urllib2.Request(url = bingCommon.BING_URL, headers = self.httpHeaders)
         with self.opener.open(request) as response:
             page = helpers.getResponseBody(response)
 
@@ -77,7 +78,7 @@ class BingAuth:
 #        print "Now requesting facebook authentication page"
 
 # request FACEBOOK_CONNECT_ORIGINAL_URL
-        request = urllib2.Request(url = url, headers = bingCommon.HEADERS)
+        request = urllib2.Request(url = url, headers = self.httpHeaders)
         request.add_header("Referer", bingCommon.BING_URL)
         with self.opener.open(request) as response:
             referer = response.geturl()
@@ -109,7 +110,7 @@ class BingAuth:
 
 # pass facebook authentication
         postFields = urllib.urlencode(parser.inputs)
-        request = urllib2.Request(url, postFields, bingCommon.HEADERS)
+        request = urllib2.Request(url, postFields, self.httpHeaders)
         request.add_header("Referer", referer)
         with self.opener.open(request) as response:
             url = response.geturl()
@@ -134,7 +135,7 @@ class BingAuth:
 #        print "Requesting bing.com"
 
 # request http://www.bing.com
-        request = urllib2.Request(url = bingCommon.BING_URL, headers = bingCommon.HEADERS)
+        request = urllib2.Request(url = bingCommon.BING_URL, headers = self.httpHeaders)
         with self.opener.open(request) as response:
             page = helpers.getResponseBody(response)
 
@@ -148,7 +149,7 @@ class BingAuth:
 # see (http://docs.python.org/2/library/codecs.html#python-specific-encodings)
         url = page[s:e].decode('string-escape')
 
-        request = urllib2.Request(url = url, headers = bingCommon.HEADERS)
+        request = urllib2.Request(url = url, headers = self.httpHeaders)
         request.add_header("Referer", bingCommon.BING_URL)
         with self.opener.open(request) as response:
             referer = response.geturl()
@@ -221,7 +222,7 @@ class BingAuth:
 
         # get Passport page
 
-        request = urllib2.Request(url, postFields, bingCommon.HEADERS)
+        request = urllib2.Request(url, postFields, self.httpHeaders)
         with self.opener.open(request) as response:
             page = helpers.getResponseBody(response)
 
@@ -237,14 +238,14 @@ class BingAuth:
         # finish passing authentication
 
         url = "http://www.bing.com/Passport.aspx?requrl=http%3a%2f%2fwww.bing.com%2f&wa=wsignin1.0"
-        request = urllib2.Request(url, postFields, bingCommon.HEADERS)
+        request = urllib2.Request(url, postFields, self.httpHeaders)
         request.add_header("Origin", "https://login.live.com")
 
         with self.opener.open(request) as response:
             page = helpers.getResponseBody(response)
 
         url = bingCommon.BING_URL
-        request = urllib2.Request(url, postFields, bingCommon.HEADERS)
+        request = urllib2.Request(url, postFields, self.httpHeaders)
         request.add_header("Referer", "http://www.bing.com/Passport.aspx?requrl=http%3a%2f%2fwww.bing.com%2f&wa=wsignin1.0")
         with self.opener.open(request) as response:
             url = response.geturl()
