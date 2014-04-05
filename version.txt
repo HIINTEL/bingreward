@@ -1,4 +1,6 @@
-Current version 3.1.5
+Current version 3.1.6
+
+3.1.6   *) Case insensitive match on flyout strings
 
 3.1.5   *) Fixed Live auth. Credits to jbrobst (GitHub). https://github.com/sealemar/BingRewards/issues/18
 

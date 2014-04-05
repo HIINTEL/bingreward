@@ -257,7 +257,7 @@ class __HTMLRewardsParser(HTMLParser.HTMLParser):
                                 self.reward.tp = t
                                 return
 
-            elif t[Reward.Type.Col.NAME] == self.reward.name \
+            elif t[Reward.Type.Col.NAME].lower() == self.reward.name.lower() \
                     and ( t[Reward.Type.Col.DESCRIPTION] is None \
                           or t[Reward.Type.Col.DESCRIPTION] == self.reward.description ):
                                 self.reward.tp = t
