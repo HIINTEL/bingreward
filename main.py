@@ -27,8 +27,8 @@ import helpers
 verbose = False
 totalPoints = 0
 
-SCRIPT_VERSION = "3.2"
-SCRIPT_DATE = "April 4, 2014"
+SCRIPT_VERSION = "3.3"
+SCRIPT_DATE = "April 7, 2014"
 
 def earnRewards(config, httpHeaders, reportItem, password):
     """Earns Bing! reward points and populates reportItem"""
@@ -43,7 +43,7 @@ def earnRewards(config, httpHeaders, reportItem, password):
         reportItem.error = None
         reportItem.pointsEarned = 0
 
-        bingRewards = BingRewards(httpHeaders, config.general.betweenQueriesInterval, config.general.betweenQueriesSalt)
+        bingRewards = BingRewards(httpHeaders, config)
         bingAuth    = BingAuth(httpHeaders, bingRewards.opener)
         bingAuth.authenticate(reportItem.accountType, reportItem.accountLogin, password)
         reportItem.oldPoints = bingRewards.getRewardsPoints()

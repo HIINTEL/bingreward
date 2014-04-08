@@ -7,6 +7,10 @@
         betweenAccountsInterval="300"
         betweenAccountsSalt="600" />
 
+    <!--
+    <proxy url="202.101.96.154:8888" />
+    -->
+
     <accounts>
         <account type="Facebook" disabled="false">
             <login>john.smith@gmail.com</login>

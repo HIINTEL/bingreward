@@ -47,21 +47,32 @@ class BingRewards:
 
     BING_FLYOUT_PAGE = "http://www.bing.com/rewardsapp/flyoutpage?style=v2"
 
-    def __init__(self, httpHeaders, betweenQueriesInterval, betweenQueriesSalt):
+    def __init__(self, httpHeaders, config):
         """
-        _betweenQueriesInterval_ - (double) - how many seconds the script should wait between queries
-        _betweenQueriesSalt_     - (double) - up to how many seconds to wait on top of _betweenQueriesInterval_ (rand(0, salt))
+        From _config_ these parameters are used:
+            config.general.betweenQueriesInterval - (double) - how many seconds the script should wait between queries
+            config.general.betweenQueriesSalt     - (double) - up to how many seconds to wait on top of _betweenQueriesInterval_ (rand(0, salt))
+            config.proxy - proxy settings (can be None)
         """
 
-        self.betweenQueriesInterval = float(betweenQueriesInterval)
-        self.betweenQueriesSalt     = float(betweenQueriesSalt)
+        self.betweenQueriesInterval = float(config.general.betweenQueriesInterval)
+        self.betweenQueriesSalt     = float(config.general.betweenQueriesSalt)
+        self.httpHeaders = httpHeaders
 
         cookies = cookielib.CookieJar()
-        self.opener = urllib2.build_opener(#urllib2.HTTPSHandler(debuglevel = 1),     # be verbose on HTTPS
-                                           #urllib2.HTTPHandler(debuglevel = 1),      # be verbose on HTTP
-                                           HTTPRefererHandler,                       # add Referer header on redirect
-                                           urllib2.HTTPCookieProcessor(cookies))     # keep cookies
-        self.httpHeaders = httpHeaders
+
+        if config.proxy:
+            self.opener = urllib2.build_opener(
+                                            urllib2.ProxyHandler( { config.proxy.protocol : config.proxy.url } ),
+                                            #urllib2.HTTPSHandler(debuglevel = 1),     # be verbose on HTTPS
+                                            #urllib2.HTTPHandler(debuglevel = 1),      # be verbose on HTTP
+                                            HTTPRefererHandler,                       # add Referer header on redirect
+                                            urllib2.HTTPCookieProcessor(cookies))     # keep cookies
+        else:
+            self.opener = urllib2.build_opener(#urllib2.HTTPSHandler(debuglevel = 1),     # be verbose on HTTPS
+                                            #urllib2.HTTPHandler(debuglevel = 1),      # be verbose on HTTP
+                                            HTTPRefererHandler,                       # add Referer header on redirect
+                                            urllib2.HTTPCookieProcessor(cookies))     # keep cookies
 
     def requestFlyoutPage(self):
         """

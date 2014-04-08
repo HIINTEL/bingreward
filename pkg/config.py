@@ -52,6 +52,15 @@ class Config:
             self.betweenAccountsInterval = 30.0   # default to this number of seconds
             self.betweenAccountsSalt     = 35.5   # default to this number of seconds
 
+    class Proxy:
+        """
+        Web proxy for HTTP requests. Currently only HTTP proxy is supported.
+        No authentication is supported.
+        """
+        def __init__(self):
+            self.protocol = "http"                # only HTTP proxy is currently supported
+            self.url = None
+
     class Account(AccountKey):
         "Data model representing config.xml account"
 
@@ -185,6 +194,7 @@ class Config:
 
     def __init__(self):
         self.general  = Config.General()
+        self.proxy    = None              # no proxy by default, otherwise will be an instance of Config.Proxy
         self.accounts = dict()            # holds a dictionary of _Account_ objects
         self.events   = dict()            # holds a dictionary of _Event_ objects
 
@@ -386,6 +396,18 @@ class Config:
 
         self.general = g
 
+    def __parseProxy(self, node):
+        """
+        Parses Config.Proxy section
+        """
+        p = Config.Proxy()
+
+        p.url = node.get("url")
+        if p.url is None:
+            raise ConfigError("proxy.url is not found")
+
+        self.proxy = p
+
     def getEvent(self, eventType, accountKey = None):
         """
         Returns an event of type _eventType_ for account _accountKey_ (if it is passed)
@@ -413,6 +435,8 @@ class Config:
         for node in helpers.getXmlChildNodes(root):
             if node.tag == "general":
                 self.__parseGeneral(node)
+            elif node.tag == "proxy":
+                self.__parseProxy(node)
             elif node.tag == "accounts":
                 self.__parseAccounts(node)
             elif node.tag == "events":

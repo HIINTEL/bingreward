@@ -1,4 +1,9 @@
-Current version 3.2
+Current version 3.3
+
+3.3     +) Adding HTTP proxy support as per
+           https://github.com/sealemar/BingRewards/issues/23
+
+           new XML node under <configuration> -> <proxy url="ip:port">. Can be also <proxy url="url:port">
 
 3.2     +) "User-Agent" HTTP header from a predefined list of most commonly used user agents.
            A new user agent is chosen for each account at random. All searches on one account use the same user agent.
