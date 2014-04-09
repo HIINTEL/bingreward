@@ -5,6 +5,7 @@
 #
 
 from datetime import datetime
+import pytz
 from HTMLParser import HTMLParser
 import helpers
 
@@ -105,5 +106,6 @@ def getBingHistoryTodayURL():
     i.e. "https://ssl.bing.com/profile/history?d=20121217"
     """
     BING_HISTORY_URL = "https://ssl.bing.com/profile/history?d="
-    dtStr = datetime.now().strftime("%Y%m%d")
+    date = datetime.now(tz=pytz.utc).astimezone(pytz.timezone('US/Pacific'))
+    dtStr = date.strftime("%Y%m%d")
     return BING_HISTORY_URL + dtStr
