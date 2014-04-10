@@ -60,6 +60,8 @@ class Config:
         def __init__(self):
             self.protocol = "http"                # only HTTP proxy is currently supported
             self.url = None
+            self.login = None                     # login and password can be None while url can be set,
+            self.password = None                  # meaning that the proxy doesn't require auth
 
     class Account(AccountKey):
         "Data model representing config.xml account"
@@ -405,6 +407,13 @@ class Config:
         p.url = node.get("url")
         if p.url is None:
             raise ConfigError("proxy.url is not found")
+
+        p.login    = node.get("login")
+        p.password = node.get("password")
+
+        if p.login or p.password:
+            if not p.login or not p.password:
+                raise ConfigError("Both proxy login and proxy password should be either set or uset at the same time")
 
         self.proxy = p
 

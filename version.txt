@@ -1,4 +1,7 @@
-Current version 3.3.2
+Current version 3.4
+
+3.4     +) Added authentication support for proxy as per
+           https://github.com/sealemar/BingRewards/issues/26
 
 3.3.2   +) Added explicit urllib2.HTTPSHandler() to urllib2.opener as per
            https://github.com/sealemar/BingRewards/issues/23#issuecomment-39948409

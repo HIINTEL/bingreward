@@ -62,6 +62,13 @@ class BingRewards:
         cookies = cookielib.CookieJar()
 
         if config.proxy:
+            if config.proxy.login:
+                proxyString = "%s:%s@%s" % ( config.proxy.login, config.proxy.password, config.proxy.url )
+            else:
+                proxyString = config.proxy.url
+
+            print "Proxy: '%s'" % proxyString
+
             self.opener = urllib2.build_opener(
                                             urllib2.ProxyHandler( { config.proxy.protocol : config.proxy.url } ),
                                             #urllib2.HTTPSHandler(debuglevel = 1),     # be verbose on HTTPS
