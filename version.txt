@@ -1,4 +1,7 @@
-Current version 3.3.1
+Current version 3.3.2
+
+3.3.2   +) Added explicit urllib2.HTTPSHandler() to urllib2.opener as per
+           https://github.com/sealemar/BingRewards/issues/23#issuecomment-39948409
 
 3.3.1   *) pkg/bingHistory.getBingHistoryTodayURL() is now calculating time in PST time zone.
            The change was made after adding HTTP proxy support as per

@@ -66,11 +66,14 @@ class BingRewards:
                                             urllib2.ProxyHandler( { config.proxy.protocol : config.proxy.url } ),
                                             #urllib2.HTTPSHandler(debuglevel = 1),     # be verbose on HTTPS
                                             #urllib2.HTTPHandler(debuglevel = 1),      # be verbose on HTTP
+                                            urllib2.HTTPSHandler(),
                                             HTTPRefererHandler,                       # add Referer header on redirect
                                             urllib2.HTTPCookieProcessor(cookies))     # keep cookies
+
         else:
             self.opener = urllib2.build_opener(#urllib2.HTTPSHandler(debuglevel = 1),     # be verbose on HTTPS
                                             #urllib2.HTTPHandler(debuglevel = 1),      # be verbose on HTTP
+                                            urllib2.HTTPSHandler(),
                                             HTTPRefererHandler,                       # add Referer header on redirect
                                             urllib2.HTTPCookieProcessor(cookies))     # keep cookies
 
