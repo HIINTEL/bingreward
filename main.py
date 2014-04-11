@@ -27,7 +27,7 @@ import helpers
 verbose = False
 totalPoints = 0
 
-SCRIPT_VERSION = "3.4.2"
+SCRIPT_VERSION = "3.4.3"
 SCRIPT_DATE = "April 10, 2014"
 
 def earnRewards(config, httpHeaders, reportItem, password):

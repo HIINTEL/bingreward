@@ -58,7 +58,7 @@ class Config:
         No authentication is supported.
         """
         def __init__(self):
-            self.protocol = "http"                # only HTTP proxy is currently supported
+            self.protocol = None
             self.url = None
             self.login = None                     # login and password can be None while url can be set,
             self.password = None                  # meaning that the proxy doesn't require auth
@@ -403,6 +403,10 @@ class Config:
         Parses Config.Proxy section
         """
         p = Config.Proxy()
+
+        p.protocol = node.get("protocol")
+        if p.protocol is None:
+            raise ConfigError("proxy.protocol is not found")
 
         p.url = node.get("url")
         if p.url is None:

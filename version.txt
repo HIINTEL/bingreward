@@ -1,4 +1,7 @@
-Current version 3.4.2
+Current version 3.4.3
+
+3.4.3   *) Adding explicit protocol support through config.xml as per
+           https://github.com/sealemar/BingRewards/issues/23#issuecomment-40054238
 
 3.4.2   *) Reverting 3.3.1 change as per
            https://github.com/sealemar/BingRewards/issues/27
