@@ -1,4 +1,7 @@
-Current version 3.4.1
+Current version 3.4.2
+
+3.4.2   *) Reverting 3.3.1 change as per
+           https://github.com/sealemar/BingRewards/issues/27
 
 3.4.1   +) Fixed urllib2.build_opener() call as per
            https://github.com/sealemar/BingRewards/issues/26#issuecomment-40053091
