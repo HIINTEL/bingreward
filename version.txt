@@ -1,4 +1,7 @@
-Current version 3.4
+Current version 3.4.1
+
+3.4.1   +) Fixed urllib2.build_opener() call as per
+           https://github.com/sealemar/BingRewards/issues/26#issuecomment-40053091
 
 3.4     +) Added authentication support for proxy as per
            https://github.com/sealemar/BingRewards/issues/26
