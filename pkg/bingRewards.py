@@ -67,10 +67,10 @@ class BingRewards:
             else:
                 proxyString = config.proxy.url
 
-            print "Proxy: '%s'" % proxyString
+            print "Protocols: '%s', Proxy: '%s'" % ( ", ".join(config.proxy.protocols), proxyString )
 
             self.opener = urllib2.build_opener(
-                                            urllib2.ProxyHandler( { config.proxy.protocol : proxyString } ),
+                                            urllib2.ProxyHandler( { p : proxyString for p in config.proxy.protocols } ),
                                             #urllib2.HTTPSHandler(debuglevel = 1),     # be verbose on HTTPS
                                             #urllib2.HTTPHandler(debuglevel = 1),      # be verbose on HTTP
                                             urllib2.HTTPSHandler(),
@@ -78,7 +78,8 @@ class BingRewards:
                                             urllib2.HTTPCookieProcessor(cookies))     # keep cookies
 
         else:
-            self.opener = urllib2.build_opener(#urllib2.HTTPSHandler(debuglevel = 1),     # be verbose on HTTPS
+            self.opener = urllib2.build_opener(
+                                            #urllib2.HTTPSHandler(debuglevel = 1),     # be verbose on HTTPS
                                             #urllib2.HTTPHandler(debuglevel = 1),      # be verbose on HTTP
                                             urllib2.HTTPSHandler(),
                                             HTTPRefererHandler,                       # add Referer header on redirect

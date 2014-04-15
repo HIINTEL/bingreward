@@ -1,4 +1,10 @@
-Current version 3.4.3
+Current version 3.4.4
+
+3.4.4   *) Adding support for multiple proxy protocols in config.xml as per
+           https://github.com/sealemar/BingRewards/issues/23#issuecomment-40173913
+
+           Example proxy xml declaration:
+           <proxy protocols="http,https" url="218.204.159.45:8123" login="John Smith" password="xxx" />
 
 3.4.3   *) Adding explicit protocol support through config.xml as per
            https://github.com/sealemar/BingRewards/issues/23#issuecomment-40054238

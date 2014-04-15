@@ -11,8 +11,8 @@
       - Note: login and password are optional
       -       if not set, the proxy is considered open
       -       only Basic HTTP Authentication is currently supported
-      -       protocol: http or https
-    <proxy protocol="http" url="113.57.252.106:80" login="John Smith" password="xxx" />
+      -       protocols: a comma separated list of values - i.e, "http,https"
+    <proxy protocols="http,https" url="218.204.159.45:8123" login="John Smith" password="xxx" />
     -->
 
     <accounts>
