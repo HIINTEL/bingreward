@@ -50,16 +50,17 @@ class Reward:
         RE_EARN_CREDITS_PASS = (1,    EARN_CREDITS_RE,
                             "Get the best of Bing by signing in with Facebook.", True,  Action.PASS)
         RE_EARN_CREDITS      = (2,    EARN_CREDITS_RE,                     None, True,  Action.HIT)
-        SEARCH_AND_EARN      = (3,    "Search and Earn",                   None, False, Action.SEARCH)
-        YOUR_GOAL            = (4,    "Your goal",                         None, False, Action.INFORM)
-        MAINTAIN_GOLD        = (5,    "Maintain Gold",                     None, False, Action.INFORM)
-        REFER_A_FRIEND       = (6,    "Refer-A-Friend",                    None, False, Action.PASS)
-        SEND_A_TWEET         = (7,    "Send a Tweet",                      None, False, Action.PASS)
-        RE_EARNED_CREDITS    = (8,    re.compile("Earned \d+ credits?"),   None, True,  Action.PASS)
-        COMPLETED            = (9,    "Completed",                         None, False, Action.PASS)
-        SILVER_STATUS        = (10,   "Silver Status",                     None, False, Action.PASS)
+        SEARCH_MOBILE        = (3,    "Mobile search",                     None, False, Action.SEARCH)
+        SEARCH_PC            = (4,    "PC search",                         None, False, Action.SEARCH)
+        YOUR_GOAL            = (5,    "Your goal",                         None, False, Action.INFORM)
+        MAINTAIN_GOLD        = (6,    "Maintain Gold",                     None, False, Action.INFORM)
+        REFER_A_FRIEND       = (7,    "Refer-A-Friend",                    None, False, Action.PASS)
+        SEND_A_TWEET         = (8,    "Send a Tweet",                      None, False, Action.PASS)
+        RE_EARNED_CREDITS    = (9,    re.compile("Earned \d+ credits?"),   None, True,  Action.PASS)
+        COMPLETED            = (10,    "Completed",                        None, False, Action.PASS)
+        SILVER_STATUS        = (11,   "Silver Status",                     None, False, Action.PASS)
 
-        ALL = (RE_EARN_CREDITS_PASS, RE_EARN_CREDITS, SEARCH_AND_EARN, YOUR_GOAL, MAINTAIN_GOLD,
+        ALL = (RE_EARN_CREDITS_PASS, RE_EARN_CREDITS, SEARCH_MOBILE, SEARCH_PC, YOUR_GOAL, MAINTAIN_GOLD,
                REFER_A_FRIEND, SEND_A_TWEET, RE_EARNED_CREDITS, COMPLETED, SILVER_STATUS)
 
     def __init__(self):

@@ -1,4 +1,12 @@
-Current version 3.4.4
+Current version 3.5
+
+3.5     +) Implemented mobile searches as per
+           https://github.com/sealemar/BingRewards/issues/16
+
+           A pair of PC user agent and Mobile user agent for the searches are
+           chosen at random for every account
+
+        *) Fixed https://github.com/sealemar/BingRewards/issues/33
 
 3.4.4   *) Adding support for multiple proxy protocols in config.xml as per
            https://github.com/sealemar/BingRewards/issues/23#issuecomment-40173913
