@@ -15,14 +15,17 @@ Usage:
 
 import re
 
+import bingFlyoutParser as bfp
+
 BING_NEWS_URL = "http://www.bing.com/news?q=world+news"
 MAX_QUERY_LEN = 50
 
 class BingQueriesGenerator:
-    def __init__(self, numberOfQueries, history):
+    def __init__(self, numberOfQueries, history, rewardType):
         """
         param numberOfQueries how many queries a user wants to perform
         param history a set of queries from today's Bing! history
+        param rewardType should be one of [ bfp.Reward.Type.SEARCH_MOBILE, bfp.Reward.Type.SEARCH_PC ]
         """
         if numberOfQueries <= 0:
             raise ValueError("numberOfQueries should be more than 0, but it is " + str(numberOfQueries))
@@ -32,6 +35,7 @@ class BingQueriesGenerator:
         self.queries = set()
         self.numberOfQueries = numberOfQueries
         self.history = history
+        self.rewardType = rewardType
 
     def __addQueriesFromString(self, inputString):
         """
@@ -89,9 +93,14 @@ class BingQueriesGenerator:
         Returns True if self.numberOfQueries queries were generated in
         self.queries set
         """
-        snippetMarkerBegin = '<span class="sn_snip"'
+        if self.rewardType == bfp.Reward.Type.SEARCH_MOBILE:
+            snippetMarkerBegin = '<p class="dgrey"'
+            snippetMarkerEnd = '</p>'
+        else:
+            snippetMarkerBegin = '<span class="sn_snip"'
+            snippetMarkerEnd = '</span>'
+
         snippetMarkerBeginLen = len(snippetMarkerBegin)
-        snippetMarkerEnd = '</span>'
         snippetMarkerEndLen = len(snippetMarkerEnd)
 
         htmlEntities = re.compile("&\w+;")
@@ -139,13 +148,21 @@ class BingQueriesGenerator:
         if newsPage is None: raise TypeError("newsPage is None")
         if newsPage.strip() == "": raise ValueError("newsPage is empty")
 
-        startMarker = '<div class="NewsResultSet'
+        if self.rewardType == bfp.Reward.Type.SEARCH_MOBILE:
+            startMarker = '<div class="mpage'
+        else:
+            startMarker = '<div class="NewsResultSet'
+
         s = newsPage.index(startMarker)
         s += len(startMarker)
         s = newsPage.index(">", s)
         s += 1
 
-        endMarker = '<div class="news_gt'
+        if self.rewardType == bfp.Reward.Type.SEARCH_MOBILE:
+            endMarker = '<div id="CntFtr"'
+        else:
+            endMarker = '<div class="news_gt'
+
         e = newsPage.index(endMarker, s)
 
         self.__generateQueries(newsPage[s:e], maxQueryLen)

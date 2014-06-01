@@ -1,4 +1,6 @@
-Current version 3.5
+Current version 3.5.1
+
+3.5.1   *) Fixed https://github.com/sealemar/BingRewards/issues/37
 
 3.5     +) Implemented mobile searches as per
            https://github.com/sealemar/BingRewards/issues/16

@@ -227,7 +227,7 @@ class BingRewards:
             page = helpers.getResponseBody(response)
 
 # generate a set of queries to run
-        bingQueriesGenerator = BingQueriesGenerator(searchesCount, history)
+        bingQueriesGenerator = BingQueriesGenerator(searchesCount, history, reward.tp)
         queries = bingQueriesGenerator.parseBingNews(page)
         if len(queries) < searchesCount:
             print "Warning: not enough queries to run were generated !"
