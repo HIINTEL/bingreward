@@ -1,4 +1,6 @@
-Current version 3.5.1
+Current version 3.5.2
+
+3.5.2   *) @JustLikeIcarus Added missing commas to list of mobile user agents
 
 3.5.1   *) Fixed https://github.com/sealemar/BingRewards/issues/37
 
