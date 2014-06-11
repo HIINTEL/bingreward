@@ -171,12 +171,6 @@ class BingAuth:
         if PPSX[0] == "'":
             PPSX = PPSX[1:-1]
 
-# get sso parameter
-        s = page.index(",W:")
-        s += len(",W:")
-        e = page.index(",", s)
-        sso = page[s:e]
-
 # generate ClientLoginTime
         clt = 20000 + int(random.uniform(0, 1000))
 
@@ -204,7 +198,6 @@ class BingAuth:
             "PPSX"          : str(PPSX),
             "idsbho"        : "1",
             "LoginOptions"  : "3",
-            "sso"           : sso,
             "NewUser"       : "1",
             "i1"            : "0",                  # ClientUserSaved
             "i2"            : "1",                  # ClientMode

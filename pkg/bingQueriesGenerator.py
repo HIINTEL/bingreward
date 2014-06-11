@@ -148,12 +148,14 @@ class BingQueriesGenerator:
         if newsPage is None: raise TypeError("newsPage is None")
         if newsPage.strip() == "": raise ValueError("newsPage is empty")
 
-        if self.rewardType == bfp.Reward.Type.SEARCH_MOBILE:
+        self.rewardType = bfp.Reward.Type.SEARCH_PC
+        startMarker = '<div class="NewsResultSet'
+        s = newsPage.find(startMarker)
+        if s == -1:
+            self.rewardType = bfp.Reward.Type.SEARCH_MOBILE
             startMarker = '<div class="mpage'
-        else:
-            startMarker = '<div class="NewsResultSet'
+            s = newsPage.index(startMarker)
 
-        s = newsPage.index(startMarker)
         s += len(startMarker)
         s = newsPage.index(">", s)
         s += 1

@@ -1,4 +1,10 @@
-Current version 3.5.2
+Current version 3.5.3
+
+3.5.3   *) Fixed https://github.com/sealemar/BingRewards/issues/45#issuecomment-45700693
+           Two bugs were addressed:
+           1. bingAuth - sso is not used any more
+           2. bingQueriesGenerator - Bing! spontaneously returns PC style page for mobile
+              searches. This fix check for both of them.
 
 3.5.2   *) @JustLikeIcarus Added missing commas to list of mobile user agents
 
