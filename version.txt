@@ -1,4 +1,7 @@
-Current version 3.5.3
+Current version 3.5.4
+
+3.5.4   *) Fixed https://github.com/sealemar/BingRewards/issues/49
+           Should have been a part of 3.5.3 - commit 6223139
 
 3.5.3   *) Fixed https://github.com/sealemar/BingRewards/issues/45#issuecomment-45700693
            Two bugs were addressed:

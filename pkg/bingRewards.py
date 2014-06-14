@@ -253,10 +253,8 @@ class BingRewards:
                 page = helpers.getResponseBody(response)
 
 # check for the successfull marker
-            found = ( reward.tp == bfp.Reward.Type.SEARCH_PC and
-                      page.find(BING_QUERY_SUCCESSFULL_RESULT_MARKER_PC) != -1 ) \
-                 or ( reward.tp == bfp.Reward.Type.SEARCH_MOBILE and
-                      page.find(BING_QUERY_SUCCESSFULL_RESULT_MARKER_MOBILE) != -1 )
+            found = page.find(BING_QUERY_SUCCESSFULL_RESULT_MARKER_PC) != -1 \
+                 or page.find(BING_QUERY_SUCCESSFULL_RESULT_MARKER_MOBILE) != -1
 
             if not found:
                 filename = helpers.dumpErrorPage(page)
