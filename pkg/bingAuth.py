@@ -63,10 +63,10 @@ class BingAuth:
         s += len('"Facebook":"')
         e = page.index('"', s)
 
-# the URL contains escape characters (http:// is http\x3a\x2f\x2f, for example)
+# the URL contains escape characters (http:// is http\u003a\u002f\u002f, for example)
 # this needs to be decoded back to normal URL
 # see (http://docs.python.org/2/library/codecs.html#python-specific-encodings)
-        url = page[s:e].decode('string-escape')
+        url = page[s:e].decode('unicode_escape')
 
         s = url.index('sig=')
         s += len('sig=')
@@ -144,10 +144,10 @@ class BingAuth:
         s += len('"WindowsLiveId":"')
         e = page.index('"', s)
 
-# the URL contains escape characters (http:// is http\x3a\x2f\x2f, for example)
+# the URL contains escape characters (http:// is http\u003a\u002f\u002f, for example)
 # this needs to be decoded back to normal URL
 # see (http://docs.python.org/2/library/codecs.html#python-specific-encodings)
-        url = page[s:e].decode('string-escape')
+        url = page[s:e].decode('unicode_escape')
 
         request = urllib2.Request(url = url, headers = self.httpHeaders)
         request.add_header("Referer", bingCommon.BING_URL)

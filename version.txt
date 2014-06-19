@@ -1,4 +1,9 @@
-Current version 3.5.4
+Current version 3.5.5
+
+3.5.5   *) @amayer5125, Change escape string type from string-escape to unicode_escape.
+           Fixes login issue.
+           See https://github.com/sealemar/BingRewards/issues/52
+           and https://github.com/sealemar/BingRewards/issues/50
 
 3.5.4   *) Fixed https://github.com/sealemar/BingRewards/issues/49
            Should have been a part of 3.5.3 - commit 6223139
