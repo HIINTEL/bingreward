@@ -41,6 +41,20 @@ class BingAuth:
         self.opener = opener
         self.httpHeaders = httpHeaders
 
+    @staticmethod
+    def _escapeString(s):
+        m = {
+            # marker  :  encoding
+            "\\u0026" : 'unicode_escape',
+            "\\x26"   : 'string-escape'
+        }
+
+        for marker, encoding in m.iteritems():
+            if s.find(marker) != -1:
+                return s.decode(encoding)
+
+        raise AuthenticationError( "s = '%s' can not be decoded with these encodings: [ %s ]" % ( s, ", ".join(m.itervalues()) ) )
+
     def __authenticateFacebook(self, login, password):
         """
         Authenticates a user on bing.com with his/her Facebook account.
@@ -63,10 +77,7 @@ class BingAuth:
         s += len('"Facebook":"')
         e = page.index('"', s)
 
-# the URL contains escape characters (http:// is http\u003a\u002f\u002f, for example)
-# this needs to be decoded back to normal URL
-# see (http://docs.python.org/2/library/codecs.html#python-specific-encodings)
-        url = page[s:e].decode('unicode_escape')
+        url = BingAuth._escapeString(page[s:e])
 
         s = url.index('sig=')
         s += len('sig=')
@@ -144,10 +155,7 @@ class BingAuth:
         s += len('"WindowsLiveId":"')
         e = page.index('"', s)
 
-# the URL contains escape characters (http:// is http\u003a\u002f\u002f, for example)
-# this needs to be decoded back to normal URL
-# see (http://docs.python.org/2/library/codecs.html#python-specific-encodings)
-        url = page[s:e].decode('unicode_escape')
+        url = BingAuth._escapeString(page[s:e])
 
         request = urllib2.Request(url = url, headers = self.httpHeaders)
         request.add_header("Referer", bingCommon.BING_URL)

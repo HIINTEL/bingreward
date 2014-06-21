@@ -1,4 +1,15 @@
-Current version 3.5.5
+Current version 3.5.6
+
+3.5.6   +) Added retry support for a relatively rare exception
+
+                [Errno 104] Connection reset by peer
+
+           see http://stackoverflow.com/a/20568874/2147244
+           for explanation of the problem
+
+        *) Fixed https://github.com/sealemar/BingRewards/pull/53#issuecomment-46684688
+           In this change the escape method is determined automatically. Two are supported:
+           'string-escape', 'unicode_escape'
 
 3.5.5   *) @amayer5125, Change escape string type from string-escape to unicode_escape.
            Fixes login issue.

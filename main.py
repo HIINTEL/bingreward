@@ -14,6 +14,9 @@ import sys
 import time
 import urllib2
 
+from socket import error as SocketError
+import errno
+
 sys.path.append(os.path.join(os.path.dirname(__file__), "pkg"))
 
 from bingAuth import BingAuth, AuthenticationError
@@ -27,8 +30,8 @@ import helpers
 verbose = False
 totalPoints = 0
 
-SCRIPT_VERSION = "3.5.5"
-SCRIPT_DATE = "June 19, 2014"
+SCRIPT_VERSION = "3.5.6"
+SCRIPT_DATE = "June 20, 2014"
 
 def earnRewards(config, httpHeaders, userAgents, reportItem, password):
     """Earns Bing! reward points and populates reportItem"""
@@ -93,6 +96,17 @@ def earnRewards(config, httpHeaders, userAgents, reportItem, password):
     except urllib2.URLError, e:
         reportItem.error = e
         print "Failed to reach the server."
+        print "Reason: ", e.reason
+
+    except SocketError as e:
+        if e.errno != errno.ECONNRESET:
+            raise
+
+        # see http://stackoverflow.com/a/20568874/2147244
+        # for explanation of the problem
+
+        reportItem.error = e
+        print "Connection reset by peer."
         print "Reason: ", e.reason
 
     finally:
