@@ -1,4 +1,9 @@
-Current version 3.5.6
+Current version 3.5.7
+
+3.5.7   *) Fixed https://github.com/sealemar/BingRewards/issues/56
+
+        *) pkg.bingAuth.BingAuth._escapeString() changed perfect match of hex character to
+           a regexp.
 
 3.5.6   +) Added retry support for a relatively rare exception
 

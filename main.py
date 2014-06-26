@@ -30,8 +30,8 @@ import helpers
 verbose = False
 totalPoints = 0
 
-SCRIPT_VERSION = "3.5.6"
-SCRIPT_DATE = "June 20, 2014"
+SCRIPT_VERSION = "3.5.7"
+SCRIPT_DATE = "June 25, 2014"
 
 def earnRewards(config, httpHeaders, userAgents, reportItem, password):
     """Earns Bing! reward points and populates reportItem"""
@@ -107,7 +107,6 @@ def earnRewards(config, httpHeaders, userAgents, reportItem, password):
 
         reportItem.error = e
         print "Connection reset by peer."
-        print "Reason: ", e.reason
 
     finally:
         if not noException:

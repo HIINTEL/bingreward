@@ -6,6 +6,7 @@ import HTMLParser
 import random
 import urllib
 import urllib2
+import re
 
 import bingCommon
 import helpers
@@ -43,17 +44,17 @@ class BingAuth:
 
     @staticmethod
     def _escapeString(s):
-        m = {
-            # marker  :  encoding
-            "\\u0026" : 'unicode_escape',
-            "\\x26"   : 'string-escape'
-        }
+        t = (
+            # encoding          marker
+            ( 'unicode_escape', re.compile("\\\\u[0-9a-fA-F]{4}") ),
+            ( 'string-escape',  re.compile("\\\\x[0-9a-fA-F]{2}") )
+        )
 
-        for marker, encoding in m.iteritems():
-            if s.find(marker) != -1:
+        for encoding, marker in t:
+            if marker.search(s):
                 return s.decode(encoding)
 
-        raise AuthenticationError( "s = '%s' can not be decoded with these encodings: [ %s ]" % ( s, ", ".join(m.itervalues()) ) )
+        raise AuthenticationError( "s = '%s' can not be decoded with these encodings: [ %s ]" % ( s, ", ".join( ( e for e, m in t ) ) ) )
 
     def __authenticateFacebook(self, login, password):
         """
