@@ -1,5 +1,9 @@
 Current version 3.5.7
 
+3.5.8   *) Fixed https://github.com/sealemar/BingRewards/issues/58
+
+        *) Added logic to catch when the dashboard uses <span> instead of <div>
+
 3.5.7   *) Fixed https://github.com/sealemar/BingRewards/issues/56
 
         *) pkg.bingAuth.BingAuth._escapeString() changed perfect match of hex character to
