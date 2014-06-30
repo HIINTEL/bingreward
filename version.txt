@@ -1,4 +1,4 @@
-Current version 3.5.7
+Current version 3.5.8
 
 3.5.8   *) Fixed https://github.com/sealemar/BingRewards/issues/58
 
