@@ -116,6 +116,7 @@ class BingRewards:
 # parse dashboard page
         s = page.find('<div class="credits-right')
         d = page.find('<span class="credits-right')
+        
         if s != -1:
             s += len('<div class="credits-right')
             s = page.index('<div class="credits', s)
@@ -123,7 +124,7 @@ class BingRewards:
         
         elif d != -1:
             d += len('<span class="credits-right')
-            d = page.index('<div class="credits', s)
+            d = page.index('<div class="credits', d)
             d += len('<div class="credits')
             s = d
         

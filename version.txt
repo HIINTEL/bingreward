@@ -1,8 +1,8 @@
 Current version 3.5.8
 
-3.5.8   *) Fixed https://github.com/sealemar/BingRewards/issues/58
+3.5.8   *) @TunaLobster, Fixed https://github.com/sealemar/BingRewards/issues/58
 
-        *) Added logic to catch when the dashboard uses <span> instead of <div>
+        +) Added logic to check when the dashboard page uses <span> instead of <div>
 
 3.5.7   *) Fixed https://github.com/sealemar/BingRewards/issues/56
 
