@@ -18,6 +18,7 @@ from socket import error as SocketError
 import errno
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "pkg"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "pkg", "queryGenerators"))
 
 from bingAuth import BingAuth, AuthenticationError
 from bingRewards import BingRewards
@@ -30,8 +31,8 @@ import helpers
 verbose = False
 totalPoints = 0
 
-SCRIPT_VERSION = "3.5.10"
-SCRIPT_DATE = "August 13, 2014"
+SCRIPT_VERSION = "3.6"
+SCRIPT_DATE = "August 14, 2014"
 
 def earnRewards(config, httpHeaders, userAgents, reportItem, password):
     """Earns Bing! reward points and populates reportItem"""

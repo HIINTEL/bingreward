@@ -1,4 +1,11 @@
-Current version 3.5.10
+Current version 3.6
+
+3.6     *) @amayer5125, Make Query Generators Into Dynamic Modlues
+           Move bingQueriesGenerator to queryGenerators folder
+           main.py add queryGenerators folder to PATH
+           Add <queries> tag to config file
+           Modify config.py to read <queries> tag
+           Make bingQueriesGenerator dynamic loadable
 
 3.5.10  *) Fixed https://github.com/sealemar/BingRewards/issues/68
            Credits to @ssgdodd, see

@@ -398,6 +398,16 @@ class Config:
 
         self.general = g
 
+    def __parseQueries(self, xmlQueriesNode):
+        """
+        Parses self.queryGenerator
+        """
+        generator = xmlQueriesNode.get("generator")
+        if generator is None:
+            raise ConfigError("queries.generator is not found")
+
+        self.queryGenerator = generator
+
     def __parseProxy(self, node):
         """
         Parses Config.Proxy section
@@ -455,6 +465,8 @@ class Config:
                 self.__parseAccounts(node)
             elif node.tag == "events":
                 self.__parseEvents(node)
+            elif node.tag == "queries":
+                self.__parseQueries(node)
             else:
                 raise ConfigError("Invalid subnode configuration root - [" + node.tag + "]")
 
@@ -470,6 +482,7 @@ class Config:
 
         self.accounts.clear()
         self.events.clear()
+        self.queryGenerator = None
 
         tree = et.parse(configFile)
         root = tree.getroot()
@@ -487,6 +500,7 @@ class Config:
 
         self.accounts.clear()
         self.events.clear()
+        self.queryGenerator = None
 
         root = et.fromstring(xmlString)
         self.__parse(root)

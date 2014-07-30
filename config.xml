@@ -74,4 +74,6 @@
             <notify cmd="/home/BingRewards/bin/BingRewards/notify/onScriptFailure.sh -mail" />
         </onScriptFailure>
     </events>
+
+    <queries generator="bing" />
 </configuration>
