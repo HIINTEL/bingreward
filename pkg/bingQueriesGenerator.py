@@ -163,7 +163,7 @@ class BingQueriesGenerator:
         if self.rewardType == bfp.Reward.Type.SEARCH_MOBILE:
             endMarker = '<div id="CntFtr"'
         else:
-            endMarker = '<div class="news_gt'
+            endMarker = '<div class="RightRail"'
 
         e = newsPage.index(endMarker, s)
 

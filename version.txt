@@ -1,4 +1,8 @@
-Current version 3.5.9
+Current version 3.5.10
+
+3.5.10  *) Fixed https://github.com/sealemar/BingRewards/issues/68
+           Credits to @ssgdodd, see
+           https://github.com/sealemar/BingRewards/issues/68#issuecomment-52050514
 
 3.5.9   *) @amayer5125, Remove iPad User Agent From Mobile Agents
 
