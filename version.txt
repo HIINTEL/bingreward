@@ -1,4 +1,9 @@
-Current version 3.6
+Current version 3.7
+
+3.7     *) @amayer5125, Add Wikipedia Query Generator Module
+           Generate queries pulled from the current days wikipedia page
+           (ie. http://en.wikipedia.org/wiki/August_14)
+           Make Wikipedia Query Generator the default query generator
 
 3.6     *) @amayer5125, Make Query Generators Into Dynamic Modlues
            Move bingQueriesGenerator to queryGenerators folder
