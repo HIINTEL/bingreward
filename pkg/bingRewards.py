@@ -11,12 +11,12 @@ import random
 import time
 import urllib
 import urllib2
+import importlib
 
 import bingCommon
 import bingFlyoutParser as bfp
 import bingHistory
 import helpers
-from bingQueriesGenerator import BingQueriesGenerator, BING_NEWS_URL
 
 # extend urllib.addinfourl like it defines @contextmanager (to use with "with" keyword)
 urllib.addinfourl.__enter__ = lambda self: self
@@ -59,6 +59,7 @@ class BingRewards:
         self.betweenQueriesSalt     = float(config.general.betweenQueriesSalt)
         self.httpHeaders = httpHeaders
         self.userAgents  = userAgents
+        self.queryGenerator = config.queryGenerator
 
         cookies = cookielib.CookieJar()
 
@@ -230,17 +231,19 @@ class BingRewards:
             res.message = "Don't know how to process this search"
             return res
 
-        request = urllib2.Request(url = BING_NEWS_URL, headers = headers)
-        with self.opener.open(request) as response:
-            page = helpers.getResponseBody(response)
+        # Import the query generator
+        try:
+            qg = importlib.import_module(self.queryGenerator, package=None)
+            queryGenerator = qg.queryGenerator(self)
+        except ImportError:
+            raise TypeError("{0} is not a module".format(self.queryGenerator))
+        # generate a set of queries to run
+        queries = queryGenerator.generateQueries(searchesCount, history)
 
-# generate a set of queries to run
-        bingQueriesGenerator = BingQueriesGenerator(searchesCount, history, reward.tp)
-        queries = bingQueriesGenerator.parseBingNews(page)
         if len(queries) < searchesCount:
-            print "Warning: not enough queries to run were generated !"
+            print "Warning: not enough queries to run were generated!"
             print "Requested:", searchesCount
-            print "Generated:", len(bingQueriesGenerator.queries)
+            print "Generated:", len(queries)
 
         successfullQueries = 0
         i = 1
