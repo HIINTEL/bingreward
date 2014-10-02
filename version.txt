@@ -1,4 +1,8 @@
-Current version 3.7
+Current version 3.8
+
+3.8     *) @sangdrax8, Add googleTrends Query Generator Module
+           Generate queries pulled from the current googleTrends results
+           supplemented with suggested searches from google.
 
 3.7     *) @amayer5125, Add Wikipedia Query Generator Module
            Generate queries pulled from the current days wikipedia page
