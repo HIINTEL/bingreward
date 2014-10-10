@@ -173,12 +173,16 @@ class BingAuth:
         PPFT = page[s:e]
 
 # get PPSX parameter
-        s = page.index(",g:")
-        s += len(",g:")
-        e = page.index(",", s)
-        PPSX = page[s:e]
-        if PPSX[0] == "'":
-            PPSX = PPSX[1:-1]
+        try:
+            s = page.index(",g:")
+        except:
+            s = page.index(",d:")
+        finally:
+            s += len(",g:")
+            e = page.index(",", s)
+            PPSX = page[s:e]
+            if PPSX[0] == "'":
+                PPSX = PPSX[1:-1]
 
 # generate ClientLoginTime
         clt = 20000 + int(random.uniform(0, 1000))
