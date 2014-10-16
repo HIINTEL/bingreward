@@ -58,7 +58,7 @@ class queryGenerator:
 
     def __suggestQueriesSingle(self,term):
         suggestions = set()
-        formatted = term.replace(" ","+")
+        formatted = term.replace(" ","+").encode('ascii', 'ignore')
         URL = SUGGESTURL+formatted
         tree = self.__readXML(URL)
         if tree is not None: 
