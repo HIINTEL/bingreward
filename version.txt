@@ -1,5 +1,7 @@
 Current version 3.8
 
+3.8.1   *) @TunaLobster, Fixed https://github.com/sealemar/BingRewards/issues/79
+
 3.8     *) @sangdrax8, Add googleTrends Query Generator Module
            Generate queries pulled from the current googleTrends results
            supplemented with suggested searches from google.
