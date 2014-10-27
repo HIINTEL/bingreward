@@ -283,6 +283,9 @@ class BingRewards:
         else:
             res.message = "All " + str(successfullQueries) + " requests were successfully processed"
 
+        # reset header to pc so pc pages return in getting life time points
+        headers["User-Agent"] = self.userAgents.pc
+
         return res
 
     def process(self, rewards):
