@@ -252,7 +252,7 @@ class BingRewards:
         for query in queries:
             if i > 1:
 # sleep some time between queries (don't worry Bing! ;) )
-                t = self.betweenQueriesInterval + random.uniform(0, self.betweenQueriesInterval)
+                t = self.betweenQueriesInterval + random.uniform(0, self.betweenQueriesSalt)
                 time.sleep(t)
 
             url = BING_QUERY_URL + urllib.quote_plus(query)
