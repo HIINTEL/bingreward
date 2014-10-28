@@ -174,7 +174,10 @@ class BingAuth:
 
 # get PPSX parameter
         try:
-            s = page.index(",g:")
+            if ",M:" in page:
+                s = page.index(",M:")
+            else:
+                s = page.index(",g:")
         except:
             s = page.index(",d:")
         finally:
