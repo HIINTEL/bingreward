@@ -1,6 +1,6 @@
 #!/bin/sh
 
-function usage() {
+usage() {
     echo `basename $0` "%a %p %r %P %l %i %e"
     echo "see config.xml for details"
 }

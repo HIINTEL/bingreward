@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # ./onScriptFailure [mail] "error message"
 
 logFile="`dirname $0`/log.log"
