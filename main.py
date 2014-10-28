@@ -14,6 +14,8 @@ import sys
 import time
 import urllib2
 
+from random import shuffle
+
 from socket import error as SocketError
 import errno
 
@@ -210,7 +212,9 @@ def __run(config):
 
     doSleep = False
 
-    for key, account in config.accounts.iteritems():
+    randomAccs = config.accounts.items()
+    shuffle(randomAccs)
+    for key, account in randomAccs:
         if account.disabled:
             continue
 
