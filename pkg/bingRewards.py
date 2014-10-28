@@ -255,7 +255,7 @@ class BingRewards:
                 t = self.betweenQueriesInterval + random.uniform(0, self.betweenQueriesSalt)
                 time.sleep(t)
 
-            url = BING_QUERY_URL + urllib.quote_plus(query)
+            url = BING_QUERY_URL + urllib.quote_plus(query.encode('utf-8'))
 
             print "%s - %2d/%2d - Requesting: %s" % (helpers.getLoggingTime(), i, totalQueries, url)
 

@@ -12,6 +12,7 @@
 import urllib2
 import random
 from xml.etree import ElementTree
+from urllib import quote_plus
 
 TRENDSURL = "http://www.google.com/trends/hottrends/atom/feed?pn=p1"
 SUGGESTURL = "http://suggestqueries.google.com/complete/search?output=toolbar&hl=en&q="
@@ -58,7 +59,7 @@ class queryGenerator:
 
     def __suggestQueriesSingle(self,term):
         suggestions = set()
-        formatted = term.replace(" ","+").encode('ascii', 'ignore')
+        formatted = quote_plus(term.encode('utf-8')) #term.replace(" ","+").encode('ascii', 'ignore')
         URL = SUGGESTURL+formatted
         tree = self.__readXML(URL)
         if tree is not None: 
