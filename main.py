@@ -212,9 +212,7 @@ def __run(config):
 
     doSleep = False
 
-    randomAccs = config.accounts.items()
-    shuffle(randomAccs)
-    for key, account in randomAccs:
+    for key, account in config.accounts.iteritems():
         if account.disabled:
             continue
 

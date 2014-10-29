@@ -180,7 +180,6 @@ class BingAuth:
             ppsxParam = ",g:"
         else:
             ppsxParam = ",d:"
-        if not ppsxParam in page: print helpers.dumpErrorPage(page)
         s = page.index(ppsxParam)
         s += len(ppsxParam)
         e = page.index(",", s)

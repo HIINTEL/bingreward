@@ -3,7 +3,6 @@ Current version 3.8
 3.8.2   *) @ktp420, Fixed https://github.com/sealemar/BingRewards/issues/86
            Fixed https://github.com/sealemar/BingRewards/issues/84
            Fixed PPSX parameter in bingAuth.py
-           Added shuffling mutiple accounts to provide random order in multi run
 
 3.8.1   *) @TunaLobster, Fixed https://github.com/sealemar/BingRewards/issues/79
 
