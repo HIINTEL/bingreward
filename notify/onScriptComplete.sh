@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # ./onScriptComplete [mail]
 
 logFile="`dirname $0`/log.log"
@@ -19,7 +19,7 @@ if [ $# -eq 0 -o $1 != "mail" ] ; then
 
     cat "$logFile"
 else
-    source "${LOCAL_CONFIG_DIR}/mailx.config.sh"
+    . "${LOCAL_CONFIG_DIR}/mailx.config.sh"
 
     SUBJECT="'$HOSTNAME' - Notify. BingRewards::onScriptComplete"
 
