@@ -14,8 +14,6 @@ import sys
 import time
 import urllib2
 
-from random import shuffle
-
 from socket import error as SocketError
 import errno
 
