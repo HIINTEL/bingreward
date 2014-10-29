@@ -173,19 +173,20 @@ class BingAuth:
         PPFT = page[s:e]
 
 # get PPSX parameter
-        try:
-            if ",M:" in page:
-                s = page.index(",M:")
-            else:
-                s = page.index(",g:")
-        except:
-            s = page.index(",d:")
-        finally:
-            s += len(",g:")
-            e = page.index(",", s)
-            PPSX = page[s:e]
-            if PPSX[0] == "'":
-                PPSX = PPSX[1:-1]
+        ppsxParam = ""
+        if ",M:" in page:
+            ppsxParam = ",M:"
+        elif ",g:" in page:
+            ppsxParam = ",g:"
+        else:
+            ppsxParam = ",d:"
+        if not ppsxParam in page: print helpers.dumpErrorPage(page)
+        s = page.index(ppsxParam)
+        s += len(ppsxParam)
+        e = page.index(",", s)
+        PPSX = page[s:e]
+        if PPSX[0] == "'":
+            PPSX = PPSX[1:-1]
 
 # generate ClientLoginTime
         clt = 20000 + int(random.uniform(0, 1000))
