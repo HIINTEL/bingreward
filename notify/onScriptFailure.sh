@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # ./onScriptFailure [mail] "error message"
 
 logFile="`dirname $0`/log.log"
@@ -20,7 +20,7 @@ if [ $# -lt 2 -o $1 != "mail" ] ; then
 else
     echo "onScriptFailure: $2" >> "$logFile"
 
-    . "${LOCAL_CONFIG_DIR}/mailx.config.sh"
+    source "${LOCAL_CONFIG_DIR}/mailx.config.sh"
 
     SUBJECT="'$HOSTNAME' - Alert! BingRewards::onScriptFailure"
 
