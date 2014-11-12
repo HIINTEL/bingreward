@@ -218,8 +218,7 @@ def __run(config):
         report.append(reportItem)
         doSleep = True
 
-    EventsProcessor.onScriptComplete(config)
-
+    
     #
     # trigger full report if needed
     #
@@ -243,6 +242,8 @@ def __run(config):
     print "Total points earned: %d" % totalPoints
     print
     print "%s - script ended" % helpers.getLoggingTime()
+    
+    EventsProcessor.onScriptComplete(config)
 
 if __name__ == "__main__":
     try:
