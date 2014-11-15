@@ -57,6 +57,10 @@ class BingRewards:
 
         self.betweenQueriesInterval = float(config.general.betweenQueriesInterval)
         self.betweenQueriesSalt     = float(config.general.betweenQueriesSalt)
+        self.addSearchesDesktop     = int(config.general.addSearchesDesktop)
+        self.addSearchesDesktopSalt = int(config.general.addSearchesDesktopSalt)
+        self.addSearchesMobile      = int(config.general.addSearchesMobile)
+        self.addSearchesMobileSalt  = int(config.general.addSearchesMobileSalt)
         self.httpHeaders = httpHeaders
         self.userAgents  = userAgents
         self.queryGenerator = config.queryGenerator
@@ -237,11 +241,13 @@ class BingRewards:
 
         if reward.tp == bfp.Reward.Type.SEARCH_PC:
             headers["User-Agent"] = self.userAgents.pc
+            searchesCount += self.addSearchesDesktop + random.randint(0, self.addSearchesDesktopSalt)
             print
             print "Running PC searches"
             print
         elif reward.tp == bfp.Reward.Type.SEARCH_MOBILE:
             headers["User-Agent"] = self.userAgents.mobile
+            searchesCount += self.addSearchesMobile + random.randint(0, self.addSearchesMobileSalt)
             print
             print "Running mobile searches"
             print

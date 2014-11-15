@@ -51,6 +51,10 @@ class Config:
             self.betweenQueriesSalt      = 3.0    # default to this number of seconds
             self.betweenAccountsInterval = 30.0   # default to this number of seconds
             self.betweenAccountsSalt     = 35.5   # default to this number of seconds
+            self.addSearchesDesktop      = 0      # default to this number of additional Desktop searches
+            self.addSearchesDesktopSalt  = 0      # default to this number of additional Desktop searches for salt
+            self.addSearchesMobile       = 0      # default to this number of additional Mobile searches
+            self.addSearchesMobileSalt   = 0      # default to this number of additional Mobile searches for salt
 
     class Proxy:
         """
@@ -385,6 +389,18 @@ class Config:
 
         return result
 
+    def __parseIntAttr(self, xmlNode, attr, default, attrName):
+        result = 0
+        val = xmlNode.get(attr, default)
+        try:
+            result = int(val)
+        except ValueError:
+            raise ConfigError(attrName + " must be (int): " + val)
+        if result < 0:
+            raise ConfigError(attrName + " MUST BE >= 0")
+
+        return result
+
     def __parseGeneral(self, xmlGeneralNode):
         """
         Parses Config.General section
@@ -395,6 +411,10 @@ class Config:
         g.betweenQueriesSalt      = self.__parseFloatAttr(xmlGeneralNode, "betweenQueriesSalt",      g.betweenQueriesSalt,      "general.betweenQueriesSalt")
         g.betweenAccountsInterval = self.__parseFloatAttr(xmlGeneralNode, "betweenAccountsInterval", g.betweenAccountsInterval, "general.betweenAccountsInterval")
         g.betweenAccountsSalt     = self.__parseFloatAttr(xmlGeneralNode, "betweenAccountsSalt",     g.betweenAccountsSalt,     "general.betweenAccountsSalt")
+        g.addSearchesMobile       = self.__parseIntAttr(xmlGeneralNode,   "addSearchesMobile",       g.addSearchesMobile,       "general.addSearchesMobile")
+        g.addSearchesMobileSalt   = self.__parseIntAttr(xmlGeneralNode,   "addSearchesMobileSalt",   g.addSearchesMobileSalt,   "general.addSearchesMobileSalt")
+        g.addSearchesDesktop      = self.__parseIntAttr(xmlGeneralNode,   "addSearchesDesktop",      g.addSearchesDesktop,      "general.addSearchesDesktop")
+        g.addSearchesDesktopSalt  = self.__parseIntAttr(xmlGeneralNode,   "addSearchesDesktopSalt",  g.addSearchesDesktopSalt,  "general.addSearchesDesktopSalt")
 
         self.general = g
 
