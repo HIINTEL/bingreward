@@ -183,6 +183,25 @@ class BingRewards:
                               str(pointsEarned) + " points. Check " + filename + " for further information"
         return res
 
+    def __processWarn(self, reward):
+        """Processes bfp.Reward.Type.Action.WARN and returns self.RewardResult"""
+        res = self.RewardResult(reward)
+
+        if reward.isAchieved():
+            res.message = "This reward has been already achieved"
+            return res
+
+        pointsEarned = self.getRewardsPoints()
+        request = urllib2.Request(url = reward.url, headers = self.httpHeaders)
+        with self.opener.open(request) as response:
+            page = helpers.getResponseBody(response)
+        pointsEarned = self.getRewardsPoints() - pointsEarned
+# check if we earned any points
+        if pointsEarned < 1:
+            res.isError = True
+            res.message = "Didn't earn any points for click"
+        return res
+
     def __processSearch(self, reward):
         """Processes bfp.Reward.Type.Action.SEARCH and returns self.RewardResult"""
 
@@ -306,6 +325,8 @@ class BingRewards:
 
             if action == bfp.Reward.Type.Action.HIT:
                 res = self.__processHit(r)
+            elif action == bfp.Reward.Type.Action.WARN:
+                res = self.__processWarn(r)
             elif action == bfp.Reward.Type.Action.SEARCH:
                 res = self.__processSearch(r)
             else:
