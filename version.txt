@@ -1,4 +1,7 @@
-Current version 3.8
+Current version 3.8.3
+
+3.8.3   *) @jamre, Added "Invite friends" match
+           Follow warn links since many that should be hit are identified as warn
 
 3.8.2   *) @ktp420, Fixed https://github.com/sealemar/BingRewards/issues/86
            Fixed https://github.com/sealemar/BingRewards/issues/84
