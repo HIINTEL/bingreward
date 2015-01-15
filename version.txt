@@ -1,5 +1,8 @@
 Current version 3.8.3
 
+
+3.8.4   *) @itssasanka, Fixed a small bug that crashed the script when fetching max rewards.
+
 3.8.3   *) @jamre, Added "Invite friends" match
            Follow warn links since many that should be hit are identified as warn
 
