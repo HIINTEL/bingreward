@@ -231,7 +231,7 @@ class __HTMLRewardsParser(HTMLParser.HTMLParser):
                 else:
                     progress = data.strip().split(' of ', 1)
                     self.reward.progressCurrent = int(progress[0])
-                    self.reward.progressMax = int(progress[1])
+                    self.reward.progressMax = int(progress[1].split()[0])
         elif self.step == self.ParsingStep.DIV_MESSAGE:
 # if '<a ' tag exists - that's probably the last tag - get rid of it
             if self.reward.description == "":
