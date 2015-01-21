@@ -1,5 +1,8 @@
-Current version 3.8.3
+Current version 3.8.5
 
+3.8.5   *) Display Account Information Before Starting Search
+           Code writen by: @AuthenticAMD
+           Adds enhancement #59 (Display Account Information Differently)
 
 3.8.4   *) @itssasanka, Fixed a small bug that crashed the script when fetching max rewards.
 

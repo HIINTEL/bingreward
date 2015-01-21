@@ -31,8 +31,8 @@ import helpers
 verbose = False
 totalPoints = 0
 
-SCRIPT_VERSION = "3.8.4"
-SCRIPT_DATE = "January 15, 2015"
+SCRIPT_VERSION = "3.8.5"
+SCRIPT_DATE = "January 20, 2015"
 
 def earnRewards(config, httpHeaders, userAgents, reportItem, password):
     """Earns Bing! reward points and populates reportItem"""
@@ -55,6 +55,7 @@ def earnRewards(config, httpHeaders, userAgents, reportItem, password):
 
         if verbose:
             bingRewards.printRewards(rewards)
+        print ("%s - %s" % (reportItem.accountType, reportItem.accountLogin))
         results = bingRewards.process(rewards)
 
         if verbose:
