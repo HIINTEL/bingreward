@@ -31,8 +31,8 @@ import helpers
 verbose = False
 totalPoints = 0
 
-SCRIPT_VERSION = "3.8.5"
-SCRIPT_DATE = "January 20, 2015"
+SCRIPT_VERSION = "3.8.6"
+SCRIPT_DATE = "January 21, 2015"
 
 def earnRewards(config, httpHeaders, userAgents, reportItem, password):
     """Earns Bing! reward points and populates reportItem"""
@@ -226,13 +226,13 @@ def __run(config):
 
     if showFullReport or totalPoints > 0 and len(report) > 1:
         print
-        print " -=-=-=-=-=-=-=-=-=-=--=-=- FULL REPORT -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-"
+        print "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= FINAL REPORT =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="
         print
-        print "          Account          | Before | After  | Earned | Retries | Lifetime Credits"
-        print "---------------------------+--------+--------+--------+---------+-----------------"
+        print "            Account           | Before | After  | Earned |  Lifetime  | Retries "
+        print "------------------------------+--------+--------+--------+------------+---------"
 
         for r in report:
-            print " %25s | %6d | %6d | %6d | %7d | %16d" % (__stringifyAccount(r, 25), r.oldPoints, r.newPoints, r.pointsEarnedRetrying, r.retries, r.lifetimeCredits)
+            print " %-28s | %6d | %6d | %6d | %10d | %7d" % (__stringifyAccount(r, 28), r.oldPoints, r.newPoints, r.pointsEarnedRetrying, r.lifetimeCredits, r.retries)
 
         print
 
