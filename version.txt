@@ -1,4 +1,11 @@
-Current version 3.8.5
+Current version 3.8.6
+
+3.8.6   *) Adjust Terminal Output To Better Fit 80 Width Terminals
+
+           Change Full Results to Final Results (better spacing)
+           Change order of Final Results to group points together
+           Make email slot in Final Results larger
+           Change requested URL to search string for searches
 
 3.8.5   *) Display Account Information Before Starting Search
            Code writen by: @AuthenticAMD

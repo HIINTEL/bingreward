@@ -276,7 +276,7 @@ class BingRewards:
 
             url = BING_QUERY_URL + urllib.quote_plus(query.encode('utf-8'))
 
-            print "%s - %2d/%2d - Requesting: %s" % (helpers.getLoggingTime(), i, totalQueries, url)
+            print "%s - %2d/%2d - Search: %s" % (helpers.getLoggingTime(), i, totalQueries, query)
 
             request = urllib2.Request(url = url, headers = bingCommon.HEADERS)
             with self.opener.open(request) as response:
