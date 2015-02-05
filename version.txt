@@ -1,4 +1,12 @@
-Current version 3.8.6
+Current version 3.8.7
+
+3.8.7   *) Bingbot obfuscation additions
+           
+           Added the ability to perform additional searches with salted values.
+           config.xml has new variables addSearchesDesktop, addSearchesDesktopSalt, addSearchesMobile,
+           and addSearchesMobileSalt to specify the number of extra searches to perform.
+           Also increased the time between searches, as with more searches it might be
+           better to spread them out more.
 
 3.8.6   *) Adjust Terminal Output To Better Fit 80 Width Terminals
 

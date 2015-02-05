@@ -2,10 +2,18 @@
 
 <configuration>
     <general
-        betweenQueriesInterval="10.0"
-        betweenQueriesSalt="5.0"
+        betweenQueriesInterval="15.0"
+        betweenQueriesSalt="12.0"
         betweenAccountsInterval="300"
-        betweenAccountsSalt="600" />
+        betweenAccountsSalt="600"
+        addSearchesDesktop="0"
+        addSearchesDesktopSalt="20"
+        addSearchesMobile="0"
+        addSearchesMobileSalt="20" />
+    <!-- Lower the addSearches values if you have three or more accounts
+         If you have one account, an average of 30 extra searches a day is fine
+         If you have 5 accounts, an average of 150 extra searches a day is probably not good
+    -->
 
     <!--
       - Note: login and password are optional
