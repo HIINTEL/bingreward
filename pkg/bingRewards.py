@@ -225,9 +225,9 @@ class BingRewards:
 
 # find out how many searches need to be performed
         matches = bfp.Reward.Type.SEARCH_AND_EARN_DESCR_RE.search(reward.description)
-        rewardsCount    = int(matches.group('count'))
-        rewardCost      = int(matches.group('cost'))
-        maxRewardsCount = int(matches.group('max'))
+        rewardsCount    = int(matches.group(1))
+        rewardCost      = int(matches.group(2))
+        maxRewardsCount = int(matches.group(4))
         searchesCount = maxRewardsCount * rewardCost / rewardsCount
 
 # adjust to the current progress
