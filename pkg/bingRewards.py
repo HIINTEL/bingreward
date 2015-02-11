@@ -22,6 +22,9 @@ import helpers
 urllib.addinfourl.__enter__ = lambda self: self
 urllib.addinfourl.__exit__  = lambda self, type, value, traceback: self.close()
 
+class BannedError(ValueError):
+    pass
+
 class HTTPRefererHandler(urllib2.HTTPRedirectHandler):
     def http_error_302(self, req, fp, code, msg, headers):
         if not "Referer" in req.headers:
@@ -164,7 +167,11 @@ class BingRewards:
         s = page.index("t.innerHTML='")
         s += len("t.innerHTML='")
         e = page.index("'", s)
-        return int(page[s:e])
+        rewardsText = page[s:e]
+        if rewardsText == 'Rewards': # The account is banned
+            raise BannedError("Could not get the number of rewards")
+        else:
+            return int(rewardsText)
 
     def __processHit(self, reward):
         """Processes bfp.Reward.Type.Action.HIT and returns self.RewardResult"""

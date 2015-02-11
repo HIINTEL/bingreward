@@ -1,4 +1,7 @@
-Current version 3.8.7
+Current version 3.8.8
+
+3.8.8   *) Banned account detection
+           Fixed a crash when the account is banned. It now results in a warning.
 
 3.8.7   *) Bingbot obfuscation additions
            
