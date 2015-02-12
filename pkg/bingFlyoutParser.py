@@ -41,7 +41,7 @@ class Reward:
             ISRE        = 3
             ACTION      = 4
 
-        SEARCH_AND_EARN_DESCR_RE = re.compile("Earn (\d)+ credits? per (\d)+ Bing search(es)? up to (\d+) credits? a day")
+        SEARCH_AND_EARN_DESCR_RE = re.compile("Earn (\d+) credits? per (\d+) Bing search(es)? up to (\d+) credits? a day")
         EARN_CREDITS_RE = re.compile("Earn (\d+) credits?")
 
 #       Alias                   Index Reward.name
