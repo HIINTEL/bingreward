@@ -1,4 +1,8 @@
-Current version 3.8.8
+Current version 3.8.9
+
+3.8.9   *) Authentication script termination fixes
+           Preventing the script from terminating if invalid passwords, invalid account names
+           and inability to pull lifetime credits (possible ban)
 
 3.8.8   *) Banned account detection
            Fixed a crash when the account is banned. It now results in a warning.

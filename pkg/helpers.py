@@ -12,6 +12,10 @@ import errno
 from datetime import datetime
 import sys
 
+class BingAccountError(ValueError):
+    def __init__(self, message):
+        Exception.__init__(self, message)
+
 RESULTS_DIR = "result/"
 
 def getXmlChildNodes(xmlNode):
@@ -85,3 +89,8 @@ def dumpErrorPage(page):
         fd.write(page)
 
     return filename
+
+def errorOnText(page, query_string, err):
+    p = page.find(query_string)
+    if p != -1:
+        raise BingAccountError(err)

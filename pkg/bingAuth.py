@@ -235,6 +235,10 @@ class BingAuth:
         with self.opener.open(request) as response:
             page = helpers.getResponseBody(response)
 
+        # Checking for bad usernames and password
+        helpers.errorOnText(page, 'That password is incorrect.', 'Authentication has not been passed: Invalid password')
+        helpers.errorOnText(page, "That Microsoft account doesn\\'t exist", 'Authentication has not been passed: Invalid username')
+
         s = page.index("<form ")
         e = page.index("</form>", s)
         e += len("</form>")
