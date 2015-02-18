@@ -22,9 +22,6 @@ import helpers
 urllib.addinfourl.__enter__ = lambda self: self
 urllib.addinfourl.__exit__  = lambda self, type, value, traceback: self.close()
 
-class BannedError(ValueError):
-    pass
-
 class HTTPRefererHandler(urllib2.HTTPRedirectHandler):
     def http_error_302(self, req, fp, code, msg, headers):
         if not "Referer" in req.headers:
@@ -124,7 +121,10 @@ class BingRewards:
 # parse dashboard page
         s = page.find('<div class="credits-right')
         d = page.find('<span class="credits-right')
-        
+         
+        # There are instances where the account appears to be signed in, but really is not
+        helpers.errorOnText(page, "You are not signed", "User was not successfully signed in (possibly banned)\n")
+ 
         if s != -1:
             s += len('<div class="credits-right')
             s = page.index('<div class="credits', s)
@@ -163,13 +163,16 @@ class BingRewards:
         if len(page) == 0:
             raise Exception("Rewards points page is empty. That could mean you are not signed up for rewards with this account")
 
+         # There are instances where the account appears to be signed in, but really is not
+        helpers.errorOnText(page, "You are not signed", "User was not successfully signed in (possibly banned)\n")
+
 # parse activity page
         s = page.index("t.innerHTML='")
         s += len("t.innerHTML='")
         e = page.index("'", s)
         rewardsText = page[s:e]
         if rewardsText == 'Rewards': # The account is banned
-            raise BannedError("Could not get the number of rewards")
+            raise helpers.BingAccountError("Could not get the number of rewards: Account banned (at least temporarily)")
         else:
             return int(rewardsText)
 

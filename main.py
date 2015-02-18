@@ -21,18 +21,19 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "pkg"))
 sys.path.append(os.path.join(os.path.dirname(__file__), "pkg", "queryGenerators"))
 
 from bingAuth import BingAuth, AuthenticationError
-from bingRewards import BingRewards, BannedError
+from bingRewards import BingRewards
 from config import BingRewardsReportItem, Config, ConfigError
 from eventsProcessor import EventsProcessor
 import bingCommon
 import bingFlyoutParser as bfp
 import helpers
+from helpers import BingAccountError 
 
 verbose = False
 totalPoints = 0
 
-SCRIPT_VERSION = "3.8.8"
-SCRIPT_DATE = "February 12, 2015"
+SCRIPT_VERSION = "3.8.9"
+SCRIPT_DATE = "February 13, 2015"
 
 def earnRewards(config, httpHeaders, userAgents, reportItem, password):
     """Earns Bing! reward points and populates reportItem"""
@@ -110,9 +111,9 @@ def earnRewards(config, httpHeaders, userAgents, reportItem, password):
         reportItem.error = e
         print "Connection reset by peer."
 
-    except BannedError as e:
+    except BingAccountError as e:
         reportItem.error = e
-        print "Warning: Account banned (at least temporarily): %r" % e
+        print "BingAccountError: %s" % e
 
     finally:
         if not noException:
