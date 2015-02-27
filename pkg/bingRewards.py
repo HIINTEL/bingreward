@@ -123,7 +123,7 @@ class BingRewards:
         d = page.find('<span class="credits-right')
          
         # There are instances where the account appears to be signed in, but really is not
-        helpers.errorOnText(page, "You are not signed", "User was not successfully signed in (possibly banned)\n")
+        helpers.errorOnText(page, "You are not signed", "Temporary account ban: User was not successfully signed in.\n")
  
         if s != -1:
             s += len('<div class="credits-right')
@@ -164,7 +164,7 @@ class BingRewards:
             raise Exception("Rewards points page is empty. That could mean you are not signed up for rewards with this account")
 
          # There are instances where the account appears to be signed in, but really is not
-        helpers.errorOnText(page, "You are not signed", "User was not successfully signed in (possibly banned)\n")
+        helpers.errorOnText(page, "You are not signed", "Temporary account ban: User was not successfully signed in.\n")
 
 # parse activity page
         s = page.index("t.innerHTML='")
@@ -172,7 +172,7 @@ class BingRewards:
         e = page.index("'", s)
         rewardsText = page[s:e]
         if rewardsText == 'Rewards': # The account is banned
-            raise helpers.BingAccountError("Could not get the number of rewards: Account banned (at least temporarily)")
+            raise helpers.BingAccountError("Banned from BingRewards: Could not get the number of rewards.")
         else:
             return int(rewardsText)
 
