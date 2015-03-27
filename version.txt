@@ -1,4 +1,7 @@
-Current version 3.8.9
+Current version 3.9.0
+
+3.9.0   *) Randomly Open Link After Search Query
+           Based heavily on work by @iRobie
 
 3.8.9   *) Authentication script termination fixes
            Preventing the script from terminating if invalid passwords, invalid account names
@@ -8,7 +11,7 @@ Current version 3.8.9
            Fixed a crash when the account is banned. It now results in a warning.
 
 3.8.7   *) Bingbot obfuscation additions
-           
+
            Added the ability to perform additional searches with salted values.
            config.xml has new variables addSearchesDesktop, addSearchesDesktopSalt, addSearchesMobile,
            and addSearchesMobileSalt to specify the number of extra searches to perform.

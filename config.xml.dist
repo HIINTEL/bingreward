@@ -6,13 +6,18 @@
         betweenQueriesSalt="12.0"
         betweenAccountsInterval="300"
         betweenAccountsSalt="600"
+        openTopLinkRange="5"
+        openLinkChance=".7"
         addSearchesDesktop="0"
         addSearchesDesktopSalt="20"
         addSearchesMobile="0"
         addSearchesMobileSalt="20" />
-    <!-- Lower the addSearches values if you have three or more accounts
-         If you have one account, an average of 30 extra searches a day is fine
-         If you have 5 accounts, an average of 150 extra searches a day is probably not good
+    <!--
+        openTopLinkRange looks at the top X results, and randomly clicks one
+        openLinkChance is the chance that a Bing result will be opened
+        Lower the addSearches values if you have three or more accounts
+        If you have one account, an average of 30 extra searches a day is fine
+        If you have 5 accounts, an average of 150 extra searches a day is probably not good
     -->
 
     <!--

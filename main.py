@@ -27,13 +27,13 @@ from eventsProcessor import EventsProcessor
 import bingCommon
 import bingFlyoutParser as bfp
 import helpers
-from helpers import BingAccountError 
+from helpers import BingAccountError
 
 verbose = False
 totalPoints = 0
 
-SCRIPT_VERSION = "3.8.9"
-SCRIPT_DATE = "February 13, 2015"
+SCRIPT_VERSION = "3.9.0"
+SCRIPT_DATE = "March 27, 2015"
 
 def earnRewards(config, httpHeaders, userAgents, reportItem, password):
     """Earns Bing! reward points and populates reportItem"""
@@ -57,7 +57,7 @@ def earnRewards(config, httpHeaders, userAgents, reportItem, password):
         if verbose:
             bingRewards.printRewards(rewards)
         print ("%s - %s" % (reportItem.accountType, reportItem.accountLogin))
-        results = bingRewards.process(rewards)
+        results = bingRewards.process(rewards, verbose)
 
         if verbose:
             print
@@ -224,7 +224,7 @@ def __run(config):
         report.append(reportItem)
         doSleep = True
 
-    
+
     #
     # trigger full report if needed
     #
@@ -248,7 +248,7 @@ def __run(config):
     print "Total points earned: %d" % totalPoints
     print
     print "%s - script ended" % helpers.getLoggingTime()
-    
+
     EventsProcessor.onScriptComplete(config)
 
 if __name__ == "__main__":
