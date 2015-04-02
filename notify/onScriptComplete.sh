@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ./onScriptComplete [mail]
 
 logFile="`dirname $0`/log.log"
