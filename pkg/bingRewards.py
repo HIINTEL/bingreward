@@ -12,6 +12,7 @@ import time
 import urllib
 import urllib2
 import importlib
+import re
 
 import bingCommon
 import bingFlyoutParser as bfp
@@ -61,6 +62,8 @@ class BingRewards:
         self.addSearchesDesktopSalt = int(config.general.addSearchesDesktopSalt)
         self.addSearchesMobile      = int(config.general.addSearchesMobile)
         self.addSearchesMobileSalt  = int(config.general.addSearchesMobileSalt)
+        self.openTopLinkRange       = int(config.general.openTopLinkRange)
+        self.openLinkChance         = float(config.general.openLinkChance)
         self.httpHeaders = httpHeaders
         self.userAgents  = userAgents
         self.queryGenerator = config.queryGenerator
@@ -121,21 +124,21 @@ class BingRewards:
 # parse dashboard page
         s = page.find('<div class="credits-right')
         d = page.find('<span class="credits-right')
-         
+
         # There are instances where the account appears to be signed in, but really is not
         helpers.errorOnText(page, "You are not signed", "Temporary account ban: User was not successfully signed in.\n")
- 
+
         if s != -1:
             s += len('<div class="credits-right')
             s = page.index('<div class="credits', s)
             s += len('<div class="credits')
-        
+
         elif d != -1:
             d += len('<span class="credits-right')
             d = page.index('<div class="credits', d)
             d += len('<div class="credits')
             s = d
-        
+
         else:
             s = page.index('<div class="data-lifetime')
             s += len('<div class="data-lifetime')
@@ -216,12 +219,16 @@ class BingRewards:
             res.message = "Didn't earn any points for click"
         return res
 
-    def __processSearch(self, reward):
+    def __processSearch(self, reward, verbose):
         """Processes bfp.Reward.Type.Action.SEARCH and returns self.RewardResult"""
 
         BING_QUERY_URL = 'http://www.bing.com/search?q='
         BING_QUERY_SUCCESSFULL_RESULT_MARKER_PC = '<div id="b_content">'
         BING_QUERY_SUCCESSFULL_RESULT_MARKER_MOBILE = '<div id="content">'
+        IG_PING_LINK = "http://www.bing.com/fd/ls/GLinkPing.aspx"
+        IG_NUMBER_PATTERN = re.compile(r'IG:"(.+?)"')
+        IG_SEARCH_RESULTS_PATTERN = re.compile(r'<ol\s.*?id="b_results"(.+?)</ol>')
+        IG_SEARCHS_PATTERN = re.compile(r'<a\s.*?href="(http.+?)".*?\sh="(.+?)"')
 
         res = self.RewardResult(reward)
         if reward.isAchieved():
@@ -311,6 +318,45 @@ class BingRewards:
             else:
                 successfullQueries += 1
 
+                # randomly open a link
+                if self.openLinkChance > random.random():
+                    # get IG number
+                    ig_number = IG_NUMBER_PATTERN.search(page)
+                    if ig_number != None:
+                        ig_number = ig_number.group(1)
+                        # get search results
+                        ig_results = IG_SEARCH_RESULTS_PATTERN.search(page)
+                        if ig_results != None:
+                            ig_results = ig_results.group(1)
+                            # seperate search results
+                            ig_searches = IG_SEARCHS_PATTERN.findall(ig_results)
+                            # get a random link to open
+                            ig_max_rand = min(self.openTopLinkRange, len(ig_searches) - 1)
+                            ig_link_num = random.randint(0, ig_max_rand)
+                            # number of the link we will use
+                            ig_link = "{0}?IG={1}&{2}".format(
+                                IG_PING_LINK,
+                                urllib.quote_plus(ig_number),
+                                urllib.quote_plus(ig_searches[ig_link_num][1])
+                            )
+
+                            # sleep a reasonable amount of time before clicking the link
+                            # use defaults to save space in config
+                            t = random.uniform(0.75, 3.0)
+                            time.sleep(t)
+
+                            # open the random link
+                            request = urllib2.Request(url = ig_link, headers = bingCommon.HEADERS)
+                            request.headers["Referer"] = response.url
+                            self.opener.open(request)
+
+                            if verbose:
+                                print("Followed Link {}".format(ig_link_num + 1))
+                    else:
+                        filename = helpers.dumpErrorPage(page)
+                        print "Warning! Could not find search result IG number"
+                        print "Check {0} file for more information".format(filename)
+
             i += 1
 
         if successfullQueries < searchesCount:
@@ -323,7 +369,7 @@ class BingRewards:
 
         return res
 
-    def process(self, rewards):
+    def process(self, rewards, verbose):
         """
         Runs an action for each of rewards as described in self.RewardType
         returns results list of self.RewardResult objects
@@ -344,7 +390,7 @@ class BingRewards:
             elif action == bfp.Reward.Type.Action.WARN:
                 res = self.__processWarn(r)
             elif action == bfp.Reward.Type.Action.SEARCH:
-                res = self.__processSearch(r)
+                res = self.__processSearch(r, verbose)
             else:
                 res = self.RewardResult(r)
 
