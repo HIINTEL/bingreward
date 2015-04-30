@@ -6,6 +6,10 @@ BingRewards is an automated point earning script that works with Bing.com to ear
 Python 2.7+
 
 ##Running The Script
+Copy *config.xml.dist* to *config.xml*  
+Enter accounts in `<accounts>` section.  
+Ensure `<events>` match accounts or are commented out.
+
 Linux/Mac
 ```bash
 $ cd path/to/bingrewards
