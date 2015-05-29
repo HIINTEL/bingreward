@@ -1,4 +1,7 @@
-Current version 3.9.0
+Current version 3.9.1
+
+3.9.1   *) Add Check To See If Any Search Results Were Returned Before Clicking
+           Fixes #132
 
 3.9.0   *) Randomly Open Link After Search Query
            Based heavily on work by @iRobie
