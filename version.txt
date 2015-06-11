@@ -1,4 +1,10 @@
-Current version 3.10.0
+Current version 3.11.0
+
+3.11.0  +) @amayer5125, Add User-Agent Config Support
+           Add ua_dektop and ua_mobile tag support in config.xml
+           If no ua_(desktop|mobile) is set use random User-Agent from defaults
+           Add User-Agent output to verbose output
+           Implements enhancement #142
 
 3.10.1  +) @peterdimou, Fix wikipedia generator top-level domain
 

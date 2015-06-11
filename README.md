@@ -33,11 +33,14 @@ addSearchesMobile Number of extra mobile searches
 addSearchesMobileSalt Random number of added mobile searches  
 
 ###Accounts
-You can have as many account tags as you need
+You can have as many account tags as you need.  
+**Note**: User-Agent fields are optional. If omitted a random User-Agent will be selected. Use caution when entering a custom User-Agent. If User-Agent is not associated with a common browser Bing! might flag you as a bot.
 ```xml
 <account type="(Live|Facebook)" disabled="(true|false)">
     <login>email@example.org</login>
     <password>passwordhere</password>
+    <ua_desktop><![CDATA[YOUR DEKSTOP USER AGENT HERE]]></ua_desktop>
+    <ua_mobile><![CDATA[YOUR MOBILE USER AGENT HERE]]></ua_mobile>
 </account>
 ```
 

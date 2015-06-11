@@ -32,8 +32,8 @@ from helpers import BingAccountError
 verbose = False
 totalPoints = 0
 
-SCRIPT_VERSION = "3.10.1"
-SCRIPT_DATE = "June 14, 2015"
+SCRIPT_VERSION = "3.11.0"
+SCRIPT_DATE = "June 15, 2015"
 
 def earnRewards(config, httpHeaders, userAgents, reportItem, password):
     """Earns Bing! reward points and populates reportItem"""
@@ -206,10 +206,11 @@ def __processAccountUserAgent(config, account, userAgents, doSleep):
     reportItem.accountType  = account.accountType
     reportItem.accountLogin = account.accountLogin
 
-    agents = bingCommon.UserAgents.generate()
+    agents = bingCommon.UserAgents.generate(account)
 
     httpHeaders = bingCommon.HEADERS
-    httpHeaders["User-Agent"] = userAgents[ random.randint(0, len(userAgents) - 1) ]
+    httpHeaders["User-Agent"] = agents.pc
+
     __processAccount(config, httpHeaders, agents, reportItem, account.password)
 
     return reportItem

@@ -273,6 +273,10 @@ class BingRewards:
             res.message = "Don't know how to process this search"
             return res
 
+        if verbose:
+            print("User-Agent: {0}".format(bingCommon.HEADERS["User-Agent"]))
+            print
+
         # Import the query generator
         try:
             qg = importlib.import_module(self.queryGenerator, package=None)

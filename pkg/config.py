@@ -225,6 +225,14 @@ class Config:
                 raise ConfigError("accounts.account.password is not found")
             acc.password = val.text
 
+            val = account.find("ua_desktop")
+            if not val is None:
+                acc.ua_desktop = val.text
+
+            val = account.find("ua_mobile")
+            if not val is None:
+                acc.ua_mobile = val.text
+
             self.accounts[acc.getRef()] = acc
 
     def __parseEvents(self, xmlEventsNode):
