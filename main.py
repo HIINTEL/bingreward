@@ -197,6 +197,9 @@ def __processAccountUserAgent(config, account, userAgents, doSleep):
 # sleep between two accounts logins
     if doSleep:
         extra = config.general.betweenAccountsInterval + random.uniform(0, config.general.betweenAccountsSalt)
+        if verbose:
+            print
+            print("Pausing between accounts for {0} seconds".format(int(extra)))
         time.sleep(extra)
 
     reportItem = BingRewardsReportItem()
