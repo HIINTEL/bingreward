@@ -1,4 +1,6 @@
-Current version 3.9.1
+Current version 3.10.0
+
+3.10.0  +) @amayer, Add Auth Check For Terms Of Use Update
 
 3.9.1   *) Add Check To See If Any Search Results Were Returned Before Clicking
            Fixes #132
