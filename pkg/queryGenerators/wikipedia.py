@@ -13,7 +13,7 @@ from datetime import date
 from bingRewards import BingRewards
 
 month_names = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-QUERY_URL = "http://en.wikipedia.com/wiki/{0}_{1}".format(month_names[date.today().month - 1], date.today().strftime("%d"))
+QUERY_URL = "http://en.wikipedia.org/wiki/{0}_{1}".format(month_names[date.today().month - 1], date.today().strftime("%d"))
 
 class queryGenerator:
     def __init__(self, br):
