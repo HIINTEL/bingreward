@@ -17,10 +17,19 @@ HEADERS = {
 
 class UserAgents:
     @staticmethod
-    def generate():
+    def generate(account):
         userAgents = UserAgents
-        userAgents.pc     = USER_AGENTS_PC[ random.randint(0, len(USER_AGENTS_PC) - 1) ]
-        userAgents.mobile = USER_AGENTS_MOBILE[ random.randint(0, len(USER_AGENTS_MOBILE) - 1) ]
+
+        if hasattr(account, "ua_desktop"):
+            userAgents.pc = account.ua_desktop
+        else:
+            userAgents.pc = random.choice(USER_AGENTS_PC)
+
+        if hasattr(account, "ua_mobile"):
+            userAgents.mobile = account.ua_mobile
+        else:
+            userAgents.mobile = random.choice(USER_AGENTS_MOBILE)
+
         return userAgents
 
 USER_AGENTS_PC = (
