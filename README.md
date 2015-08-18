@@ -34,7 +34,8 @@ addSearchesMobileSalt Random number of added mobile searches
 
 ###Accounts
 You can have as many account tags as you need.  
-**Note**: User-Agent fields are optional. If omitted a random User-Agent will be selected. Use caution when entering a custom User-Agent. If User-Agent is not associated with a common browser Bing! might flag you as a bot.
+**Note**: User-Agent fields are optional. If omitted a random User-Agent will be selected. Use caution when entering a custom User-Agent. If User-Agent is not associated with a common browser Bing! might flag you as a bot.  
+**Note**: Two-Factor Authentication (2FA) is not supported.
 ```xml
 <account type="(Live|Facebook)" disabled="(true|false)">
     <login>email@example.org</login>
