@@ -1,4 +1,6 @@
-Current version 3.12.0
+Current version 3.13.0
+
+3.13.0  *) @amayer5125, Update User Agents To Latest Versions
 
 3.12.0  *) @amayer5125, Update User Agents To Latest Versions
 
