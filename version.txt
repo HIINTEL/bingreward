@@ -1,4 +1,17 @@
-Current version 3.13.0
+Current version 3.14.0
+
+3.14.0  *) @amayer5125, Revamp Wikipedia Query Generator
+           Search raw text instead of html page
+               Decrease download size
+               Increase parsability
+               Respect Wikipedia API rules
+           Call correct page for days with single digit
+               ie. September_9 vs September_09
+               Removes need for http redirect
+           Add weight to sections to favor events and holidays over people
+           Compile regex
+           Search in lowercase (more human like)
+           Shuffle parsed search terms to increase entropy
 
 3.13.0  *) @amayer5125, Update User Agents To Latest Versions
 
