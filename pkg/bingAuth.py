@@ -239,7 +239,7 @@ class BingAuth:
         helpers.errorOnText(page, 'That password is incorrect.', 'Authentication has not been passed: Invalid password')
         helpers.errorOnText(page, "That Microsoft account doesn\\'t exist", 'Authentication has not been passed: Invalid username')
         # check if there is a new terms of use
-        helpers.errorOnText(page, '//account.live.com/tou/accrue', 'Please log in through a browser and accept the Terms Of Use')
+        helpers.errorOnText(page, '//account.live.com/tou/accrue', 'Please log in (log out first if necessary) through a browser and accept the Terms Of Use')
 
         s = page.index("<form ")
         e = page.index("</form>", s)
