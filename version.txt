@@ -1,4 +1,7 @@
-Current version 3.14.0
+Current version 3.14.1
+
+3.14.1  *) @amayer5125, Fix trim Bug.
+           Should be .strip()
 
 3.14.0  *) @amayer5125, Revamp Wikipedia Query Generator
            Search raw text instead of html page
