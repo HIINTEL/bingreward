@@ -75,7 +75,7 @@ class queryGenerator:
             raise ValueError("Wikipedia page is empty")
 
         # convert history to lowercase
-        history = [x.trim().lower() for x in history]
+        history = [x.strip().lower() for x in history]
 
         # get sections of the page (ie. Events, Births, Deaths, Holidays)
         rawSections = WIKIPEDIA_SECTION_PATTERN.findall(page)
