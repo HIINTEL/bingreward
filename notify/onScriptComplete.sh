@@ -12,7 +12,7 @@ if [ ! -s "$logFile" ] ; then
     exit 0
 fi
 
-if [ $# -eq 0 -o $1 != "mail" ] ; then
+if [ $# -eq 0 -o "$1" != "mail" ] ; then
     echo
     echo "Full log:"
     echo "---------"
