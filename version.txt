@@ -1,4 +1,7 @@
-Current version 3.14.3
+Current version 3.14.4
+
+3.14.4  *) @cloudlyfe-aldwin, Add "Earn more credits" as Inform
+           Fixes #169
 
 3.14.3  *) @cloudlyfe-aldwin, Fix unquoted variable string comparison bug.
            Variable should be quoted to allow for empty value comparision.

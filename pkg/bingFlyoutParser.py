@@ -60,9 +60,11 @@ class Reward:
         COMPLETED            = (10,    "Completed",                        None, False, Action.PASS)
         SILVER_STATUS        = (11,   "Silver Status",                     None, False, Action.PASS)
         INVITE_FRIENDS       = (12,   "Invite friends",                    None, False, Action.PASS)
+        EARN_MORE_CREDITS    = (13,   "Earn more credits",                 None, False, Action.INFORM)
 
         ALL = (RE_EARN_CREDITS_PASS, RE_EARN_CREDITS, SEARCH_MOBILE, SEARCH_PC, YOUR_GOAL, MAINTAIN_GOLD,
-               REFER_A_FRIEND, SEND_A_TWEET, RE_EARNED_CREDITS, COMPLETED, SILVER_STATUS, INVITE_FRIENDS)
+               REFER_A_FRIEND, SEND_A_TWEET, RE_EARNED_CREDITS, COMPLETED, SILVER_STATUS, INVITE_FRIENDS,
+               EARN_MORE_CREDITS)
 
     def __init__(self):
         self.url = ""               # optional
