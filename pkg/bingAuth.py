@@ -178,6 +178,8 @@ class BingAuth:
             ppsxParam = ",M:"
         elif ",g:" in page:
             ppsxParam = ",g:"
+        elif ",j:" in page:
+            ppsxParam = ",j:"
         else:
             ppsxParam = ",d:"
         s = page.index(ppsxParam)
