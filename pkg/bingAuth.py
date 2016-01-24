@@ -254,7 +254,7 @@ class BingAuth:
 
         # finish passing authentication
 
-        url = "http://www.bing.com/Passport.aspx?requrl=http%3a%2f%2fwww.bing.com%2f&wa=wsignin1.0"
+        url = "https://www.bing.com/secure/Passport.aspx?requrl=http%3a%2f%2fwww.bing.com%2f&wa=wsignin1.0"
         request = urllib2.Request(url, postFields, self.httpHeaders)
         request.add_header("Origin", "https://login.live.com")
 
@@ -263,7 +263,7 @@ class BingAuth:
 
         url = bingCommon.BING_URL
         request = urllib2.Request(url, postFields, self.httpHeaders)
-        request.add_header("Referer", "http://www.bing.com/Passport.aspx?requrl=http%3a%2f%2fwww.bing.com%2f&wa=wsignin1.0")
+        request.add_header("Referer", "https://www.bing.com/secure/Passport.aspx?requrl=http%3a%2f%2fwww.bing.com%2f&wa=wsignin1.0")
         with self.opener.open(request) as response:
             url = response.geturl()
 
