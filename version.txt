@@ -1,4 +1,6 @@
-Current version 3.14.1
+Current version 3.14.2
+
+3.14.2  *) @HmmU, @amayer5125, Fixed bingAuth url error
 
 3.14.1  *) @amayer5125, Fix trim Bug.
            Should be .strip()
