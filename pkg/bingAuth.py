@@ -243,18 +243,20 @@ class BingAuth:
         # check if there is a new terms of use
         helpers.errorOnText(page, '//account.live.com/tou/accrue', 'Please log in (log out first if necessary) through a browser and accept the Terms Of Use')
 
-        s = page.index("<form ")
-        e = page.index("</form>", s)
-        e += len("</form>")
+        # get auth form url and contents
+        authForm = re.search(r"<form.+action=\"([^\"]+)\".*?>(.+)?</form>", page)
+        if authForm == None:
+            filename = helpers.dumpErrorPage(page)
+            raise AuthenticationError("Could not find login form:\ncheck " + filename + " file for more information")
 
         parser = HTMLFormInputsParser()
-        parser.feed(page[s:e].decode("utf-8"))
+        parser.feed(authForm.group(2).decode("utf-8"))
         parser.close()
         postFields = urllib.urlencode(parser.inputs)
 
-        # finish passing authentication
+# finish passing authentication
 
-        url = "http://www.bing.com/Passport.aspx?requrl=http%3a%2f%2fwww.bing.com%2f&wa=wsignin1.0"
+        url = authForm.group(1)
         request = urllib2.Request(url, postFields, self.httpHeaders)
         request.add_header("Origin", "https://login.live.com")
 
@@ -263,7 +265,7 @@ class BingAuth:
 
         url = bingCommon.BING_URL
         request = urllib2.Request(url, postFields, self.httpHeaders)
-        request.add_header("Referer", "http://www.bing.com/Passport.aspx?requrl=http%3a%2f%2fwww.bing.com%2f&wa=wsignin1.0")
+        request.add_header("Referer", authForm.group(1))
         with self.opener.open(request) as response:
             url = response.geturl()
 
