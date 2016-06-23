@@ -8,7 +8,7 @@ if [ ! -s "$logFile" ] ; then
     echo "Empty log" > "$logFile"
 fi
 
-if [ $# -lt 2 -o $1 != "mail" ] ; then
+if [ $# -lt 2 -o "$1" != "mail" ] ; then
     echo
     echo "Full log:"
     echo "---------"
