@@ -7,6 +7,8 @@ import random
 import urllib
 import urllib2
 import re
+import time
+import json
 
 import bingCommon
 import helpers
@@ -32,6 +34,10 @@ class HTMLFormInputsParser(HTMLParser.HTMLParser):
                 self.inputs[name] = value.encode("utf-8")
 
 class BingAuth:
+    inputNameValue = re.compile(r"<input.+?name=\"(.+?)\".+?value=\"(.+?)\"")
+    formAction = re.compile(r"<form.+action=\"(.+?)\"")
+    ppsxValue = re.compile(r",t:'(.+?)',")
+
     def __init__(self, httpHeaders, opener):
         """
         @param opener is an instance of urllib2.OpenerDirector
@@ -173,33 +179,13 @@ class BingAuth:
         PPFT = page[s:e]
 
 # get PPSX parameter
-        ppsxParam = ""
-        if ",M:" in page:
-            ppsxParam = ",M:"
-        elif ",g:" in page:
-            ppsxParam = ",g:"
-        elif ",j:" in page:
-            ppsxParam = ",j:"
-        else:
-            ppsxParam = ",d:"
-        s = page.index(ppsxParam)
-        s += len(ppsxParam)
-        e = page.index(",", s)
-        PPSX = page[s:e]
-        if PPSX[0] == "'":
-            PPSX = PPSX[1:-1]
+        ppsxSearch = self.ppsxValue.search(page)
+        if ppsxSearch == None:
+            raise AuthenticationError("Could not find variable 't' on Live login page")
+        PPSX = ppsxSearch.group(1)
 
 # generate ClientLoginTime
         clt = 20000 + int(random.uniform(0, 1000))
-
-# generate RenderCompleteTime
-        renderTime = 130 + int(random.uniform(0, 100))
-
-# generate ResourcesCompleteTime
-        resourcesTime = renderTime + int(random.uniform(2, 5))
-
-# generate ResourcesCompleteTime
-        PLT = 870 + int(random.uniform(0, 250))
 
 # get url to post data to
         s = page.index(",urlPost:'")
@@ -207,34 +193,58 @@ class BingAuth:
         e = page.index("'", s)
         url = page[s:e]
 
+        timestamp = int(round(time.time() * 1000))
+        # TODO: randomize times a bit?
+        i16 = json.dumps({
+            "navigationStart": timestamp,
+            "unloadEventStart": timestamp + 209,
+            "unloadEventEnd": timestamp + 210,
+            "redirectStart": 0,
+            "redirectEnd": 0,
+            "fetchStart": timestamp + 73,
+            "domainLookupStart": timestamp + 73,
+            "domainLookupEnd": timestamp + 130,
+            "connectStart": timestamp + 130,
+            "connectEnd": timestamp + 130,
+            "requestStart": timestamp + 183,
+            "responseStart": timestamp + 205,
+            "responseEnd": timestamp + 205,
+            "domLoading": timestamp + 208,
+            "domInteractive": timestamp + 406,
+            "domContentLoadedEventStart": timestamp + 420,
+            "domContentLoadedEventEnd": timestamp + 420,
+            "domComplete": timestamp + 422,
+            "loadEventStart": timestamp + 422,
+            "loadEventEnd": 0
+        })
+
         postFields = urllib.urlencode({
+            "loginfmt"      : login,
             "login"         : login,
             "passwd"        : password,
-            "SI"            : "Sign in",
             "type"          : "11",
             "PPFT"          : PPFT,
             "PPSX"          : str(PPSX),
-            "idsbho"        : "1",
             "LoginOptions"  : "3",
+            "FoundMSAs"     : "",
+            "fspost"        : "0",
             "NewUser"       : "1",
-            "i1"            : "0",                  # ClientUserSaved
             "i2"            : "1",                  # ClientMode
-            "i3"            : str(clt),             # ClientLoginTime
-            "i4"            : "0",                  # ClientExplore
-            "i7"            : "0",                  # ClientOTPRequest
-            "i12"           : "1",                  # LoginUsedSSL
             "i13"           : "0",                  # ClientUsedKMSI
-            "i14"           : str(renderTime),      # RenderCompleteTime
-            "i15"           : str(resourcesTime),   # RenderCompleteTime
-            "i16"           : str(PLT),             # PLT
+            "i16"           : i16,
+            "i19"           : str(clt),             # ClientLoginTime
+            "i21"           : "0",
+            "i22"           : "0",
             "i17"           : "0",                  # SRSFailed
-            "i18"           : "__Login_Strings|1,__Login_Core|1," # SRSSuccess
+            "i18"           : "__DefaultLogin_Strings|1,__DefaultLogin_Core|1," # SRSSuccess
         })
 
         # get Passport page
 
         request = urllib2.Request(url, postFields, self.httpHeaders)
+        request.add_header("Referer", referer)
         with self.opener.open(request) as response:
+            referer = response.geturl()
             page = helpers.getResponseBody(response)
 
         # Checking for bad usernames and password
@@ -243,34 +253,32 @@ class BingAuth:
         # check if there is a new terms of use
         helpers.errorOnText(page, '//account.live.com/tou/accrue', 'Please log in (log out first if necessary) through a browser and accept the Terms Of Use')
 
-        # get auth form url and contents
-        authForm = re.search(r"<form.+action=\"([^\"]+)\".*?>(.+)?</form>", page)
-        if authForm == None:
-            filename = helpers.dumpErrorPage(page)
-            raise AuthenticationError("Could not find login form:\ncheck " + filename + " file for more information")
+        contSubmitUrl = self.formAction.search(page)
+        if contSubmitUrl == None:
+            raise AuthenticationError("Could not find form action for continue page")
+        url = contSubmitUrl.group(1)
 
-        parser = HTMLFormInputsParser()
-        parser.feed(authForm.group(2).decode("utf-8"))
-        parser.close()
-        postFields = urllib.urlencode(parser.inputs)
+        # get all form inputs
+        formFields = self.inputNameValue.findall(page)
+        postFields = {}
+        for field in formFields:
+            postFields[field[0]] = field[1]
+        postFields = urllib.urlencode(postFields)
 
-# finish passing authentication
-
-        url = authForm.group(1)
+        # submit continue page
         request = urllib2.Request(url, postFields, self.httpHeaders)
-        request.add_header("Origin", "https://login.live.com")
-
+        request.add_header("Referer", referer)
         with self.opener.open(request) as response:
+            referer = response.geturl()
             page = helpers.getResponseBody(response)
 
-        url = bingCommon.BING_URL
-        request = urllib2.Request(url, postFields, self.httpHeaders)
-        request.add_header("Referer", authForm.group(1))
+        request = urllib2.Request(url = bingCommon.BING_URL, headers = self.httpHeaders)
+        request.add_header("Referer", referer)
         with self.opener.open(request) as response:
-            url = response.geturl()
+            referer = response.geturl()
 
 # if that's not bingCommon.BING_URL => authentication wasn't pass => write the page to the file and report
-            if url.find(bingCommon.BING_URL) == -1:
+            if referer.find(bingCommon.BING_URL) == -1:
                 try:
                     filename = helpers.dumpErrorPage(helpers.getResponseBody(response))
                     s = "check " + filename + " file for more information"
