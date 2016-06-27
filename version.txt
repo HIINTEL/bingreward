@@ -1,4 +1,9 @@
-Current version 3.14.4
+Current version 3.14.5
+
+3.14.5  *) @amayer5125, Bugfix: Live Auth
+           Update post fields
+           Get PPSX from "t" variable
+           Refactor auth redirect page (continue page)
 
 3.14.4  *) @cloudlyfe-aldwin, Add "Earn more credits" as Inform
            Fixes #169
