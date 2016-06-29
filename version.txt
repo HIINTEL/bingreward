@@ -1,4 +1,6 @@
-Current version 3.14.6
+Current version 3.14.7
+
+3.14.7  *) @amayer5125, Update User Agent Strings
 
 3.14.6  *) @amayer5125, Test For Search And Earn VS PC/Mobile
            New reward type only allows for 15 points mobile and pc combined
