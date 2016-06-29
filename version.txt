@@ -1,4 +1,8 @@
-Current version 3.14.5
+Current version 3.14.6
+
+3.14.6  *) @amayer5125, Test For Search And Earn VS PC/Mobile
+           New reward type only allows for 15 points mobile and pc combined
+           Based on work by: @tsdg112
 
 3.14.5  *) @amayer5125, Bugfix: Live Auth
            Update post fields

@@ -248,7 +248,7 @@ class BingRewards:
         matches = bfp.Reward.Type.SEARCH_AND_EARN_DESCR_RE.search(reward.description)
         rewardsCount    = int(matches.group(1))
         rewardCost      = int(matches.group(2))
-        maxRewardsCount = int(matches.group(4))
+        maxRewardsCount = int(matches.group(3))
         searchesCount = maxRewardsCount * rewardCost / rewardsCount
 
 # adjust to the current progress
@@ -256,7 +256,7 @@ class BingRewards:
 
         headers = self.httpHeaders
 
-        if reward.tp == bfp.Reward.Type.SEARCH_PC:
+        if reward.tp == bfp.Reward.Type.SEARCH_PC or reward.tp == bfp.Reward.Type.SEARCH_AND_EARN:
             headers["User-Agent"] = self.userAgents.pc
             searchesCount += self.addSearchesDesktop + random.randint(0, self.addSearchesDesktopSalt)
             print
