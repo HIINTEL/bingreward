@@ -227,8 +227,7 @@ class BingRewards:
         BING_QUERY_SUCCESSFULL_RESULT_MARKER_MOBILE = '<div id="content">'
         IG_PING_LINK = "http://www.bing.com/fd/ls/GLinkPing.aspx"
         IG_NUMBER_PATTERN = re.compile(r'IG:"([^"]+)"')
-        IG_SEARCH_RESULTS_PATTERN = re.compile(r'<ol\s[^>]*id="b_results".+')
-        IG_SEARCHS_PATTERN = re.compile(r'<li\s[^>]*class="b_algo"[^>]*><h2><a\s[^>]*href="(http[^"]+)"\s[^>]*h="([^"]+)"')
+        IG_SEARCHES_PATTERN = re.compile(r'<li\s[^>]*class="b_algo"[^>]*><h2><a\s[^>]*href="(http[^"]+)"\s[^>]*h="([^"]+)"')
 
         res = self.RewardResult(reward)
         if reward.isAchieved():
@@ -329,39 +328,35 @@ class BingRewards:
                     ig_number = IG_NUMBER_PATTERN.search(page)
                     if ig_number is not None:
                         ig_number = ig_number.group(1)
-                        # get search results (from b_results ol to end of line)
-                        ig_results = IG_SEARCH_RESULTS_PATTERN.search(page)
-                        if ig_results is not None:
-                            # separate search results
-                            ig_searches = IG_SEARCHS_PATTERN.findall(ig_results.group(0))
-                            # make sure we have at least 1 search
-                            if len(ig_searches) > 0:
-                                # get a random link to open
-                                ig_max_rand = min(self.openTopLinkRange, len(ig_searches) - 1)
-                                # number of the link we will use
-                                ig_link_num = random.randint(0, ig_max_rand)
-                                ig_link = "{0}?IG={1}&{2}".format(
-                                    IG_PING_LINK,
-                                    urllib.quote_plus(ig_number),
-                                    urllib.quote_plus(ig_searches[ig_link_num][1])
-                                )
+                        ig_searches = IG_SEARCHES_PATTERN.findall(page)
+                        # make sure we have at least 1 search
+                        if len(ig_searches) > 0:
+                            # get a random link to open
+                            ig_max_rand = min(self.openTopLinkRange, len(ig_searches) - 1)
+                            # number of the link we will use
+                            ig_link_num = random.randint(0, ig_max_rand)
+                            ig_link = "{0}?IG={1}&{2}".format(
+                                IG_PING_LINK,
+                                urllib.quote_plus(ig_number),
+                                urllib.quote_plus(ig_searches[ig_link_num][1])
+                            )
 
-                                # sleep a reasonable amount of time before clicking the link
-                                # use defaults to save space in config
-                                t = random.uniform(0.75, 3.0)
-                                time.sleep(t)
+                            # sleep a reasonable amount of time before clicking the link
+                            # use defaults to save space in config
+                            t = random.uniform(0.75, 3.0)
+                            time.sleep(t)
 
-                                # open the random link
-                                request = urllib2.Request(url = ig_link, headers = bingCommon.HEADERS)
-                                request.headers["Referer"] = response.url
-                                self.opener.open(request)
+                            # open the random link
+                            request = urllib2.Request(url = ig_link, headers = bingCommon.HEADERS)
+                            request.headers["Referer"] = response.url
+                            self.opener.open(request)
 
-                                if verbose:
-                                    print("Followed Link {}".format(ig_link_num + 1))
-                            else:
-                                filename = helpers.dumpErrorPage(page)
-                                print "Warning! No searches were found on search results page"
-                                print "Check {0} file for more information".format(filename)
+                            if verbose:
+                                print("Followed Link {}".format(ig_link_num + 1))
+                        else:
+                            filename = helpers.dumpErrorPage(page)
+                            print "Warning! No searches were found on search results page"
+                            print "Check {0} file for more information".format(filename)
                     else:
                         filename = helpers.dumpErrorPage(page)
                         print "Warning! Could not find search result IG number"
