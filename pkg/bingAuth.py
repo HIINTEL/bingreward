@@ -206,6 +206,7 @@ class BingAuth:
             "domainLookupEnd": timestamp + 130,
             "connectStart": timestamp + 130,
             "connectEnd": timestamp + 130,
+            "secureConnectionStart": timestamp + 210,
             "requestStart": timestamp + 183,
             "responseStart": timestamp + 205,
             "responseEnd": timestamp + 205,

@@ -110,12 +110,15 @@ class BingRewards:
             page = helpers.getResponseBody(response)
         return page
 
+# TODO: this function is returning a page that says you must have javascript to log in
+# I'm not sure yet how this script goes about calling pages while maintaining the log in
+# once that's figured out, the parser below will need to be updated for the new page layout
     def getLifetimeCredits(self):
         """
-        Returns http://www.bing.com/rewards/dashboard Lifetime Credits
+        Returns https://account.microsoft.com/rewards Lifetime Credits
         The number of credits earned since day one of the account
         """
-        url = "http://www.bing.com/rewards/dashboard"
+        url = "https://account.microsoft.com/rewards"
         request = urllib2.Request(url = url, headers = self.httpHeaders)
         request.add_header("Referer", bingCommon.BING_URL)
         with self.opener.open(request) as response:
@@ -245,13 +248,20 @@ class BingRewards:
 
 # find out how many searches need to be performed
         matches = bfp.Reward.Type.SEARCH_AND_EARN_DESCR_RE.search(reward.description)
-        rewardsCount    = int(matches.group(1))
-        rewardCost      = int(matches.group(2))
-        maxRewardsCount = int(matches.group(3))
+        if matches is None:
+            print "No RegEx matches found for this search and earn"
+            res.isError = True
+            res.message = "No RegEx matches found for this search and earn"
+            return res
+        maxRewardsCount = int(matches.group(1))
+        rewardsCount    = int(matches.group(2))
+        rewardCost      = 1 # Looks like it's now always X points per one search
         searchesCount = maxRewardsCount * rewardCost / rewardsCount
 
 # adjust to the current progress
-        searchesCount -= reward.progressCurrent * rewardCost
+# reward.progressCurrent is now returning current points, not current searches
+# so divide it by points per search (rewardsCount) to get correct search count needed
+        searchesCount -= (reward.progressCurrent * rewardCost) / rewardsCount
 
         headers = self.httpHeaders
 
