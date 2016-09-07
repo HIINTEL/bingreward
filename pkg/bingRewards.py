@@ -122,37 +122,51 @@ class BingRewards:
         request = urllib2.Request(url = url, headers = self.httpHeaders)
         request.add_header("Referer", bingCommon.BING_URL)
         with self.opener.open(request) as response:
+            referer = response.geturl()
             page = helpers.getResponseBody(response)
 
-# parse dashboard page
-        s = page.find('<div class="credits-right')
-        d = page.find('<span class="credits-right')
+# get form data
+        s = page.index('action="')
+        s += len('action="')
+        e = page.index('"', s)
+        action = page[s:e]
 
-        # There are instances where the account appears to be signed in, but really is not
-        helpers.errorOnText(page, "You are not signed", "Temporary account ban: User was not successfully signed in.\n")
+        s = page.index("NAP")
+        s = page.index('value="', s)
+        s += len('value="')
+        e = page.index('"', s)
+        nap = page[s:e]
 
-        if s != -1:
-            s += len('<div class="credits-right')
-            s = page.index('<div class="credits', s)
-            s += len('<div class="credits')
+        s = page.index("ANON")
+        s = page.index('value="', s)
+        s += len('value="')
+        e = page.index('"', s)
+        anon = page[s:e]
 
-        elif d != -1:
-            d += len('<span class="credits-right')
-            d = page.index('<div class="credits', d)
-            d += len('<div class="credits')
-            s = d
+        s = page.index('id="t"')
+        s = page.index('value="', s)
+        s += len('value="')
+        e = page.index('"', s)
+        t = page[s:e]
 
-        else:
-            s = page.index('<div class="data-lifetime')
-            s += len('<div class="data-lifetime')
-            s = page.index('<div class="data-value-text', s)
-            s += len('<div class="data-value-text')
+        postFields = urllib.urlencode({
+            "NAP"    : nap,
+            "ANON"   : anon,
+            "t"      : t
+        })
 
-        s = page.index(">", s) + 1
-        e = page.index('</div>', s)
+        request = urllib2.Request(action, postFields, self.httpHeaders)
+        request.add_header("Referer", referer)
+        with self.opener.open(request) as response:
+            page = helpers.getResponseBody(response)
 
-        result = int(page[s:e])
-        return result
+# find lifetime points
+        s = page.find(' lifetime points</div>') - 20
+        s = page.find('>', s) + 1
+        e = page.find(' ', s)
+        points = page[s:e]
+
+        return int(points.replace(",", "")) # remove commas so we can cast as int
 
     def getRewardsPoints(self):
         """

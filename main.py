@@ -67,7 +67,7 @@ def earnRewards(config, httpHeaders, userAgents, reportItem, password):
         bingRewards.printResults(results, verbose)
 
         reportItem.newPoints = bingRewards.getRewardsPoints()
-        # reportItem.lifetimeCredits = bingRewards.getLifetimeCredits() # this function not yet working with new Microsoft Rewards
+        reportItem.lifetimeCredits = bingRewards.getLifetimeCredits()
         reportItem.pointsEarned = reportItem.newPoints - reportItem.oldPoints
         reportItem.pointsEarnedRetrying += reportItem.pointsEarned
         print
