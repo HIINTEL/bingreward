@@ -1,4 +1,6 @@
-Current version 3.14.8
+Current version 3.14.9
+
+3.14.9  *) @reganface, Updated to work with the new Microsoft Rewards
 
 3.14.8  *) @jbrobst, Fix "no searches found" error when results begin with a definition
 

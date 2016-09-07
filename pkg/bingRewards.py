@@ -110,9 +110,6 @@ class BingRewards:
             page = helpers.getResponseBody(response)
         return page
 
-# TODO: this function is returning a page that says you must have javascript to log in
-# I'm not sure yet how this script goes about calling pages while maintaining the log in
-# once that's figured out, the parser below will need to be updated for the new page layout
     def getLifetimeCredits(self):
         """
         Returns https://account.microsoft.com/rewards Lifetime Credits
