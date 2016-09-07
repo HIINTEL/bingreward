@@ -226,9 +226,8 @@ class BingRewards:
         BING_QUERY_SUCCESSFULL_RESULT_MARKER_PC = '<div id="b_content">'
         BING_QUERY_SUCCESSFULL_RESULT_MARKER_MOBILE = '<div id="content">'
         IG_PING_LINK = "http://www.bing.com/fd/ls/GLinkPing.aspx"
-        IG_NUMBER_PATTERN = re.compile(r'IG:"(.+?)"')
-        IG_SEARCH_RESULTS_PATTERN = re.compile(r'<ol\s.*?id="b_results"(.+?)</ol>')
-        IG_SEARCHS_PATTERN = re.compile(r'<a\s.*?href="(http.+?)".*?\sh="(.+?)"')
+        IG_NUMBER_PATTERN = re.compile(r'IG:"([^"]+)"')
+        IG_SEARCHES_PATTERN = re.compile(r'<li\s[^>]*class="b_algo"[^>]*><h2><a\s[^>]*href="(http[^"]+)"\s[^>]*h="([^"]+)"')
 
         res = self.RewardResult(reward)
         if reward.isAchieved():
@@ -283,6 +282,7 @@ class BingRewards:
             queryGenerator = qg.queryGenerator(self)
         except ImportError:
             raise TypeError("{0} is not a module".format(self.queryGenerator))
+
         # generate a set of queries to run
         queries = queryGenerator.generateQueries(searchesCount, history)
 
@@ -326,42 +326,37 @@ class BingRewards:
                 if self.openLinkChance > random.random():
                     # get IG number
                     ig_number = IG_NUMBER_PATTERN.search(page)
-                    if ig_number != None:
+                    if ig_number is not None:
                         ig_number = ig_number.group(1)
-                        # get search results
-                        ig_results = IG_SEARCH_RESULTS_PATTERN.search(page)
-                        if ig_results != None:
-                            ig_results = ig_results.group(1)
-                            # seperate search results
-                            ig_searches = IG_SEARCHS_PATTERN.findall(ig_results)
-                            # make sure we have at least 1 search
-                            if len(ig_searches) > 0:
-                                # get a random link to open
-                                ig_max_rand = min(self.openTopLinkRange, len(ig_searches) - 1)
-                                ig_link_num = random.randint(0, ig_max_rand)
-                                # number of the link we will use
-                                ig_link = "{0}?IG={1}&{2}".format(
-                                    IG_PING_LINK,
-                                    urllib.quote_plus(ig_number),
-                                    urllib.quote_plus(ig_searches[ig_link_num][1])
-                                )
+                        ig_searches = IG_SEARCHES_PATTERN.findall(page)
+                        # make sure we have at least 1 search
+                        if len(ig_searches) > 0:
+                            # get a random link to open
+                            ig_max_rand = min(self.openTopLinkRange, len(ig_searches) - 1)
+                            # number of the link we will use
+                            ig_link_num = random.randint(0, ig_max_rand)
+                            ig_link = "{0}?IG={1}&{2}".format(
+                                IG_PING_LINK,
+                                urllib.quote_plus(ig_number),
+                                urllib.quote_plus(ig_searches[ig_link_num][1])
+                            )
 
-                                # sleep a reasonable amount of time before clicking the link
-                                # use defaults to save space in config
-                                t = random.uniform(0.75, 3.0)
-                                time.sleep(t)
+                            # sleep a reasonable amount of time before clicking the link
+                            # use defaults to save space in config
+                            t = random.uniform(0.75, 3.0)
+                            time.sleep(t)
 
-                                # open the random link
-                                request = urllib2.Request(url = ig_link, headers = bingCommon.HEADERS)
-                                request.headers["Referer"] = response.url
-                                self.opener.open(request)
+                            # open the random link
+                            request = urllib2.Request(url = ig_link, headers = bingCommon.HEADERS)
+                            request.headers["Referer"] = response.url
+                            self.opener.open(request)
 
-                                if verbose:
-                                    print("Followed Link {}".format(ig_link_num + 1))
-                            else:
-                                filename = helpers.dumpErrorPage(page)
-                                print "Warning! No searches were found on search results page"
-                                print "Check {0} file for more information".format(filename)
+                            if verbose:
+                                print("Followed Link {}".format(ig_link_num + 1))
+                        else:
+                            filename = helpers.dumpErrorPage(page)
+                            print "Warning! No searches were found on search results page"
+                            print "Check {0} file for more information".format(filename)
                     else:
                         filename = helpers.dumpErrorPage(page)
                         print "Warning! Could not find search result IG number"
