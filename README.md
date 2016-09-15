@@ -40,7 +40,7 @@ You can have as many account tags as you need.
 <account type="(Live|Facebook)" disabled="(true|false)">
     <login>email@example.org</login>
     <password>passwordhere</password>
-    <ua_desktop><![CDATA[YOUR DEKSTOP USER AGENT HERE]]></ua_desktop>
+    <ua_desktop><![CDATA[YOUR DESKTOP USER AGENT HERE]]></ua_desktop>
     <ua_mobile><![CDATA[YOUR MOBILE USER AGENT HERE]]></ua_mobile>
 </account>
 ```
