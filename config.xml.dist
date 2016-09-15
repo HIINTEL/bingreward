@@ -1,6 +1,13 @@
 <?xml version="1.0"?>
 
 <configuration>
+    <!--
+    openTopLinkRange looks at the top X results, and randomly clicks one
+    openLinkChance is the chance that a Bing result will be opened
+    Lower the addSearches values if you have three or more accounts
+    If you have one account, an average of 30 extra searches a day is fine
+    If you have 5 accounts, an average of 150 extra searches a day is probably not good
+    -->
     <general
         betweenQueriesInterval="15.0"
         betweenQueriesSalt="12.0"
@@ -12,22 +19,19 @@
         addSearchesDesktopSalt="20"
         addSearchesMobile="0"
         addSearchesMobileSalt="20" />
-    <!--
-        openTopLinkRange looks at the top X results, and randomly clicks one
-        openLinkChance is the chance that a Bing result will be opened
-        Lower the addSearches values if you have three or more accounts
-        If you have one account, an average of 30 extra searches a day is fine
-        If you have 5 accounts, an average of 150 extra searches a day is probably not good
-    -->
 
     <!--
-      - Note: login and password are optional
-      -       if not set, the proxy is considered open
-      -       only Basic HTTP Authentication is currently supported
-      -       protocols: a comma separated list of values - i.e, "http,https"
+    Note: login and password are optional
+        if not set, the proxy is considered open
+        only Basic HTTP Authentication is currently supported
+        protocols: a comma separated list of values - i.e, "http,https"
     <proxy protocols="http,https" url="218.204.159.45:8123" login="John Smith" password="xxx" />
     -->
 
+    <!--
+    See config options in the Accounts section of README
+    or view them here: https://github.com/sealemar/BingRewards#accounts
+    -->
     <accounts>
         <account type="Facebook" disabled="false">
             <login>john.smith@gmail.com</login>
@@ -89,13 +93,13 @@
     </events>
 
     <!--
-      - generator="MODULE" must be a module in pkg/queryGenerators
-      - current modules:
-      -     bing - uses today's bing news page. Generates terms which may be partial words.
-      -     wikipedia - uses today's wikipedia. Generates terms with whole words.
-      -     googleTrends - uses today's google trends, and google suggested searches. This generatoer
-      -	                   generates whole words, generally consistent with a search syntax.  These terms
-      -                    are anything trending and can be NSFW or terms for illegal items.
+    generator="MODULE" must be a module in pkg/queryGenerators
+    current modules:
+        bing - uses today's bing news page. Generates terms which may be partial words.
+        wikipedia - uses today's wikipedia. Generates terms with whole words.
+        googleTrends - uses today's google trends, and google suggested searches. This generatoer
+                       generates whole words, generally consistent with a search syntax.  These terms
+                       are anything trending and can be NSFW or terms for illegal items.
     -->
     <queries generator="wikipedia" />
 </configuration>
