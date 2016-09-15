@@ -33,14 +33,6 @@
     or view them here: https://github.com/sealemar/BingRewards#accounts
     -->
     <accounts>
-        <account type="Facebook" disabled="false">
-            <login>john.smith@gmail.com</login>
-            <password>xxx</password>
-        </account>
-        <account type="Facebook" disabled="true">
-            <login>blabla@mail.com</login>
-            <password>xxx</password>
-        </account>
         <account type="Live" disabled="false">
             <login>gogo@hotmail.com</login>
             <password>xxx</password>
@@ -74,7 +66,7 @@
                 <notify if="%P gt 475"
                         cmd="/home/BingRewards/bin/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
             </account>
-            <account ref="Facebook_john.smith@gmail.com">
+            <account ref="Live_hoho@hotmail.com">
                 <retry if="%p lt 31" interval="15" salt="13.5" count="3" />
                 <notify if="%l gt 10000"
                         cmd='/home/BingRewards/bin/BingRewards/notify/onComplete_reached.sh %a %p %r %P %l %i "reached %l Life Credits"' />
