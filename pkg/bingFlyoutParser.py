@@ -62,10 +62,11 @@ class Reward:
         INVITE_FRIENDS       = (12,   "Invite friends",                    None, False, Action.PASS)
         EARN_MORE_CREDITS    = (13,   "Earn more credits",                 None, False, Action.INFORM)
         SEARCH_AND_EARN      = (14,   "Search and earn",                   None, False, Action.SEARCH)
+        THURSDAY_BONUS       = (15,   "Thursday bonus",                    None, False, Action.PASS)
 
         ALL = (RE_EARN_CREDITS_PASS, RE_EARN_CREDITS, SEARCH_MOBILE, SEARCH_PC, YOUR_GOAL, MAINTAIN_GOLD,
                REFER_A_FRIEND, SEND_A_TWEET, RE_EARNED_CREDITS, COMPLETED, SILVER_STATUS, INVITE_FRIENDS,
-               EARN_MORE_CREDITS, SEARCH_AND_EARN)
+               EARN_MORE_CREDITS, SEARCH_AND_EARN, THURSDAY_BONUS)
 
     def __init__(self):
         self.url = ""               # optional
