@@ -89,7 +89,7 @@
     current modules:
         bing - uses today's bing news page. Generates terms which may be partial words.
         wikipedia - uses today's wikipedia. Generates terms with whole words.
-        googleTrends - uses today's google trends, and google suggested searches. This generatoer
+        googleTrends - uses today's google trends, and google suggested searches. This generator
                        generates whole words, generally consistent with a search syntax.  These terms
                        are anything trending and can be NSFW or terms for illegal items.
     -->
