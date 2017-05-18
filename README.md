@@ -1,11 +1,11 @@
-#BingRewards
-##About
+# BingRewards
+## About
 BingRewards is an automated point earning script that works with Bing.com to earn points that can be redeemed for giftcards.
 
-##Requirements
+## Requirements
 Python 2.7+
 
-##Running The Script
+## Running The Script
 Copy *config.xml.dist* to *config.xml*  
 Enter accounts in `<accounts>` section.  
 Ensure `<events>` match accounts or are commented out.
@@ -20,9 +20,9 @@ Windows
 > cd path\to\bingrewards
 > python main.py
 ```
-##Config
+## Config
 
-###General
+### General
 betweenQueriesInterval: Number of seconds between queries  
 betweenQueriesSalt: Random number of seconds added between queries  
 betweenAccountsInterval Number of seconds between accounts  
@@ -32,7 +32,7 @@ addSearchesDesktopSalt Random number of added desktop searches
 addSearchesMobile Number of extra mobile searches  
 addSearchesMobileSalt Random number of added mobile searches  
 
-###Accounts
+### Accounts
 You can have as many account tags as you need.  
 **Note**: User-Agent fields are optional. If omitted a random User-Agent will be selected. Use caution when entering a custom User-Agent. If User-Agent is not associated with a common browser Bing! might flag you as a bot.  
 **Note**: Two-Factor Authentication (2FA) is not supported.
@@ -45,18 +45,18 @@ You can have as many account tags as you need.
 </account>
 ```
 
-###Query Generators
+### Query Generators
 - bing
 - googleTrends
 - wikipedia
 
-###Events
+### Events
 onError: Defines what the script should do when an error occurs durring processing an account.  
 onComplete: Defines how the script should behave when it completes processing an account.  
 onScriptComplete: A special event which occurs only once when the script finishes executing.  
 onScriptFailure: A special event which occurs only once and if the script fails with exception some time after successfully loading the config.
 
-##Automating
+## Automating
 Linux/Mac: Create cron job  
 Replace `LOCAL_CONFIG_DIR` setting with the path to your Bing Rewards folder  
 You will also need to update the paths in the command to point to your Bing Rewards folder
@@ -71,7 +71,7 @@ LOCAL_CONFIG_DIR=/home/bingrewards/etc
 ```
 Windows: Use build in Task Scheduler
 
-##References
+## References
 - For more information, including how to use this, please, take a look at my blog post:
 [here](http://sealemar.blogspot.com/2012/12/bing-rewards-automation.html)
 - To find out how to convert Bing! Rewards points to cash, read my second post in this series:
