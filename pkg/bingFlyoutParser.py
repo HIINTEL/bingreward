@@ -63,13 +63,11 @@ class Reward:
         EARN_MORE_CREDITS    = (13,   "Earn more credits",                 None, False, Action.INFORM)
         SEARCH_AND_EARN      = (14,   "Search and earn",                   None, False, Action.SEARCH)
         THURSDAY_BONUS       = (15,   "Thursday bonus",                    None, False, Action.PASS)
-        LIGHTSPEED_QUIZ      = (16,   "Lightspeed quiz",                   None, False, Action.PASS)
-        COFFEE_BREAK_QUIZ    = (17,   "Coffee break quiz",                 None, False, Action.PASS)
-        SUPERSONIC_QUIZ      = (18,   "Supersonic quiz",                   None, False, Action.PASS)
+        RE_QUIZ              = (16,   re.compile(r"quiz"),                 None, True,  Action.PASS)
 
         ALL = (RE_EARN_CREDITS_PASS, RE_EARN_CREDITS, SEARCH_MOBILE, SEARCH_PC, YOUR_GOAL, MAINTAIN_GOLD,
                REFER_A_FRIEND, SEND_A_TWEET, RE_EARNED_CREDITS, COMPLETED, SILVER_STATUS, INVITE_FRIENDS,
-               EARN_MORE_CREDITS, SEARCH_AND_EARN, THURSDAY_BONUS, LIGHTSPEED_QUIZ, COFFEE_BREAK_QUIZ, SUPERSONIC_QUIZ)
+               EARN_MORE_CREDITS, SEARCH_AND_EARN, THURSDAY_BONUS, RE_QUIZ)
 
     def __init__(self):
         self.url = ""               # optional
