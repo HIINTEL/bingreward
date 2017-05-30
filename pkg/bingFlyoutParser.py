@@ -63,7 +63,7 @@ class Reward:
         EARN_MORE_CREDITS    = (13,   "Earn more credits",                 None, False, Action.INFORM)
         SEARCH_AND_EARN      = (14,   "Search and earn",                   None, False, Action.SEARCH)
         THURSDAY_BONUS       = (15,   "Thursday bonus",                    None, False, Action.PASS)
-        RE_QUIZ              = (16,   re.compile(".*Q|quiz.*"),            None, True,  Action.PASS)
+        RE_QUIZ              = (16,   re.compile(r"\b[Qq]uiz\b"),          None, True,  Action.PASS)
 
         ALL = (RE_EARN_CREDITS_PASS, RE_EARN_CREDITS, SEARCH_MOBILE, SEARCH_PC, YOUR_GOAL, MAINTAIN_GOLD,
                REFER_A_FRIEND, SEND_A_TWEET, RE_EARNED_CREDITS, COMPLETED, SILVER_STATUS, INVITE_FRIENDS,
