@@ -1,0 +1,31 @@
+machine:
+  python:
+    version: 2.7
+
+dependencies:
+  override:
+    # for debugging firefox issues manually 
+    # 1) uncomment below 
+    # 2) run something like ssh -p 64686 ubuntu@52.14.38.229 -L 5902:localhost:5901
+    # 3) remove ~/.vnc/xstartup that might be causing grey screen
+    # - echo "firefox &" >> ~/.vnc/xstartup 
+    # - vnc4server -geometry 1280x1024 -depth 24
+    
+    - openssl aes-256-cbc -d -in config.xml.encrypted -k "${KEY}" >> config.xml
+
+  post:
+    - sudo apt-get update
+    - sudo apt-get install -y x11vnc
+    - echo "firefox &" >> xstartup 
+    - sudo mkdir /root/.vnc
+    - sudo mv xstartup /root/.vnc/xstartup
+    - sudo chmod 777 /root/.vnc/xstartup
+    - x11vnc -forever -nopw:
+        background: true
+
+test:
+  override:
+    - nosetests test/unittest.py
+  post:
+    - ls -al test
+    - ls
