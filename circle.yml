@@ -12,6 +12,7 @@ dependencies:
     # - vnc4server -geometry 1280x1024 -depth 24
     
     - openssl aes-256-cbc -d -in config.xml.encrypted -k "${KEY}" >> config.xml
+    - pip install -r requirements.txt
 
   post:
     - sudo apt-get update
