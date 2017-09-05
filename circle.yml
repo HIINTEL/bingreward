@@ -27,5 +27,8 @@ test:
   override:
     - nosetests test/unittest.py
   post:
+    - coverage run pkg/*.py
+    - coverage report
+    - coveralls
     - ls -al test
     - ls
