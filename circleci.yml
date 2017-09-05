@@ -1,3 +1,7 @@
+machine:
+  python:
+    version: 2.7
+
 dependencies:
   override:
     # for debugging firefox issues manually 
@@ -22,3 +26,6 @@ dependencies:
 test:
   override:
     - nosetests test/unittest.py
+  post:
+    - ls -al test
+    - ls
