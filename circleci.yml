@@ -21,4 +21,4 @@ dependencies:
 
 test:
   override:
-    - ./main.py -f config.xml
+    - nosetests test/unittest.py
