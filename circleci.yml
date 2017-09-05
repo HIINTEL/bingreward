@@ -7,8 +7,7 @@ dependencies:
     # - echo "firefox &" >> ~/.vnc/xstartup 
     # - vnc4server -geometry 1280x1024 -depth 24
     
-    # uncomment after checkin config
-    #- openssl aes-256-cbc -d -in config.xml.encrypted -k "${KEY}" >> config.xml
+    - openssl aes-256-cbc -d -in config.xml.encrypted -k "${KEY}" >> config.xml
 
   post:
     - sudo apt-get update
@@ -22,5 +21,4 @@ dependencies:
 
 test:
   override:
-    # uncomment after checkin config
-    #- ./main.py -f config.xml
+    - ./main.py -f config.xml
