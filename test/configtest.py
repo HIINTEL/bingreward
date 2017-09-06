@@ -179,8 +179,6 @@ class TestConfig(unittest.TestCase):
         import helpers
         self.assertRaisesRegexp(TypeError, "None", helpers.dumpErrorPage, None)
 
-    self.assertRegexpMatches(output, "\d{4}-\d{2}-\d{2}", "should have time stamp,\n" + output)
-
     def test_dump(self):
         """
          test dump page to a file
