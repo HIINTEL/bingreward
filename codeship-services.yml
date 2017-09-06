@@ -1,12 +1,7 @@
-# initial checkin
-- type: parallel
-  name: example_parallel_step
-  steps:
-    - service: codeship_example
-      command: printenv
-    - service: codeship_example
-      command: pwd 
-- name: example_tagged_step
-  tag: master
-  service: codeship_example
-  command: echo "Deploy here!"
+version: '2'
+
+services:
+  codeship_example:
+    build: .
+    environment:
+      EXAMPLE_ENV_VAR: example-var
