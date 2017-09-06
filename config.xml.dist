@@ -9,16 +9,16 @@
     If you have 5 accounts, an average of 150 extra searches a day is probably not good
     -->
     <general
-        betweenQueriesInterval="15.0"
-        betweenQueriesSalt="12.0"
-        betweenAccountsInterval="300"
-        betweenAccountsSalt="600"
+        betweenQueriesInterval="1.0"
+        betweenQueriesSalt="1.0"
+        betweenAccountsInterval="3"
+        betweenAccountsSalt="6"
         openTopLinkRange="5"
         openLinkChance=".7"
         addSearchesDesktop="0"
-        addSearchesDesktopSalt="20"
+        addSearchesDesktopSalt="2"
         addSearchesMobile="0"
-        addSearchesMobileSalt="20" />
+        addSearchesMobileSalt="2" />
 
     <!--
     Note: login and password are optional
@@ -37,16 +37,12 @@
             <login>gogo@hotmail.com</login>
             <password>xxx</password>
         </account>
-        <account type="Live" disabled="false">
-            <login>hoho@hotmail.com</login>
-            <password>xxx</password>
-        </account>
     </accounts>
 
     <events>
         <onError>
             <retry interval="15" salt="13.5" count="3" />
-            <notify cmd="/home/BingRewards/bin/BingRewards/notify/onError.sh %a %p %r %P %l %i %e" />
+            <notify cmd="~/BingRewards/notify/onError.sh %a %p %r %P %l %i %e" />
         </onError>
         <onComplete>
             <retry if="%p lt 16" interval="15" salt="13.5" count="3" />
@@ -60,27 +56,18 @@
             <account ref="Live_gogo@hotmail.com">
                 <retry if="%p lt 16" interval="15" salt="13.5" count="3" />
                 <notify if="%l gt 750"
-                        cmd='/home/BingRewards/bin/BingRewards/notify/onComplete_reached.sh %a %p %r %P %l %i "Gold with %l Life Credits"' />
+                        cmd='~/BingRewards/notify/onComplete_reached.sh %a %p %r %P %l %i "Gold with %l Life Credits"' />
                 <notify if="%p ne 16"
-                        cmd="/home/BingRewards/bin/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
+                        cmd="~/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
                 <notify if="%P gt 475"
-                        cmd="/home/BingRewards/bin/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
-            </account>
-            <account ref="Live_hoho@hotmail.com">
-                <retry if="%p lt 31" interval="15" salt="13.5" count="3" />
-                <notify if="%l gt 10000"
-                        cmd='/home/BingRewards/bin/BingRewards/notify/onComplete_reached.sh %a %p %r %P %l %i "reached %l Life Credits"' />
-                <notify if="%p ne 31"
-                        cmd="/home/BingRewards/bin/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
-                <notify if="%P gt 475"
-                        cmd="/home/BingRewards/bin/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
+                        cmd="~/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
             </account>
         </onComplete>
         <onScriptComplete>
-            <notify cmd="/home/BingRewards/bin/BingRewards/notify/onScriptComplete.sh -mail" />
+            <notify cmd="~/BingRewards/notify/onScriptComplete.sh -mail" />
         </onScriptComplete>
         <onScriptFailure>
-            <notify cmd="/home/BingRewards/bin/BingRewards/notify/onScriptFailure.sh -mail" />
+            <notify cmd="~/BingRewards/notify/onScriptFailure.sh -mail" />
         </onScriptFailure>
     </events>
 

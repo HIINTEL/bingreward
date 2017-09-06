@@ -54,6 +54,7 @@ class TestConfig(unittest.TestCase):
             <notify cmd="./onScriptFailure.sh" />
         </onScriptFailure>
     </events>
+    <queries generator="wikipedia" />
 </configuration>
         """
         self.config = Config()
@@ -102,6 +103,7 @@ class TestConfig(unittest.TestCase):
             <notify cmd="./onScriptFailure.sh" />
         </onScriptFailure>
     </events>
+    <queries generator="googleTrends" />
 </configuration>
         """
         self.config.parseFromString(self.configXMLString)
@@ -148,7 +150,7 @@ class TestBing(unittest.TestCase):
       self.assertEqual(status, 0, "no config.xml file")
 
   def test_configfile(self):
-      cmd = "./main.py -f config.xml"
+      cmd = "./main.py -f config.xml.dist"
       cmds = cmd.split()
       status = subprocess.check_call(cmds)
       self.assertEqual(status, 0, "fail to run config.xml")
