@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7 -B
+#!/usr/bin/env python -B
 
 import unittest
 import subprocess
@@ -12,6 +12,7 @@ class TestBing(unittest.TestCase):
       cmds = cmd.split()
       status = subprocess.check_call(cmds)
       self.assertEqual(status, 0, "no config.xml file")
+
   def test_configfile(self):
       cmd = "./main.py -f config.xml"
       cmds = cmd.split()
