@@ -205,7 +205,6 @@ class TestBing(unittest.TestCase):
       status = subprocess.check_call(cmds)
       self.assertEqual(status, 0, "no config.xml file")
 
-    @unittest.skip("")
     def test_configfile(self):
       cmd = "./main.py -f config.xml.dist"
       cmds = cmd.split()
