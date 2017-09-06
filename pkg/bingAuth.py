@@ -72,8 +72,7 @@ class BingAuth:
         throws urllib2.HTTPError if the server couldn't fulfill the request
         throws urllib2.URLError if failed to reach the server
         """
-        print "Unsupported"
-        return
+        raise ValueError("Not supported")
 
     def __authenticateLive(self, login, password):
         """
