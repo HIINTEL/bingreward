@@ -162,6 +162,14 @@ class TestConfig(unittest.TestCase):
 
         self.assertRaisesRegexp(ValueError, "substring not found", main.run, self.config)
 
+    def test_timestamp(self):
+        """
+         test getlogtime
+         :return:
+         """
+        import helpers
+        stamp = helpers.getLoggingTime()
+        self.assertRegexpMatches(stamp, "\d{4}-\d{2}-\d{2}", "should have time stamp,\n" + stamp)
 
     def test_accounts(self):
         self.assertIsNotNone(self.config.accounts)
@@ -173,6 +181,8 @@ class TestConfig(unittest.TestCase):
         acc.password = "zzz"
         acc.accountType = "Live"
         acc.disabled = False
+        acc.ua_desktop = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10136"
+        acc.ua_mobile = "mozilla/5.0 (iphone; cpu iphone os 7_0_2 like mac os x) applewebkit/537.51.1 (khtml, like gecko) version/7.0 mobile/11a501 safari/9537.53"
         accounts[acc.getRef()] = acc
 
         self.assertEqual(accounts, self.config.accounts)
@@ -189,13 +199,14 @@ class TestConfig(unittest.TestCase):
   Testing bing reward with configuration files below
 """
 class TestBing(unittest.TestCase):
-  def test_assert(self):
+    def test_assert(self):
       cmd = "ls config.xml"
       cmds = cmd.split()
       status = subprocess.check_call(cmds)
       self.assertEqual(status, 0, "no config.xml file")
 
-  def test_configfile(self):
+    @unittest.skip("")
+    def test_configfile(self):
       cmd = "./main.py -f config.xml.dist"
       cmds = cmd.split()
       output = subprocess.check_output(cmds, stderr=subprocess.STDOUT)
