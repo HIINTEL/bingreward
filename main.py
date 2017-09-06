@@ -31,6 +31,7 @@ from helpers import BingAccountError
 
 verbose = False
 totalPoints = 0
+showFullReport = False
 
 SCRIPT_VERSION = "3.14.9"
 SCRIPT_DATE = "September 7, 2016"
