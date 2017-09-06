@@ -20,97 +20,108 @@ mockdate = "2017-09-06 00:44:47.7"
   Test xml is correctly stored
 """
 class TestConfig(unittest.TestCase):
+    fsock = None
+
+    def _redirectOut(self):
+        self.fsock = open('out.log', 'a+')
+        sys.stdout = self.fsock
+
+    def tearDown(self):
+        if self.fsock is not None:
+            self.fsock.close()
+            self.fsock = None
+            sys.stdout = sys.__stdout__
     def setUp(self):
-        self.configFBXML = """
-<configuration>
-    <general
-        betweenQueriesInterval="12.271"
-        betweenQueriesSalt="5.7"
-        betweenAccountsInterval="404.1"
-        betweenAccountsSalt="40.52" />
-
-    <accounts>
-        <account type="Facebook" disabled="false">
-            <login>john.smith@gmail.com</login>
-            <password>xxx</password>
-        </account>
-    </accounts>
-
-    <events>
-        <onError>
-            <retry interval="5" salt="3.5" count="1" />
-            <notify cmd="echo error %a %p %r %l %i" />
-        </onError>
-        <onComplete>
-            <retry if="%p lt 16" interval="5" salt="3.5" count="1" />
-            <notify if="%l gt 3000" cmd="echo complete %a %p %r %P %l %i" />
-            <notify if="%p ne 16" cmd="echo complete %a %p %r %P %l %i" />
-            <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
-
-            <account ref="Facebook_john.smith@gmail.com">
-                <retry if="%p lt 31" interval="5" salt="3.5" count="1" />
-                <notify if="%l gt 10000" cmd="echo complete %a %p %r %P %l %i" />
-                <notify if="%p ne 31" cmd="echo complete %a %p %r %P %l %i" />
-                <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
-            </account>
-
-        </onComplete>
-        <onScriptComplete>
-            <notify cmd="./mail.sh" />
-        </onScriptComplete>
-        <onScriptFailure>
-            <notify cmd="./onScriptFailure.sh" />
-        </onScriptFailure>
-    </events>
-    <queries generator="wikipedia" />
-</configuration>
-        """
         self.config = Config()
         self.configXMLString = """
-<configuration>
-    <general
-        betweenQueriesInterval="12.271"
-        betweenQueriesSalt="5.7"
-        betweenAccountsInterval="404.1"
-        betweenAccountsSalt="40.52" />
+    <configuration>
+        <general
+            betweenQueriesInterval="12.271"
+            betweenQueriesSalt="5.7"
+            betweenAccountsInterval="404.1"
+            betweenAccountsSalt="40.52" />
 
-    <accounts>
-        <account type="Live" disabled="false">
-            <login>ms@ps.com</login>
-            <password>zzz</password>
-        </account>
-    </accounts>
-
-    <events>
-        <onError>
-            <retry interval="5" salt="3.5" count="1" />
-            <notify cmd="echo error %a %p %r %l %i" />
-        </onError>
-        <onComplete>
-            <retry if="%p lt 16" interval="5" salt="3.5" count="1" />
-            <notify if="%l gt 3000" cmd="echo complete %a %p %r %P %l %i" />
-            <notify if="%p ne 16" cmd="echo complete %a %p %r %P %l %i" />
-            <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
-
-            <account ref="Live_ms@ps.com">
-                <retry if="%p lt 31" interval="5" salt="3.5" count="1" />
-                <notify if="%l gt 10000" cmd="echo complete %a %p %r %P %l %i" />
-                <notify if="%p ne 31" cmd="echo complete %a %p %r %P %l %i" />
-                <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
+        <accounts>
+            <account type="Live" disabled="false">
+                <login>ms@ps.com</login>
+                <password>zzz</password>
             </account>
+        </accounts>
 
-        </onComplete>
-        <onScriptComplete>
-            <notify cmd="echo" />
-        </onScriptComplete>
-        <onScriptFailure>
-            <notify cmd="echo" />
-        </onScriptFailure>
-    </events>
-    <queries generator="googleTrends" />
-</configuration>
-        """
+        <events>
+            <onError>
+                <retry interval="5" salt="3.5" count="1" />
+                <notify cmd="echo error %a %p %r %l %i" />
+            </onError>
+            <onComplete>
+                <retry if="%p lt 16" interval="5" salt="3.5" count="1" />
+                <notify if="%l gt 3000" cmd="echo complete %a %p %r %P %l %i" />
+                <notify if="%p ne 16" cmd="echo complete %a %p %r %P %l %i" />
+                <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
+
+                <account ref="Live_ms@ps.com">
+                    <retry if="%p lt 31" interval="5" salt="3.5" count="1" />
+                    <notify if="%l gt 10000" cmd="echo complete %a %p %r %P %l %i" />
+                    <notify if="%p ne 31" cmd="echo complete %a %p %r %P %l %i" />
+                    <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
+                </account>
+
+            </onComplete>
+            <onScriptComplete>
+                <notify cmd="echo" />
+            </onScriptComplete>
+            <onScriptFailure>
+                <notify cmd="echo" />
+            </onScriptFailure>
+        </events>
+        <queries generator="googleTrends" />
+    </configuration>
+            """
         self.config.parseFromString(self.configXMLString)
+        self.configFBXML = """
+    <configuration>
+        <general
+            betweenQueriesInterval="12.271"
+            betweenQueriesSalt="5.7"
+            betweenAccountsInterval="404.1"
+            betweenAccountsSalt="40.52" />
+
+        <accounts>
+            <account type="Facebook" disabled="false">
+                <login>john.smith@gmail.com</login>
+                <password>xxx</password>
+            </account>
+        </accounts>
+
+        <events>
+            <onError>
+                <retry interval="5" salt="3.5" count="1" />
+                <notify cmd="echo error %a %p %r %l %i" />
+            </onError>
+            <onComplete>
+                <retry if="%p lt 16" interval="5" salt="3.5" count="1" />
+                <notify if="%l gt 3000" cmd="echo complete %a %p %r %P %l %i" />
+                <notify if="%p ne 16" cmd="echo complete %a %p %r %P %l %i" />
+                <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
+
+                <account ref="Facebook_john.smith@gmail.com">
+                    <retry if="%p lt 31" interval="5" salt="3.5" count="1" />
+                    <notify if="%l gt 10000" cmd="echo complete %a %p %r %P %l %i" />
+                    <notify if="%p ne 31" cmd="echo complete %a %p %r %P %l %i" />
+                    <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
+                </account>
+
+            </onComplete>
+            <onScriptComplete>
+                <notify cmd="./mail.sh" />
+            </onScriptComplete>
+            <onScriptFailure>
+                <notify cmd="./onScriptFailure.sh" />
+            </onScriptFailure>
+        </events>
+        <queries generator="wikipedia" />
+    </configuration>
+            """
 
     import helpers
     @patch('helpers.getResponseBody')
@@ -126,7 +137,29 @@ class TestConfig(unittest.TestCase):
         helpmock.return_value = '"WindowsLiveId":""     "WindowsLiveId":""'
         timemock.return_value = ''
 
+        self._redirectOut()
         main.run(self.config)
+        output = ""
+        for line in self.fsock.readlines():
+            print line
+            output += line
+        self.assertRegexpMatches(output, "", "should have not error,\n" + output)
+
+    @patch('helpers.getResponseBody')
+    @patch('time.sleep')
+    def test_fail_auth(self, timemock, helpmock):
+        """
+        test authentication decoding error
+        :return:
+        """
+        import bingAuth
+        import main
+
+        helpmock.return_value = ''
+        timemock.return_value = ''
+
+        self.assertRaisesRegexp(ValueError, "substring not found", main.run, self.config)
+
 
     def test_accounts(self):
         self.assertIsNotNone(self.config.accounts)
