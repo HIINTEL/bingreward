@@ -4,10 +4,13 @@ import unittest
 import subprocess
 import sys
 import os
+
+from mock import patch, Mock
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "pkg"))
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from config import AccountKey, BingRewardsReportItem, Config, ConfigError
-
+mockdate = "2017-09-06 00:44:47.7"
 """
   Test xml is correctly stored
 """
@@ -67,10 +70,7 @@ class TestConfig(unittest.TestCase):
         betweenAccountsSalt="40.52" />
 
     <accounts>
-        <account type="Facebook" disabled="false">
-            <login>john.smith@gmail.com</login>
-            <password>xxx</password>
-        </account>
+
         <account type="Live" disabled="false">
             <login>ms@ps.com</login>
             <password>zzz</password>
@@ -88,7 +88,7 @@ class TestConfig(unittest.TestCase):
             <notify if="%p ne 16" cmd="./log.sh complete %a %p %r %P %l %i" />
             <notify if="%P gt 475" cmd="./log.sh complete %a %p %r %P %l %i" />
 
-            <account ref="Facebook_john.smith@gmail.com">
+            <account ref="Live_ms@ps.com">
                 <retry if="%p lt 31" interval="5" salt="3.5" count="3" />
                 <notify if="%l gt 10000" cmd="./log.sh complete %a %p %r %P %l %i" />
                 <notify if="%p ne 31" cmd="./log.sh complete %a %p %r %P %l %i" />
@@ -108,18 +108,29 @@ class TestConfig(unittest.TestCase):
         """
         self.config.parseFromString(self.configXMLString)
 
+    import helpers
+    @patch('helpers.getResponseBody')
+    @patch('time.sleep')
+    def test_auth(self, timemock, helpmock):
+        """
+        test authentication decoding error
+        :return:
+        """
+        import bingAuth
+        import main
+        #self.config.parseFromString(self.configXMLString)
+
+        helpmock.return_value = '"WindowsLiveId":""     "WindowsLiveId":""'
+        timemock.return_value = ''
+        #import pdb
+        #pdb.set_trace()
+        #self.assertRaisesRegexp(bingAuth.AuthenticationError, "can not be decoded", main.run, self.config)
+        main.run(self.config)
+
     def test_accounts(self):
         self.assertIsNotNone(self.config.accounts)
-        self.assertEqual(len(self.config.accounts), 2)
-
+        self.assertEqual(len(self.config.accounts), 1)
         accounts = dict()
-
-        acc = Config.Account()
-        acc.accountLogin = "john.smith@gmail.com"
-        acc.password = "xxx"
-        acc.accountType = "Facebook"
-        acc.disabled = False
-        accounts[acc.getRef()] = acc
 
         acc = Config.Account()
         acc.accountLogin = "ms@ps.com"
@@ -134,10 +145,9 @@ class TestConfig(unittest.TestCase):
         """
         Should throw Not supported value for facebook parameters
         """
-        sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
         self.config.parseFromString(self.configFBXML)
         import main
-        self.assertRaisesRegexp(ValueError,"Not supported", main.run,self.config)
+        self.assertRaisesRegexp(ValueError, "Not supported", main.run, self.config)
 
 """
   Testing bing reward with configuration files below
@@ -152,7 +162,7 @@ class TestBing(unittest.TestCase):
   def test_configfile(self):
       cmd = "./main.py -f config.xml.dist"
       cmds = cmd.split()
-      status = subprocess.check_call(cmds)
+      status = subprocess.check_call(cmds, stderr=subprocess.STDOUT)
       self.assertEqual(status, 0, "fail to run config.xml")
 
 if __name__ == '__main__':
