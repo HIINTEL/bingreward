@@ -200,6 +200,31 @@ class TestConfig(unittest.TestCase):
             output += fd.readline()
         self.assertRegexpMatches(output, "\d{4}-\d{2}-\d{2}", "should have time stamp,\n" + output)
 
+    def test_errorontext(self):
+        """
+        test exception from helper's errorOnText
+        :return:
+        """
+        import helpers
+        err = ValueError("error")
+
+        # not found so no assertion
+        output = helpers.errorOnText("", "none", err)
+
+        self.assertRaisesRegexp(Exception, "error", helpers.errorOnText, "none", "none", err)
+
+    def test_node(self):
+        """
+        test node's children
+        :return:
+        """
+        import xml.etree.ElementTree as ET
+        root = ET.fromstring(self.configXMLString)
+
+        import helpers
+        node = helpers.getXmlChildNodes(root)
+        self.assertIsNotNone(node, "should not be null " + str(node))
+
     def test_accounts(self):
         self.assertIsNotNone(self.config.accounts)
         self.assertEqual(len(self.config.accounts), 1)
