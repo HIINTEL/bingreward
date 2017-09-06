@@ -27,9 +27,9 @@ dependencies:
 test:
   override:
     - nosetests test/*.py
+
   post:
+    - ./main.py -f config.xml
     - coverage run pkg/*.py
     - coverage report
     - coveralls
-    - ls -al test
-    - ls
