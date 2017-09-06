@@ -1,4 +1,4 @@
-#!/usr/bin/env python -B
+#!/usr/bin/python2.7 -B
 
 import unittest
 import subprocess
