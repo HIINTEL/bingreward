@@ -6,11 +6,16 @@ import sys
 import os
 
 from mock import patch, Mock
+
+"""
+Add pkg and parent directory for mock testing of authentication errors
+"""
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "pkg"))
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from config import AccountKey, BingRewardsReportItem, Config, ConfigError
 mockdate = "2017-09-06 00:44:47.7"
+
 """
   Test xml is correctly stored
 """
@@ -33,20 +38,20 @@ class TestConfig(unittest.TestCase):
 
     <events>
         <onError>
-            <retry interval="5" salt="3.5" count="3" />
-            <notify cmd="./log.sh error %a %p %r %l %i" />
+            <retry interval="5" salt="3.5" count="1" />
+            <notify cmd="echo error %a %p %r %l %i" />
         </onError>
         <onComplete>
-            <retry if="%p lt 16" interval="5" salt="3.5" count="3" />
-            <notify if="%l gt 3000" cmd="./log.sh complete %a %p %r %P %l %i" />
-            <notify if="%p ne 16" cmd="./log.sh complete %a %p %r %P %l %i" />
-            <notify if="%P gt 475" cmd="./log.sh complete %a %p %r %P %l %i" />
+            <retry if="%p lt 16" interval="5" salt="3.5" count="1" />
+            <notify if="%l gt 3000" cmd="echo complete %a %p %r %P %l %i" />
+            <notify if="%p ne 16" cmd="echo complete %a %p %r %P %l %i" />
+            <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
 
             <account ref="Facebook_john.smith@gmail.com">
-                <retry if="%p lt 31" interval="5" salt="3.5" count="3" />
-                <notify if="%l gt 10000" cmd="./log.sh complete %a %p %r %P %l %i" />
-                <notify if="%p ne 31" cmd="./log.sh complete %a %p %r %P %l %i" />
-                <notify if="%P gt 475" cmd="./log.sh complete %a %p %r %P %l %i" />
+                <retry if="%p lt 31" interval="5" salt="3.5" count="1" />
+                <notify if="%l gt 10000" cmd="echo complete %a %p %r %P %l %i" />
+                <notify if="%p ne 31" cmd="echo complete %a %p %r %P %l %i" />
+                <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
             </account>
 
         </onComplete>
@@ -70,7 +75,6 @@ class TestConfig(unittest.TestCase):
         betweenAccountsSalt="40.52" />
 
     <accounts>
-
         <account type="Live" disabled="false">
             <login>ms@ps.com</login>
             <password>zzz</password>
@@ -79,28 +83,28 @@ class TestConfig(unittest.TestCase):
 
     <events>
         <onError>
-            <retry interval="5" salt="3.5" count="3" />
-            <notify cmd="./log.sh error %a %p %r %l %i" />
+            <retry interval="5" salt="3.5" count="1" />
+            <notify cmd="echo error %a %p %r %l %i" />
         </onError>
         <onComplete>
-            <retry if="%p lt 16" interval="5" salt="3.5" count="3" />
-            <notify if="%l gt 3000" cmd="./log.sh complete %a %p %r %P %l %i" />
-            <notify if="%p ne 16" cmd="./log.sh complete %a %p %r %P %l %i" />
-            <notify if="%P gt 475" cmd="./log.sh complete %a %p %r %P %l %i" />
+            <retry if="%p lt 16" interval="5" salt="3.5" count="1" />
+            <notify if="%l gt 3000" cmd="echo complete %a %p %r %P %l %i" />
+            <notify if="%p ne 16" cmd="echo complete %a %p %r %P %l %i" />
+            <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
 
             <account ref="Live_ms@ps.com">
-                <retry if="%p lt 31" interval="5" salt="3.5" count="3" />
-                <notify if="%l gt 10000" cmd="./log.sh complete %a %p %r %P %l %i" />
-                <notify if="%p ne 31" cmd="./log.sh complete %a %p %r %P %l %i" />
-                <notify if="%P gt 475" cmd="./log.sh complete %a %p %r %P %l %i" />
+                <retry if="%p lt 31" interval="5" salt="3.5" count="1" />
+                <notify if="%l gt 10000" cmd="echo complete %a %p %r %P %l %i" />
+                <notify if="%p ne 31" cmd="echo complete %a %p %r %P %l %i" />
+                <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
             </account>
 
         </onComplete>
         <onScriptComplete>
-            <notify cmd="./mail.sh" />
+            <notify cmd="echo" />
         </onScriptComplete>
         <onScriptFailure>
-            <notify cmd="./onScriptFailure.sh" />
+            <notify cmd="echo" />
         </onScriptFailure>
     </events>
     <queries generator="googleTrends" />
@@ -118,13 +122,10 @@ class TestConfig(unittest.TestCase):
         """
         import bingAuth
         import main
-        #self.config.parseFromString(self.configXMLString)
 
         helpmock.return_value = '"WindowsLiveId":""     "WindowsLiveId":""'
         timemock.return_value = ''
-        #import pdb
-        #pdb.set_trace()
-        #self.assertRaisesRegexp(bingAuth.AuthenticationError, "can not be decoded", main.run, self.config)
+
         main.run(self.config)
 
     def test_accounts(self):
@@ -162,8 +163,8 @@ class TestBing(unittest.TestCase):
   def test_configfile(self):
       cmd = "./main.py -f config.xml.dist"
       cmds = cmd.split()
-      status = subprocess.check_call(cmds, stderr=subprocess.STDOUT)
-      self.assertEqual(status, 0, "fail to run config.xml")
+      output = subprocess.check_output(cmds, stderr=subprocess.STDOUT)
+      self.assertRegexpMatches(output, "AuthenticationError", "should have seen invalid account auth\n" + output)
 
 if __name__ == '__main__':
   unittest.main(verbosity=3)
