@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python2 -B
 
 #
 # Google Trends queries generator
