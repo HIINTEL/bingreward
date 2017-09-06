@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python -B
 
 #
 # developed by Sergey Markelov (2013)
@@ -215,6 +215,12 @@ def __processAccountUserAgent(config, account, userAgents, doSleep):
 
     return reportItem
 
+def run(config):
+    """
+    Allow unittesting of config
+    """
+    __run(config)
+  
 def __run(config):
     report = list()
 
