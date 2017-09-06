@@ -71,6 +71,11 @@ LOCAL_CONFIG_DIR=/home/bingrewards/etc
 ```
 Windows: Use build in Task Scheduler
 
+## Known features not supported
+- Quizzes
+- Level 1 support (but see kenney/mobile project)
+- New User registration
+
 ## References
 - For more information, including how to use this, please, take a look at my blog post:
 [here](http://sealemar.blogspot.com/2012/12/bing-rewards-automation.html)
