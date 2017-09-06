@@ -34,6 +34,7 @@ class HTMLFormInputsParser(HTMLParser.HTMLParser):
                 self.inputs[name] = value.encode("utf-8")
 
 class BingAuth:
+
     inputNameValue = re.compile(r"<input.+?name=\"(.+?)\".+?value=\"(.+?)\"")
     formAction = re.compile(r"<form.+action=\"(.+?)\"")
     ppsxValue = re.compile(r",t:'(.+?)',")
@@ -71,76 +72,8 @@ class BingAuth:
         throws urllib2.HTTPError if the server couldn't fulfill the request
         throws urllib2.URLError if failed to reach the server
         """
-        BING_REQUEST_PERMISSIONS = "http://www.bing.com/fd/auth/signin?action=interactive&provider=facebook&return_url=http%3a%2f%2fwww.bing.com%2f&src=EXPLICIT&perms=read_stream%2cuser_photos%2cfriends_photos&sig="
-#        print "Requesting bing.com"
-
-# request http://www.bing.com
-        request = urllib2.Request(url = bingCommon.BING_URL, headers = self.httpHeaders)
-        with self.opener.open(request) as response:
-            page = helpers.getResponseBody(response)
-
-# get connection URL for provider Facebook
-        s = page.index('"Facebook":"')
-        s += len('"Facebook":"')
-        e = page.index('"', s)
-
-        url = BingAuth._escapeString(page[s:e])
-
-        s = url.index('sig=')
-        s += len('sig=')
-        e = url.find('&', s)
-        if e == -1:
-            e = len(url)
-        url = BING_REQUEST_PERMISSIONS + url[s:e]
-
-#        print "Now requesting facebook authentication page"
-
-# request FACEBOOK_CONNECT_ORIGINAL_URL
-        request = urllib2.Request(url = url, headers = self.httpHeaders)
-        request.add_header("Referer", bingCommon.BING_URL)
-        with self.opener.open(request) as response:
-            referer = response.geturl()
-# get Facebook authenctication form action url
-            page = helpers.getResponseBody(response)
-
-        s = page.index('<form id="login_form"')
-        s = page.index('action="', s)
-        s += len('action="')
-        e = page.index('"', s)
-        url = page[s:e]
-
-# relative url? add url from the previous response
-        if url[0:1] == "/":
-            url = referer + url
-
-# find all html elements which need to be sent to the server
-        s = page.index('>', s)
-        s += 1
-        e = page.index('</form>')
-
-        parser = HTMLFormInputsParser()
-        parser.feed(page[s:e].decode("utf-8"))
-        parser.close()
-        parser.inputs["email"] = login
-        parser.inputs["pass"] = password
-
-#        print "Now passing facebook authentication"
-
-# pass facebook authentication
-        postFields = urllib.urlencode(parser.inputs)
-        request = urllib2.Request(url, postFields, self.httpHeaders)
-        request.add_header("Referer", referer)
-        with self.opener.open(request) as response:
-            url = response.geturl()
-# if that's not bingCommon.BING_URL => authentication wasn't pass => write the page to the file and report
-            if url.find(bingCommon.BING_URL) == -1:
-                try:
-                    filename = helpers.dumpErrorPage(helpers.getResponseBody(response))
-                    s = "check " + filename + " file for more information"
-                except IOError:
-                    s = "no further information could be provided - failed to write a file into " + \
-                        helpers.RESULTS_DIR + " subfolder"
-                raise AuthenticationError("Authentication has not been passed:\n" + s)
+        print "Unsupported"
+        return
 
     def __authenticateLive(self, login, password):
         """

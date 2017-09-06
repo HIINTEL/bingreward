@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python2 -B
 
 #
 # developed by Sergey Markelov (2013)
@@ -10,7 +10,7 @@ Bing! flyout page parser
 Usage:
     from bingFlyoutParser import Reward, parseFlyoutPage
     ...
-    bingRewards = BingRewards(FACEBOOK_EMAIL, FACEBOOK_PASSWORD)
+    bingRewards = BingRewards(Live_login, Live_pasword)
     bingRewards.authenticate()
     parseFlyoutPage(bingRewards.requestFlyoutPage(), BING_URL)
 """

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python -B
 
 #
 # developed by Sergey Markelov (2013)
