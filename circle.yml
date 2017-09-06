@@ -10,19 +10,19 @@ dependencies:
     # 3) remove ~/.vnc/xstartup that might be causing grey screen
     # - echo "firefox &" >> ~/.vnc/xstartup 
     # - vnc4server -geometry 1280x1024 -depth 24
-    
+    - pip install --upgrade pip 
     - openssl aes-256-cbc -d -in config.xml.encrypted -k "${KEY}" >> config.xml
     - pip install -r requirements.txt
 
   post:
-    - sudo apt-get update
-    - sudo apt-get install -y x11vnc
-    - echo "firefox &" >> xstartup 
-    - sudo mkdir /root/.vnc
-    - sudo mv xstartup /root/.vnc/xstartup
-    - sudo chmod 777 /root/.vnc/xstartup
-    - x11vnc -forever -nopw:
-        background: true
+    # - sudo apt-get update
+    # - sudo apt-get install -y x11vnc
+    # - echo "firefox &" >> xstartup 
+    # - sudo mkdir /root/.vnc
+    # - sudo mv xstartup /root/.vnc/xstartup
+    # - sudo chmod 777 /root/.vnc/xstartup
+    # - x11vnc -forever -nopw:
+    #     background: true
 
 test:
   override:
@@ -30,6 +30,7 @@ test:
 
   post:
     - ./main.py -f config.xml
+    - rm -f config.xml
     - coverage run pkg/*.py
     - coverage report
     - coveralls
