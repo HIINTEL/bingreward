@@ -171,6 +171,15 @@ class TestConfig(unittest.TestCase):
         stamp = helpers.getLoggingTime()
         self.assertRegexpMatches(stamp, "\d{4}-\d{2}-\d{2}", "should have time stamp,\n" + stamp)
 
+    def test_createdir(self):
+        """
+         test dir with file
+         :return:
+         """
+        import helpers
+        helpers.createResultsDir("none")
+        self.assertEqual(os.path.isdir(helpers.RESULTS_DIR), True, "missing directory " + helpers.RESULTS_DIR)
+
     def test_dump_none(self):
         """
          test none page to a file
