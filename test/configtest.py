@@ -206,12 +206,15 @@ class TestConfig(unittest.TestCase):
         :return:
         """
         import helpers
-        err = ValueError("error")
+
+        err = 'Authentication has not been passed: Invalid password'
 
         # not found so no assertion
-        output = helpers.errorOnText("", "none", err)
+        output = helpers.errorOnText("", 'That password is incorrect.', err)
 
-        self.assertRaisesRegexp(Exception, "error", helpers.errorOnText, "none", "none", err)
+        # should raise if it sees an assertion
+        self.assertRaisesRegexp(helpers.BingAccountError, "Invalid", helpers.errorOnText, 'That password is incorrect.',
+                                'That password is incorrect.', err)
 
     def test_node(self):
         """
