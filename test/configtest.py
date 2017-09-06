@@ -14,13 +14,14 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", "pkg"))
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from config import AccountKey, BingRewardsReportItem, Config, ConfigError
-mockdate = "2017-09-06 00:44:47.7"
 
 """
   Test xml is correctly stored
 """
 class TestConfig(unittest.TestCase):
     fsock = None
+    mockdate = "2017-09-06 00:44:47.7"
+
 
     def _redirectOut(self):
         self.fsock = open('out.log', 'a+')
@@ -159,7 +160,6 @@ class TestConfig(unittest.TestCase):
 
         helpmock.return_value = ''
         timemock.return_value = ''
-
         self.assertRaisesRegexp(ValueError, "substring not found", main.run, self.config)
 
     def test_timestamp(self):
@@ -170,6 +170,18 @@ class TestConfig(unittest.TestCase):
         import helpers
         stamp = helpers.getLoggingTime()
         self.assertRegexpMatches(stamp, "\d{4}-\d{2}-\d{2}", "should have time stamp,\n" + stamp)
+
+    def test_dump(self):
+        """
+         test dump page to a file
+         :return:
+         """
+        import helpers
+        filename = helpers.dumpErrorPage(self.mockdate)
+        output = ""
+        with open("result/" + filename, "r") as fd:
+            output += fd.readline()
+        self.assertRegexpMatches(output, "\d{4}-\d{2}-\d{2}", "should have time stamp,\n" + output)
 
     def test_accounts(self):
         self.assertIsNotNone(self.config.accounts)
