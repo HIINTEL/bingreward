@@ -263,27 +263,70 @@ class TestConfig(unittest.TestCase):
         import main
         self.assertRaisesRegexp(ValueError, "Not supported", main.run, self.config)
 
-"""
-  Testing bing reward with configuration files below
-"""
-class TestBing(unittest.TestCase):
-    def test_assert(self):
-      cmd = "ls config.xml"
-      cmds = cmd.split()
-      status = subprocess.check_call(cmds)
-      self.assertEqual(status, 0, "no config.xml file")
+    def test_history_parse(self):
+        """
+        test history parsing
+        :return:
+        """
+        import bingHistory
+        self.assertRaisesRegexp(TypeError, "None", bingHistory.parse, None)
 
-    def test_configdist(self):
-      cmd = "./main.py -f config.xml.dist"
-      cmds = cmd.split()
-      output = subprocess.check_output(cmds, stderr=subprocess.STDOUT)
-      self.assertRegexpMatches(output, "AuthenticationError", "should have seen invalid account auth\n" + output)
+        output = bingHistory.parse("")
+        self.assertIsNotNone(output, "missing output " + str(output))
 
-    def test_configxml(self):
-      cmd = "./main.py -f config.xml"
-      cmds = cmd.split()
-      status = subprocess.check_call(cmds, stderr=subprocess.STDOUT)
-      self.assertEqual(status, True, "failed to execute " + str(status))
+        page = '<div id="results_area"></div id="results_area"><div id="sidebar">'
+        output = bingHistory.parse(page)
+        self.assertIsNotNone(output, "missing output " + str(output))
+
+        page += '<ul class="sh_dayul"></ul class="sh_dayul">'
+        output = bingHistory.parse(page)
+        self.assertIsNotNone(output, "missing output " + str(output))
+
+    def test_history_today(self):
+        """
+        test history parsing
+        :return:
+        """
+        import bingHistory
+        output = bingHistory.getBingHistoryTodayURL()
+
+        self.assertRegexpMatches(output, "https", "missing url " + str(output))
+
+    def test_rewards(self):
+        """
+        test rewards object
+        :return:
+        """
+        from bingRewards import BingRewards
+        import bingCommon
+        reward = BingRewards(bingCommon.HEADERS, "", self.config)
+        self.assertIsNotNone(reward.requestFlyoutPage(), "should not be None")
+
+        # if not login should have not found error
+        self.assertRaisesRegexp(ValueError, "not found", reward.getLifetimeCredits)
+        self.assertIsNotNone(reward.getRewardsPoints(), "should not be None")
+
+mockdir="/usr/local/lib/python2.7/site-packages/mock/tests"
+mockdir1="/home/ubuntu/virtualenvs/venv-2.7/lib/python2.7/site-packages"
+"""
+  Testing mock library used
+"""
+class TestMock(unittest.TestCase):
+    def test_all(self):
+        """
+        test all mock code using their unittest
+        """
+        sys.path.append(os.path.join(os.path.dirname(mockdir)))
+        sys.path.append(os.path.join(os.path.dirname(mockdir1)))
+        try:
+            os.chdir(mockdir)
+        except:
+            os.chdir(mockdir1)
+
+        cmd = "nosetests"
+        cmds = cmd.split()
+        status = subprocess.check_call(cmds, stderr=subprocess.STDOUT)
+        self.assertEqual(status, 0, "failed to execute " + str(status))
 
 if __name__ == '__main__':
   unittest.main(verbosity=3)
