@@ -31,5 +31,4 @@ test:
     - coveralls
 
   post:
-    - ./main.py -f config.xml
     - rm -f config.xml
