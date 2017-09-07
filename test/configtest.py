@@ -228,6 +228,17 @@ class TestConfig(unittest.TestCase):
         node = helpers.getXmlChildNodes(root)
         self.assertIsNotNone(node, "should not be null " + str(node))
 
+    @patch('sys.version_info')
+    def test_node_fail(self, mockver):
+        sys.version_info = [ 2, 1 ]
+
+        import xml.etree.ElementTree as ET
+        root = ET.fromstring(self.configXMLString)
+
+        import helpers
+        node = helpers.getXmlChildNodes(root)
+        self.assertIsNotNone(node, "should not be null " + str(node))
+
     def test_accounts(self):
         self.assertIsNotNone(self.config.accounts)
         self.assertEqual(len(self.config.accounts), 1)
@@ -262,11 +273,17 @@ class TestBing(unittest.TestCase):
       status = subprocess.check_call(cmds)
       self.assertEqual(status, 0, "no config.xml file")
 
-    def test_configfile(self):
+    def test_configdist(self):
       cmd = "./main.py -f config.xml.dist"
       cmds = cmd.split()
       output = subprocess.check_output(cmds, stderr=subprocess.STDOUT)
       self.assertRegexpMatches(output, "AuthenticationError", "should have seen invalid account auth\n" + output)
+
+    def test_configxml(self):
+      cmd = "./main.py -f config.xml"
+      cmds = cmd.split()
+      status = subprocess.check_call(cmds, stderr=subprocess.STDOUT)
+      self.assertEqual(status, True, "failed to execute " + str(status))
 
 if __name__ == '__main__':
   unittest.main(verbosity=3)
