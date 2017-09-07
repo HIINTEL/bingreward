@@ -26,7 +26,7 @@ dependencies:
 
 test:
   override:
-    - coverage run nosetests test/*.py
+    - coverage run test/*.py
     - coverage report
     - coveralls
 
