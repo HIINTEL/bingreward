@@ -31,6 +31,6 @@ test:
   post:
     - ./main.py -f config.xml
     - rm -f config.xml
-    - coverage run pkg/*.py
+    - coverage run pkg/*.py test/*.py
     - coverage report
     - coveralls
