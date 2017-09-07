@@ -23,6 +23,8 @@ import bingHistory
 """
   Test xml is correctly stored
 """
+
+
 class TestConfig(unittest.TestCase):
     fsock = None
     mockdate = "2017-09-06 00:44:47.7"
@@ -292,11 +294,15 @@ class TestConfig(unittest.TestCase):
         self.assertRaisesRegexp(ValueError, "not found", reward.getLifetimeCredits)
         self.assertIsNotNone(reward.getRewardsPoints(), "should not be None")
 
-mockdir="/usr/local/lib/python2.7/site-packages/mock/tests"
-mockdir1="/home/ubuntu/virtualenvs/venv-2.7/lib/python2.7/site-packages"
+
 """
   Testing mock library used
 """
+mockdir="/usr/local/lib/python2.7/site-packages/mock/tests"
+mockdir1="/home/ubuntu/virtualenvs/venv-2.7/lib/python2.7/site-packages"
+
+
+@unittest.skip("buggy unittest2 and needed some loving")
 class TestMock(unittest.TestCase):
     def test_all(self):
         """
