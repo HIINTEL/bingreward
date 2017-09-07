@@ -5,11 +5,10 @@ import subprocess
 import sys
 import os
 
-from mock import patch, Mock
-
 """
 Add pkg and parent directory for mock testing of authentication errors
 """
+from mock import patch, Mock
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "pkg"))
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
@@ -329,4 +328,4 @@ class TestMock(unittest.TestCase):
         self.assertEqual(status, 0, "failed to execute " + str(status))
 
 if __name__ == '__main__':
-  unittest.main(verbosity=3)
+    unittest.main(verbosity=3)
