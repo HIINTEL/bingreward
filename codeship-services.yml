@@ -5,3 +5,4 @@ services:
     build: .
     environment:
       EXAMPLE_ENV_VAR: example-var
+  encrypted_env_file: env.encrypted

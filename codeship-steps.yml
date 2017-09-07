@@ -3,10 +3,12 @@
   name: example_parallel_step
   steps:
     - service: codeship_example
-      command: printenv
+      command: nosetests --with-coverage -vv -m='*py$' -w test
     - service: codeship_example
-      command: pwd 
+      command: ls config.xml 
 - name: example_tagged_step
   tag: master
   service: codeship_example
-  command: echo "Deploy here!"
+  command: coverage report
+  service: codeship_example
+  command: coveralls
