@@ -26,11 +26,10 @@ dependencies:
 
 test:
   override:
-    - nosetests test/*.py
+    - coverage run nosetests test/*.py
+    - coverage report
+    - coveralls
 
   post:
     - ./main.py -f config.xml
     - rm -f config.xml
-    - coverage run pkg/*.py test/*.py
-    - coverage report
-    - coveralls
