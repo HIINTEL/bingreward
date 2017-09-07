@@ -26,9 +26,22 @@ dependencies:
 
 test:
   override:
-    - nosetests --with-coverage --cover-erase --cover-html *test*py
-    - coverage report
-    - coveralls
+    - nosetests --with-coverage --cover-erase --cover-html test/*test*py
 
   post:
     - rm -f config.xml
+
+deployment:
+  production:
+    branch: production
+    commands:
+      - echo production test
+      - coverage report
+      - coveralls
+      
+  staging:
+    branch: master
+    commands:
+      - echo integration with docker test
+      - coverage report
+      - coveralls
