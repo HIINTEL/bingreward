@@ -26,7 +26,7 @@ dependencies:
 
 test:
   override:
-    - nosetests --with-coverage --cover-erase --cover-html test/*test*py
+    - nosetests --with-coverage test/configtest.py
 
   post:
     - rm -f config.xml
