@@ -4,6 +4,7 @@ import unittest
 import subprocess
 import sys
 import os
+import main
 
 """
 Add pkg and parent directory for mock testing of authentication errors
@@ -13,6 +14,11 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", "pkg"))
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from config import AccountKey, BingRewardsReportItem, Config, ConfigError
+
+import helpers
+import bingCommon
+import bingHistory
+
 
 """
   Test xml is correctly stored
@@ -125,7 +131,6 @@ class TestConfig(unittest.TestCase):
     </configuration>
             """
 
-    import helpers
     @patch('helpers.getResponseBody')
     @patch('time.sleep')
     def test_auth(self, timemock, helpmock):
@@ -133,9 +138,6 @@ class TestConfig(unittest.TestCase):
         test authentication decoding error
         :return:
         """
-        import bingAuth
-        import main
-
         helpmock.return_value = '"WindowsLiveId":""     "WindowsLiveId":""'
         timemock.return_value = ''
 
@@ -154,9 +156,6 @@ class TestConfig(unittest.TestCase):
         test authentication decoding error
         :return:
         """
-        import bingAuth
-        import main
-
         helpmock.return_value = ''
         timemock.return_value = ''
         self.assertRaisesRegexp(ValueError, "substring not found", main.run, self.config)
@@ -166,7 +165,6 @@ class TestConfig(unittest.TestCase):
          test getlogtime
          :return:
          """
-        import helpers
         stamp = helpers.getLoggingTime()
         self.assertRegexpMatches(stamp, "\d{4}-\d{2}-\d{2}", "should have time stamp,\n" + stamp)
 
@@ -175,7 +173,6 @@ class TestConfig(unittest.TestCase):
          test dir with file
          :return:
          """
-        import helpers
         helpers.createResultsDir("none")
         self.assertEqual(os.path.isdir(helpers.RESULTS_DIR), True, "missing directory " + helpers.RESULTS_DIR)
 
@@ -184,7 +181,6 @@ class TestConfig(unittest.TestCase):
          test none page to a file
          :return:
          """
-        import helpers
         self.assertRaisesRegexp(TypeError, "None", helpers.dumpErrorPage, None)
 
     def test_dump(self):
@@ -192,7 +188,6 @@ class TestConfig(unittest.TestCase):
          test dump page to a file
          :return:
          """
-        import helpers
         filename = helpers.dumpErrorPage(self.mockdate)
         output = ""
         with open("result/" + filename, "r") as fd:
@@ -204,8 +199,6 @@ class TestConfig(unittest.TestCase):
         test exception from helper's errorOnText
         :return:
         """
-        import helpers
-
         err = 'Authentication has not been passed: Invalid password'
 
         # not found so no assertion
@@ -223,7 +216,6 @@ class TestConfig(unittest.TestCase):
         import xml.etree.ElementTree as ET
         root = ET.fromstring(self.configXMLString)
 
-        import helpers
         node = helpers.getXmlChildNodes(root)
         self.assertIsNotNone(node, "should not be null " + str(node))
 
@@ -234,7 +226,6 @@ class TestConfig(unittest.TestCase):
         import xml.etree.ElementTree as ET
         root = ET.fromstring(self.configXMLString)
 
-        import helpers
         node = helpers.getXmlChildNodes(root)
         self.assertIsNotNone(node, "should not be null " + str(node))
 
@@ -259,7 +250,6 @@ class TestConfig(unittest.TestCase):
         Should throw Not supported value for facebook parameters
         """
         self.config.parseFromString(self.configFBXML)
-        import main
         self.assertRaisesRegexp(ValueError, "Not supported", main.run, self.config)
 
     def test_history_parse(self):
@@ -267,7 +257,6 @@ class TestConfig(unittest.TestCase):
         test history parsing
         :return:
         """
-        import bingHistory
         self.assertRaisesRegexp(TypeError, "None", bingHistory.parse, None)
 
         output = bingHistory.parse("")
@@ -286,7 +275,6 @@ class TestConfig(unittest.TestCase):
         test history parsing
         :return:
         """
-        import bingHistory
         output = bingHistory.getBingHistoryTodayURL()
 
         self.assertRegexpMatches(output, "https", "missing url " + str(output))
@@ -297,7 +285,6 @@ class TestConfig(unittest.TestCase):
         :return:
         """
         from bingRewards import BingRewards
-        import bingCommon
         reward = BingRewards(bingCommon.HEADERS, "", self.config)
         self.assertIsNotNone(reward.requestFlyoutPage(), "should not be None")
 
