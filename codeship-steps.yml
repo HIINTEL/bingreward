@@ -3,7 +3,7 @@
   name: example_parallel_step
   steps:
     - service: codeship_example
-      command: python -B test/configtest.py
+      command: pip install -r requirements.txt  
     - service: codeship_example
       command: env
     - service: codeship_example
