@@ -1,16 +1,16 @@
 # initial checkin
+- name: example_tagged_step
+  tag: master
+  service: codeship_example
+  command: pip install -r requirements.txt  
+  service: codeship_example
+  command: cp config.xml.dist config.xml 
 - type: parallel
   name: example_parallel_step
   steps:
     - service: codeship_example
-      command: pip install -r requirements.txt  
-    - service: codeship_example
       command: env
     - service: codeship_example
       command: ls -al 
-- name: example_tagged_step
-  tag: master
-  service: codeship_example
-  command: coverage report
-  service: codeship_example
-  command: coveralls
+    - service: codeship_example
+      command: whereis coveralls 
