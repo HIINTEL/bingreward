@@ -266,7 +266,7 @@ class TestConfig(unittest.TestCase):
         output = bingHistory.parse("")
         self.assertIsNotNone(output, "missing output " + str(output))
 
-        page = '<div id="results_area"></div id="results_area"><div id="sidebar">'
+        page = '<div id="results_area"></div><div id="sidebar"></div>'
         output = bingHistory.parse(page)
         self.assertIsNotNone(output, "missing output " + str(output))
 
@@ -291,8 +291,8 @@ class TestConfig(unittest.TestCase):
         newbfp = bfp.Reward()
         self.assertIsNotNone(newbfp.isAchieved(), "should not be None")
         self.assertIsNotNone(newbfp.progressPercentage(), "should not be None")
-        page = '<div id="messageContainer"></div id="messageContainer">'
-        page += '<div id="bottomContainer">'
+        page = '<div id="messageContainer"></div>'
+        page += '<div id="bottomContainer"></div>'
         self.assertIsNotNone(bfp.parseFlyoutPage(page, "http://bing"), "should not be None")
         self.assertIsNotNone(newbfp.Type.Action.toStr(newbfp.Type.Action.PASS) , "should not be None")
 
