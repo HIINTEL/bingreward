@@ -3,8 +3,6 @@
   name: example_parallel_step
   steps:
     - service: codeship_example
-      command: ls -al env 
-    - service: codeship_example
       command: cp config.xml.dist config.xml
     - service: codeship_example
       command: python -B test/rewardtest.py
