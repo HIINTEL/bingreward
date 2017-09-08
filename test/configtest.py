@@ -343,10 +343,18 @@ class TestConfig(unittest.TestCase):
         configobj = Config()
         self.assertIsNone(EventsProcessor.onScriptFailure(configobj, Exception()), "should be none")
 
-    @patch('re.search')
+    class UserAgent:
+        def __init__(self, mobile):
+            if mobile:
+                self.mobile = True
+                self.pc = False
+            else:
+                self.mobile = False
+                self.pc = True
+
     @patch('bingFlyoutParser.Reward.progressPercentage')
     @patch('helpers.getResponseBody')
-    def test_rewards_search(self, helpmock, permock, remock):
+    def test_rewards_search(self, helpmock, permock):
         """
         Search string
         :param helpmock:
@@ -361,36 +369,47 @@ class TestConfig(unittest.TestCase):
         page += 'id="t" value="0" '
         page += '<div> 999 livetime points</div> '
         page += "t.innerHTML='100'"
-
+        page += '<div id="b_content">'
+        page += '<div id="content">'
+        page += 'IG:"100"'
+        page += "http://www.bing.com/fd/ls/GLinkPing.aspx"
 
         helpmock.return_value = page
         permock.return_value = "100"
-        remock.return_value = re.match("(\d)+ love (\d)+", "1 love 2")
+        for mobile in [ True, False ]:
+            useragents = self.UserAgent(mobile)
+            reward = BingRewards(bingCommon.HEADERS, useragents, self.config)
+            newbfp = bfp.Reward()
+            reward.RewardResult(newbfp)
 
-        reward = BingRewards(bingCommon.HEADERS, "", self.config)
-        newbfp = bfp.Reward()
-        newbfp.tp = None
-        rewards = [ newbfp ]
-        #reward.process(rewards, True)
-        self.assertRaisesRegexp(ValueError, "unknown", reward.process, rewards, True)
+            newbfp.progressCurrent = 0
+            newbfp.progressMax = 0
+            newbfp.description = "Up to 10 points today, 10 points per search"
 
-        newbfp.tp = mock.Mock()
-        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.Action.HIT ]
-        newbfp.progressCurrent = 100
-        newbfp.progressMax = 100
-        newbfp.description = 100
+            newbfp.isDone = False
 
-        # SEARCH case, PC, Mobile, Earn
-        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.SEARCH_PC ]
-        rewards = [ newbfp ]
-        self.assertIsNotNone(reward.process(rewards, True), "should return res")
+            # SEARCH case, PC, Mobile, Earn
+            for data in [
+                newbfp.Type.SEARCH_MOBILE        ,
+                newbfp.Type.SEARCH_PC            ,
+                newbfp.Type.YOUR_GOAL            ,
+                newbfp.Type.MAINTAIN_GOLD        ,
+                newbfp.Type.REFER_A_FRIEND       ,
+                newbfp.Type.SEND_A_TWEET         ,
+                newbfp.Type.RE_EARNED_CREDITS    ,
+                newbfp.Type.COMPLETED            ,
+                newbfp.Type.SILVER_STATUS        ,
+                newbfp.Type.INVITE_FRIENDS       ,
+                newbfp.Type.EARN_MORE_CREDITS    ,
+                newbfp.Type.SEARCH_AND_EARN      ,
+                newbfp.Type.THURSDAY_BONUS       ,
+                newbfp.Type.RE_QUIZ ]:
+                newbfp.tp = data
 
-        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.SEARCH_MOBILE ]
-        rewards = [ newbfp ]
-        self.assertIsNotNone(reward.process(rewards, True), "should return res")
+                newbfp.Type = bfp.Reward.Type.Action.SEARCH
+                rewards = [ newbfp ]
 
-        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.EARN_MORE_CREDITS ]
-        self.assertIsNotNone(reward.process(rewards, True), "should return res")
+                self.assertIsNotNone(reward.process(rewards, True), "should return res")
 
     @patch('helpers.getResponseBody')
     def test_rewards_hit(self, helpmock):
