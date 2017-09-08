@@ -23,6 +23,7 @@ import bingHistory
 import bingFlyoutParser as bfp
 import bingAuth
 from config import Config
+from eventsProcessor import EventsProcessor
 
 
 """
@@ -327,6 +328,16 @@ class TestConfig(unittest.TestCase):
         self.assertIsNotNone(str(Config.Event.IfStatement()), "should return class")
         dist = os.path.join(os.path.dirname(__file__), "..", "config.xml.dist")
         self.assertIsNone(configobj.parseFromFile(dist), "should be none")
+
+    @patch('config.Config.getEvent')
+    def test_event(self, eventmock):
+        """
+        test event
+        :return:
+        """
+        eventmock.return_value = Config.Event()
+        configobj = Config()
+        self.assertIsNone(EventsProcessor.onScriptFailure(configobj, Exception()), "should be none")
 
     @patch('helpers.getResponseBody')
     def test_rewards(self, helpmock):
