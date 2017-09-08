@@ -3,11 +3,11 @@
   name: example_parallel_step
   steps:
     - service: codeship_example
-      command: cp config.xml.dist config.xml
+      command: python -B test/configtest.py
     - service: codeship_example
-      command: python -B test/rewardtest.py
+      command: env
     - service: codeship_example
-      command: ls config.xml 
+      command: ls -al 
 - name: example_tagged_step
   tag: master
   service: codeship_example
