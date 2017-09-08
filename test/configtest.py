@@ -327,13 +327,21 @@ class TestConfig(unittest.TestCase):
         # SEARCH case
         newbfp.tp = mock.Mock()
         newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.Action.SEARCH ]
+        newbfp.progressCurrent = 100
         rewards = [ newbfp ]
         self.assertIsNotNone(reward.process(rewards, True), "should return res")
 
         self.assertRaisesRegexp(TypeError, "not an instance", reward.printResults, None, True)
-        self.assertIsNone(reward.printResults(list(), True), "should return None")
-        self.assertRaisesRegexp(TypeError, "reward is not", reward.RewardResult, None)
 
+        result = mock.Mock()
+        result.action = bfp.Reward.Type.Action.SEARCH
+        result.isError = False
+        result.o = newbfp
+        result.message = "done"
+        self.assertIsNone(reward.printResults([result], True), "should return None")
+        self.assertIsNone(reward.printRewards(rewards), "should return None")
+
+        self.assertRaisesRegexp(TypeError, "reward is not", reward.RewardResult, None)
         self.assertIsNotNone(reward.RewardResult(newbfp), "should return class")
 
         proxy = mock.Mock()
