@@ -346,7 +346,54 @@ class TestConfig(unittest.TestCase):
     @patch('re.search')
     @patch('bingFlyoutParser.Reward.progressPercentage')
     @patch('helpers.getResponseBody')
-    def test_rewards(self, helpmock, permock, remock):
+    def test_rewards_search(self, helpmock, permock, remock):
+        """
+        Search string
+        :param helpmock:
+        :param permock:
+        :param remock:
+        :return:
+        """
+        page = '"WindowsLiveId":""     "WindowsLiveId":"" '
+        page += 'action="0" value="0" '
+        page += 'value= "0" NAP value="0" '
+        page += 'ANON value="0" '
+        page += 'id="t" value="0" '
+        page += '<div> 999 livetime points</div> '
+        page += "t.innerHTML='100'"
+
+
+        helpmock.return_value = page
+        permock.return_value = "100"
+        remock.return_value = re.match("(\d)+ love (\d)+", "1 love 2")
+
+        reward = BingRewards(bingCommon.HEADERS, "", self.config)
+        newbfp = bfp.Reward()
+        newbfp.tp = None
+        rewards = [ newbfp ]
+        #reward.process(rewards, True)
+        self.assertRaisesRegexp(ValueError, "unknown", reward.process, rewards, True)
+
+        newbfp.tp = mock.Mock()
+        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.Action.HIT ]
+        newbfp.progressCurrent = 100
+        newbfp.progressMax = 100
+        newbfp.description = 100
+
+        # SEARCH case, PC, Mobile, Earn
+        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.SEARCH_PC ]
+        rewards = [ newbfp ]
+        self.assertIsNotNone(reward.process(rewards, True), "should return res")
+
+        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.SEARCH_MOBILE ]
+        rewards = [ newbfp ]
+        self.assertIsNotNone(reward.process(rewards, True), "should return res")
+
+        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.EARN_MORE_CREDITS ]
+        self.assertIsNotNone(reward.process(rewards, True), "should return res")
+
+    @patch('helpers.getResponseBody')
+    def test_rewards_hit(self, helpmock):
         """
         test rewards object
         :return:
@@ -362,10 +409,8 @@ class TestConfig(unittest.TestCase):
         page += '<div> 999 livetime points</div> '
 
         helpmock.return_value = page
-        permock.return_value = 100
-        remock.return_value = re.match("(\d)+ love (\d)+", "1 love 2")
 
-    # if not login should have not found error for url
+        # if not login should have not found error for url
         self.assertRaisesRegexp(ValueError, "unknown", reward.getLifetimeCredits)
 
         page = "t.innerHTML='100'"
@@ -382,23 +427,14 @@ class TestConfig(unittest.TestCase):
         # HIT case
         newbfp.tp = mock.Mock()
         newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.Action.HIT ]
-        newbfp.progressCurrent = 100
-        newbfp.progressMax = 100
-        newbfp.description = 100
 
         rewards = [ newbfp ]
         self.assertRaisesRegexp(ValueError, "unknown", reward.process, rewards, True)
 
-        # SEARCH case, PC, Mobile, Earn
-        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.SEARCH_PC ]
-        rewards = [ newbfp ]
-        self.assertIsNotNone(reward.process(rewards, True), "should return res")
-
-        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.SEARCH_MOBILE ]
-        rewards = [ newbfp ]
-        self.assertIsNotNone(reward.process(rewards, True), "should return res")
-
-        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.EARN_MORE_CREDITS ]
+        # SEARCH case
+        newbfp.tp = mock.Mock()
+        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.Action.SEARCH ]
+        newbfp.progressCurrent = 100
         rewards = [ newbfp ]
         self.assertIsNotNone(reward.process(rewards, True), "should return res")
 
