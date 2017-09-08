@@ -3,7 +3,11 @@
   name: example_parallel_step
   steps:
     - service: codeship_example
-      command: nosetests --with-coverage -vv -m='*py$' -w test
+      command: ls -al env 
+    - service: codeship_example
+      command: cp config.xml.dist config.xml
+    - service: codeship_example
+      command: python -B test/rewardtest.py
     - service: codeship_example
       command: ls config.xml 
 - name: example_tagged_step
