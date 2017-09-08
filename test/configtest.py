@@ -14,10 +14,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", "pkg"))
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from config import AccountKey, BingRewardsReportItem, Config, ConfigError
+import mock
 
 import helpers
 import bingCommon
 import bingHistory
+import bingFlyoutParser as bfp
 
 
 """
@@ -281,6 +283,19 @@ class TestConfig(unittest.TestCase):
 
         self.assertRegexpMatches(output, "https", "missing url " + str(output))
 
+    def test_bfp(self):
+        """
+        test bfp
+        :return:
+        """
+        newbfp = bfp.Reward()
+        self.assertIsNotNone(newbfp.isAchieved(), "should not be None")
+        self.assertIsNotNone(newbfp.progressPercentage(), "should not be None")
+        page = '<div id="messageContainer"></div id="messageContainer">'
+        page += '<div id="bottomContainer">'
+        self.assertIsNotNone(bfp.parseFlyoutPage(page, "http://bing"), "should not be None")
+        self.assertIsNotNone(newbfp.Type.Action.toStr(newbfp.Type.Action.PASS) , "should not be None")
+
     def test_rewards(self):
         """
         test rewards object
@@ -293,6 +308,41 @@ class TestConfig(unittest.TestCase):
         # if not login should have not found error
         self.assertRaisesRegexp(ValueError, "not found", reward.getLifetimeCredits)
         self.assertIsNotNone(reward.getRewardsPoints(), "should not be None")
+
+        newbfp = bfp.Reward()
+
+        self.assertRaisesRegexp(TypeError, "not an instance", reward.process, None, True)
+
+        # NONE case
+        newbfp.tp = None
+        rewards = [ newbfp ]
+        self.assertRaisesRegexp(ValueError, "unknown", reward.process, rewards, True)
+
+        # HIT case
+        newbfp.tp = mock.Mock()
+        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.Action.HIT ]
+        rewards = [ newbfp ]
+        self.assertRaisesRegexp(ValueError, "unknown", reward.process, rewards, True)
+
+        # SEARCH case
+        newbfp.tp = mock.Mock()
+        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.Action.SEARCH ]
+        rewards = [ newbfp ]
+        self.assertIsNotNone(reward.process(rewards, True), "should return res")
+
+        self.assertRaisesRegexp(TypeError, "not an instance", reward.printResults, None, True)
+        self.assertIsNone(reward.printResults(list(), True), "should return None")
+        self.assertRaisesRegexp(TypeError, "reward is not", reward.RewardResult, None)
+
+        self.assertIsNotNone(reward.RewardResult(newbfp), "should return class")
+
+        proxy = mock.Mock()
+        proxy.login = True
+        proxy.password = "xxx"
+        proxy.url = "http://127.0.0.1"
+        proxy.protocols = "http"
+        self.config.proxy = proxy
+        self.assertIsNotNone(BingRewards(bingCommon.HEADERS, "", self.config), "should return class")
 
 
 """
