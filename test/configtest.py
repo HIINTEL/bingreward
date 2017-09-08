@@ -5,6 +5,7 @@ import subprocess
 import sys
 import os
 import main
+import urllib2
 
 """
 Add pkg and parent directory for mock testing of authentication errors
@@ -20,6 +21,7 @@ import helpers
 import bingCommon
 import bingHistory
 import bingFlyoutParser as bfp
+import bingAuth
 
 
 """
@@ -271,6 +273,19 @@ class TestConfig(unittest.TestCase):
             print line
             output += line
         self.assertRegexpMatches(output, "", "should have not error,\n" + output)
+
+        form = bingAuth.HTMLFormInputsParser()
+        self.assertIsNone(form.handle_starttag("input", "name"), "should not be None")
+
+    @patch('urllib2.Request')
+    @patch('helpers.getResponseBody')
+    @patch('urllib2.Request.add_header')
+    def test_auth_url(self, headermock, helpmock, urlmock):
+        headermock.return_value = ""
+        helpmock.return_value = ""
+        urlmock.return_value = urllib2.Request(bingCommon.BING_URL, bingCommon.HEADERS)
+        auth = bingAuth.BingAuth(bingCommon.HEADERS, urllib2.OpenerDirector())
+        self.assertIsNotNone(auth, "should return class")
 
     @patch('helpers.getResponseBody')
     @patch('time.sleep')
