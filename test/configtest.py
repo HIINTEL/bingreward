@@ -22,6 +22,7 @@ import bingCommon
 import bingHistory
 import bingFlyoutParser as bfp
 import bingAuth
+from config import Config
 
 
 """
@@ -229,7 +230,7 @@ class TestConfig(unittest.TestCase):
         self.config.parseFromString(self.configFBXML)
         self.assertRaisesRegexp(ValueError, "Not supported", main.run, self.config)
 
-    def test_history_parse(self):
+    def test_history(self):
         """
         test history parsing
         :return:
@@ -243,17 +244,17 @@ class TestConfig(unittest.TestCase):
         output = bingHistory.parse(page)
         self.assertIsNotNone(output, "missing output " + str(output))
 
-        page += '<ul class="sh_dayul"></ul class="sh_dayul">'
+        page = '<ul class="sh_dayul"></ul>'
+        page += '<span class="sh_item_qu_query"> value == 0'
+        page += '</span>'
         output = bingHistory.parse(page)
         self.assertIsNotNone(output, "missing output " + str(output))
 
-    def test_history_today(self):
-        """
-        test history parsing
-        :return:
-        """
-        output = bingHistory.getBingHistoryTodayURL()
+        page = '<ul class="sh_dayul"> </ul>'
+        output = bingHistory.parse(page)
+        self.assertIsNotNone(output, "missing output " + str(output))
 
+        output = bingHistory.getBingHistoryTodayURL()
         self.assertRegexpMatches(output, "https", "missing url " + str(output))
 
     @patch('helpers.getResponseBody')
@@ -298,7 +299,6 @@ class TestConfig(unittest.TestCase):
         timemock.return_value = ''
         self.assertRaisesRegexp(ValueError, "substring not found", main.run, self.config)
 
-
     def test_bfp(self):
         """
         test bfp
@@ -311,6 +311,22 @@ class TestConfig(unittest.TestCase):
         page += '<div id="bottomContainer"></div>'
         self.assertIsNotNone(bfp.parseFlyoutPage(page, "http://bing"), "should not be None")
         self.assertIsNotNone(newbfp.Type.Action.toStr(newbfp.Type.Action.PASS) , "should not be None")
+
+    def test_config(self):
+        """
+        test config.py
+        :return:
+        """
+        configobj = Config()
+        self.assertIsNotNone(configobj, "should return class")
+        self.assertIsNotNone(Config.General(), "should return class")
+        self.assertIsNotNone(ConfigError("ok"), "should return exception")
+        self.assertIsNotNone(Config.Proxy(), "should return class")
+        self.assertIsNotNone(Config.Event.Specifier(), "should return class")
+        self.assertIsNotNone(Config.Event.Notify(), "should return class")
+        self.assertIsNotNone(str(Config.Event.IfStatement()), "should return class")
+        dist = os.path.join(os.path.dirname(__file__), "..", "config.xml.dist")
+        self.assertIsNone(configobj.parseFromFile(dist), "should be none")
 
     @patch('helpers.getResponseBody')
     def test_rewards(self, helpmock):
