@@ -4,6 +4,10 @@ import unittest
 import subprocess
 import sys
 import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "pkg"))
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 import main
 import urllib2
 
@@ -11,8 +15,6 @@ import urllib2
 Add pkg and parent directory for mock testing of authentication errors
 """
 from mock import patch, Mock
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "pkg"))
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 from config import AccountKey, BingRewardsReportItem, Config, ConfigError
 import mock
@@ -24,6 +26,8 @@ import bingFlyoutParser as bfp
 import bingAuth
 from config import Config
 from eventsProcessor import EventsProcessor
+from bingRewards import BingRewards
+import re
 
 
 """
@@ -339,13 +343,14 @@ class TestConfig(unittest.TestCase):
         configobj = Config()
         self.assertIsNone(EventsProcessor.onScriptFailure(configobj, Exception()), "should be none")
 
+    @patch('re.search')
+    @patch('bingFlyoutParser.Reward.progressPercentage')
     @patch('helpers.getResponseBody')
-    def test_rewards(self, helpmock):
+    def test_rewards(self, helpmock, permock, remock):
         """
         test rewards object
         :return:
         """
-        from bingRewards import BingRewards
         reward = BingRewards(bingCommon.HEADERS, "", self.config)
         self.assertIsNotNone(reward.requestFlyoutPage(), "should not be None")
 
@@ -357,7 +362,10 @@ class TestConfig(unittest.TestCase):
         page += '<div> 999 livetime points</div> '
 
         helpmock.return_value = page
-        # if not login should have not found error for url
+        permock.return_value = 100
+        remock.return_value = re.match("(\d)+ love (\d)+", "1 love 2")
+
+    # if not login should have not found error for url
         self.assertRaisesRegexp(ValueError, "unknown", reward.getLifetimeCredits)
 
         page = "t.innerHTML='100'"
@@ -374,13 +382,23 @@ class TestConfig(unittest.TestCase):
         # HIT case
         newbfp.tp = mock.Mock()
         newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.Action.HIT ]
+        newbfp.progressCurrent = 100
+        newbfp.progressMax = 100
+        newbfp.description = 100
+
         rewards = [ newbfp ]
         self.assertRaisesRegexp(ValueError, "unknown", reward.process, rewards, True)
 
-        # SEARCH case
-        newbfp.tp = mock.Mock()
-        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.Action.SEARCH ]
-        newbfp.progressCurrent = 100
+        # SEARCH case, PC, Mobile, Earn
+        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.SEARCH_PC ]
+        rewards = [ newbfp ]
+        self.assertIsNotNone(reward.process(rewards, True), "should return res")
+
+        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.SEARCH_MOBILE ]
+        rewards = [ newbfp ]
+        self.assertIsNotNone(reward.process(rewards, True), "should return res")
+
+        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.EARN_MORE_CREDITS ]
         rewards = [ newbfp ]
         self.assertIsNotNone(reward.process(rewards, True), "should return res")
 
