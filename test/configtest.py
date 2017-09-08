@@ -317,6 +317,21 @@ class TestConfig(unittest.TestCase):
         self.assertIsNotNone(bfp.parseFlyoutPage(page, "http://bing"), "should not be None")
         self.assertIsNotNone(newbfp.Type.Action.toStr(newbfp.Type.Action.PASS) , "should not be None")
 
+    @unittest.skip("need love and care for local html parser")
+    def test_bfp_parser(self):
+        """
+        test html parser
+        :return:
+        """
+        parser = bfp.__HTMLRewardsParser("http://bing.com")
+
+        # test local parser
+        self.assertIsNone(parser.handle_starttag(page, "div"), "should not be None")
+        self.assertIsNone(parser.handle_endtag(page, "div"), "should not be None")
+        self.assertIsNone(parser.handle_data(page, "maintain gold"), "should not be None")
+        self.assertIsNone(parser.assignRewardType(), "should not be None")
+        self.assertIsNone(parser.close(), "should not be None")
+
     def test_config(self):
         """
         test config.py
