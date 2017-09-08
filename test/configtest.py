@@ -135,35 +135,6 @@ class TestConfig(unittest.TestCase):
     </configuration>
             """
 
-    @patch('helpers.getResponseBody')
-    @patch('time.sleep')
-    def test_auth(self, timemock, helpmock):
-        """
-        test authentication decoding error
-        :return:
-        """
-        helpmock.return_value = '"WindowsLiveId":""     "WindowsLiveId":""'
-        timemock.return_value = ''
-
-        self._redirectOut()
-        main.run(self.config)
-        output = ""
-        for line in self.fsock.readlines():
-            print line
-            output += line
-        self.assertRegexpMatches(output, "", "should have not error,\n" + output)
-
-    @patch('helpers.getResponseBody')
-    @patch('time.sleep')
-    def test_fail_auth(self, timemock, helpmock):
-        """
-        test authentication decoding error
-        :return:
-        """
-        helpmock.return_value = ''
-        timemock.return_value = ''
-        self.assertRaisesRegexp(ValueError, "substring not found", main.run, self.config)
-
     def test_timestamp(self):
         """
          test getlogtime
@@ -283,6 +254,36 @@ class TestConfig(unittest.TestCase):
 
         self.assertRegexpMatches(output, "https", "missing url " + str(output))
 
+    @patch('helpers.getResponseBody')
+    @patch('time.sleep')
+    def test_auth(self, timemock, helpmock):
+        """
+        test authentication decoding error
+        :return:
+        """
+        helpmock.return_value = '"WindowsLiveId":""     "WindowsLiveId":""'
+        timemock.return_value = ''
+
+        self._redirectOut()
+        main.run(self.config)
+        output = ""
+        for line in self.fsock.readlines():
+            print line
+            output += line
+        self.assertRegexpMatches(output, "", "should have not error,\n" + output)
+
+    @patch('helpers.getResponseBody')
+    @patch('time.sleep')
+    def test_auth_fail(self, timemock, helpmock):
+        """
+        test authentication decoding error
+        :return:
+        """
+        helpmock.return_value = ''
+        timemock.return_value = ''
+        self.assertRaisesRegexp(ValueError, "substring not found", main.run, self.config)
+
+
     def test_bfp(self):
         """
         test bfp
@@ -296,7 +297,8 @@ class TestConfig(unittest.TestCase):
         self.assertIsNotNone(bfp.parseFlyoutPage(page, "http://bing"), "should not be None")
         self.assertIsNotNone(newbfp.Type.Action.toStr(newbfp.Type.Action.PASS) , "should not be None")
 
-    def test_rewards(self):
+    @patch('helpers.getResponseBody')
+    def test_rewards(self, helpmock):
         """
         test rewards object
         :return:
@@ -305,15 +307,24 @@ class TestConfig(unittest.TestCase):
         reward = BingRewards(bingCommon.HEADERS, "", self.config)
         self.assertIsNotNone(reward.requestFlyoutPage(), "should not be None")
 
-        # if not login should have not found error
-        self.assertRaisesRegexp(ValueError, "not found", reward.getLifetimeCredits)
+        page = '"WindowsLiveId":""     "WindowsLiveId":"" '
+        page += 'action="0" value="0" '
+        page += 'value= "0" NAP value="0" '
+        page += 'ANON value="0" '
+        page += 'id="t" value="0" '
+        page += '<div> 999 livetime points</div> '
+
+        helpmock.return_value = page
+        # if not login should have not found error for url
+        self.assertRaisesRegexp(ValueError, "unknown", reward.getLifetimeCredits)
+
+        page = "t.innerHTML='100'"
+        helpmock.return_value = page
         self.assertIsNotNone(reward.getRewardsPoints(), "should not be None")
-
-        newbfp = bfp.Reward()
-
         self.assertRaisesRegexp(TypeError, "not an instance", reward.process, None, True)
 
         # NONE case
+        newbfp = bfp.Reward()
         newbfp.tp = None
         rewards = [ newbfp ]
         self.assertRaisesRegexp(ValueError, "unknown", reward.process, rewards, True)
