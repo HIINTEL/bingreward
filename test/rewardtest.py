@@ -24,7 +24,6 @@ class TestBing(unittest.TestCase):
             os.chdir(newpath)
         except:
             print "warning: unable to change to " + str(newpath)
-            pass
         
     def test_assert(self):
         cmd = "ls config.xml"
@@ -33,13 +32,25 @@ class TestBing(unittest.TestCase):
         self.assertEqual(status, 0, "no config.xml file")
 
     def test_configdist(self):
-        cmd = "./main.py -f config.xml.dist"
+        cmd = "python -B main.py -v -r -f config.xml.dist"
         cmds = cmd.split()
         output = subprocess.check_output(cmds, stderr=subprocess.STDOUT)
         self.assertRegexpMatches(output, "AuthenticationError", "should have seen invalid account auth\n" + output)
 
     def test_configxml(self):
-        cmd = "./main.py -f config.xml"
+        cmd = "python -B main.py -f config.xml"
+        cmds = cmd.split()
+        status = subprocess.check_call(cmds, stderr=subprocess.STDOUT)
+        self.assertEqual(status, 0, "failed to execute " + str(status))
+
+    def test_confighelp(self):
+        cmd = "python -B main.py -h"
+        cmds = cmd.split()
+        status = subprocess.check_call(cmds, stderr=subprocess.STDOUT)
+        self.assertEqual(status, 0, "failed to execute " + str(status))
+
+    def test_configversion(self):
+        cmd = "python -B main.py --version"
         cmds = cmd.split()
         status = subprocess.check_call(cmds, stderr=subprocess.STDOUT)
         self.assertEqual(status, 0, "failed to execute " + str(status))
