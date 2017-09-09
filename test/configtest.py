@@ -415,10 +415,9 @@ class TestConfig(unittest.TestCase):
             newbfp.Type = bfp.Reward.Type.Action.SEARCH
             rewards = [ newbfp ]
             try:
-                reward.process(rewards, True)
+                self.assertIsNotNone(reward.process(rewards, True), "should return res")
             except urllib2.URLError, e:
                 print str(e)
-            #self.assertIsNotNone(reward.process(rewards, True), "should return res")
 
     @patch('helpers.getResponseBody')
     def test_rewards_hit(self, helpmock):
@@ -494,10 +493,8 @@ class TestConfig(unittest.TestCase):
 mockdir="/usr/local/lib/python2.7/site-packages/mock/tests"
 mockdir1="/home/ubuntu/virtualenvs/venv-2.7/lib/python2.7/site-packages"
 
-
-@unittest.skip("buggy unittest2 and needed some loving")
 class TestMock(unittest.TestCase):
-    def test_all(self):
+    def test_mock(self):
         """
         test all mock code using their unittest
         """
