@@ -39,7 +39,6 @@ class TestConfig(unittest.TestCase):
     fsock = None
     mockdate = "2017-09-06 00:44:47.7"
 
-
     def _redirectOut(self):
         self.fsock = open('out.log', 'a+')
         sys.stdout = self.fsock
@@ -49,6 +48,7 @@ class TestConfig(unittest.TestCase):
             self.fsock.close()
             self.fsock = None
             sys.stdout = sys.__stdout__
+
     def setUp(self):
         self.config = Config()
         self.configXMLString = """
@@ -265,16 +265,28 @@ class TestConfig(unittest.TestCase):
         output = bingHistory.getBingHistoryTodayURL()
         self.assertRegexpMatches(output, "https", "missing url " + str(output))
 
-    @patch('helpers.getResponseBody')
-    @patch('time.sleep')
+#""" need to figure out to patch str """
+#@patch('str.find', return_value = 0)
+#def test_history_area(self):
+#    """
+#    test history area
+#    :return:
+#    """
+#    page = '<span class="query_t">'
+#    page += '<span class="sh_item_qu_query"> value == 0'
+#    page += '<ul class="sh_dayul"> </ul><a>test</a></span></span>'
+#    import pdb
+#    pdb.set_trace()
+#    output = bingHistory.parse(page)
+#    self.assertIsNotNone(output, "missing output " + str(output))
+
+    @patch('helpers.getResponseBody', return_value = '"WindowsLiveId":""     "WindowsLiveId":""')
+    @patch('time.sleep', return_value = '')
     def test_auth(self, timemock, helpmock):
         """
         test authentication decoding error
         :return:
         """
-        helpmock.return_value = '"WindowsLiveId":""     "WindowsLiveId":""'
-        timemock.return_value = ''
-
         self._redirectOut()
         main.run(self.config)
         output = ""
@@ -286,25 +298,20 @@ class TestConfig(unittest.TestCase):
         form = bingAuth.HTMLFormInputsParser()
         self.assertIsNone(form.handle_starttag("input", "name"), "should not be None")
 
-    @patch('urllib2.Request')
-    @patch('helpers.getResponseBody')
-    @patch('urllib2.Request.add_header')
+    @patch('urllib2.Request', return_value = "")
+    @patch('helpers.getResponseBody', return_value = "")
+    @patch('urllib2.Request.add_header', return_value = urllib2.Request(bingCommon.BING_URL, bingCommon.HEADERS))
     def test_auth_url(self, headermock, helpmock, urlmock):
-        headermock.return_value = ""
-        helpmock.return_value = ""
-        urlmock.return_value = urllib2.Request(bingCommon.BING_URL, bingCommon.HEADERS)
         auth = bingAuth.BingAuth(bingCommon.HEADERS, urllib2.OpenerDirector())
         self.assertIsNotNone(auth, "should return class")
 
-    @patch('helpers.getResponseBody')
-    @patch('time.sleep')
+    @patch('helpers.getResponseBody', return_value = '')
+    @patch('time.sleep', return_value = '')
     def test_auth_fail(self, timemock, helpmock):
         """
         test authentication decoding error
         :return:
         """
-        helpmock.return_value = ''
-        timemock.return_value = ''
         self.assertRaisesRegexp(ValueError, "substring not found", main.run, self.config)
 
     def test_bfp(self):
@@ -319,21 +326,6 @@ class TestConfig(unittest.TestCase):
         page += '<div id="bottomContainer"></div>'
         self.assertIsNotNone(bfp.parseFlyoutPage(page, "http://bing"), "should not be None")
         self.assertIsNotNone(newbfp.Type.Action.toStr(newbfp.Type.Action.PASS) , "should not be None")
-
-    @unittest.skip("need love and care for local html parser")
-    def test_bfp_parser(self):
-        """
-        test html parser
-        :return:
-        """
-        parser = bfp.__HTMLRewardsParser("http://bing.com")
-
-        # test local parser
-        self.assertIsNone(parser.handle_starttag(page, "div"), "should not be None")
-        self.assertIsNone(parser.handle_endtag(page, "div"), "should not be None")
-        self.assertIsNone(parser.handle_data(page, "maintain gold"), "should not be None")
-        self.assertIsNone(parser.assignRewardType(), "should not be None")
-        self.assertIsNone(parser.close(), "should not be None")
 
     def test_config(self):
         """
@@ -352,17 +344,16 @@ class TestConfig(unittest.TestCase):
         dist = os.path.join(os.path.dirname(__file__), "..", "config.xml.dist")
         self.assertIsNone(configobj.parseFromFile(dist), "should be none")
 
-    @patch('config.Config.getEvent')
+    @patch('config.Config.getEvent', return_value = Config.Event())
     def test_event(self, eventmock):
         """
         test event
         :return:
         """
-        eventmock.return_value = Config.Event()
         configobj = Config()
         self.assertIsNone(EventsProcessor.onScriptFailure(configobj, Exception()), "should be none")
 
-    @patch('bingFlyoutParser.Reward.progressPercentage')
+    @patch('bingFlyoutParser.Reward.progressPercentage', return_value = "100")
     @patch('helpers.getResponseBody')
     def test_rewards_search(self, helpmock, permock):
         """
@@ -385,7 +376,6 @@ class TestConfig(unittest.TestCase):
         page += "http://www.bing.com/fd/ls/GLinkPing.aspx"
 
         helpmock.return_value = page
-        permock.return_value = "100"
 
         useragents = bingCommon.UserAgents().generate(self.config.accounts)
         reward = BingRewards(bingCommon.HEADERS, useragents, self.config)
@@ -490,12 +480,12 @@ class TestConfig(unittest.TestCase):
         self.config.proxy = proxy
         self.assertIsNotNone(BingRewards(bingCommon.HEADERS, "", self.config), "should return class")
 
-
 """
   Testing mock library used
 """
-mockdir="/usr/local/lib/python2.7/site-packages/mock/tests"
-mockdir1="/home/ubuntu/virtualenvs/venv-2.7/lib/python2.7/site-packages"
+mockdir = "/usr/local/lib/python2.7/site-packages/mock/tests"
+mockdir1 = "/home/ubuntu/virtualenvs/venv-2.7/lib/python2.7/site-packages"
+
 
 class TestMock(unittest.TestCase):
     def test_mock(self):
