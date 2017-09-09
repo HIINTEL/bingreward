@@ -327,6 +327,21 @@ class TestConfig(unittest.TestCase):
         self.assertIsNotNone(bfp.parseFlyoutPage(page, "http://bing"), "should not be None")
         self.assertIsNotNone(newbfp.Type.Action.toStr(newbfp.Type.Action.PASS) , "should not be None")
 
+    #@unittest.skip("need love and care for local html parser")
+    #def test_bfp_parser(self):
+    #    """
+    #    test html parser
+    #    :return:
+    #    """
+    #    parser = bfp.__HTMLRewardsParser("http://bing.com")
+    #
+    #    # test local parser
+    #    self.assertIsNone(parser.handle_starttag(page, "div"), "should not be None")
+    #    self.assertIsNone(parser.handle_endtag(page, "div"), "should not be None")
+    #    self.assertIsNone(parser.handle_data(page, "maintain gold"), "should not be None")
+    #    self.assertIsNone(parser.assignRewardType(), "should not be None")
+    #    self.assertIsNone(parser.close(), "should not be None")
+
     def test_config(self):
         """
         test config.py
@@ -344,14 +359,30 @@ class TestConfig(unittest.TestCase):
         dist = os.path.join(os.path.dirname(__file__), "..", "config.xml.dist")
         self.assertIsNone(configobj.parseFromFile(dist), "should be none")
 
-    @patch('config.Config.getEvent', return_value = Config.Event())
-    def test_event(self, eventmock):
+    def test_event(self):
         """
         test event
         :return:
         """
-        configobj = Config()
-        self.assertIsNone(EventsProcessor.onScriptFailure(configobj, Exception()), "should be none")
+        self.assertIsNone(EventsProcessor.onScriptFailure(self.config, Exception()), "should be none")
+        self.assertIsNone(EventsProcessor.onScriptComplete(self.config), "should be none")
+
+    def test_event_getEvent_returnsEvent(self):
+        """
+        test onScriptFailure using echo from xml config string
+        :return:
+        """
+        event = self.config.getEvent(Config.Event.onScriptFailure)
+        self.assertIsNotNone(event)
+        self.assertTrue(len(event.notifies) == 1)
+        self.assertEqual(event.notifies[0].cmd, "echo")
+
+    def test_event_getEvent_returnsNoneIfEventDoesntExist(self):
+        """
+        test no event call does not exist
+        :return:
+        """
+        self.assertIsNone(self.config.getEvent("does_not_exist"))
 
     @patch('bingFlyoutParser.Reward.progressPercentage', return_value = "100")
     @patch('helpers.getResponseBody')
