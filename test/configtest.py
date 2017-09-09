@@ -521,29 +521,5 @@ class TestConfig(unittest.TestCase):
         self.config.proxy = proxy
         self.assertIsNotNone(BingRewards(bingCommon.HEADERS, "", self.config), "should return class")
 
-"""
-  Testing mock library used
-"""
-mockdir = "/usr/local/lib/python2.7/site-packages/mock/tests"
-mockdir1 = "/home/ubuntu/virtualenvs/venv-2.7/lib/python2.7/site-packages"
-
-
-class TestMock(unittest.TestCase):
-    def test_mock(self):
-        """
-        test all mock code using their unittest
-        """
-        sys.path.append(os.path.join(os.path.dirname(mockdir)))
-        sys.path.append(os.path.join(os.path.dirname(mockdir1)))
-        try:
-            os.chdir(mockdir)
-        except:
-            os.chdir(mockdir1)
-
-        cmd = "nosetests"
-        cmds = cmd.split()
-        status = subprocess.check_call(cmds, stderr=subprocess.STDOUT)
-        self.assertEqual(status, 0, "failed to execute " + str(status))
-
 if __name__ == '__main__':
     unittest.main(verbosity=3)
