@@ -297,13 +297,24 @@ class TestConfig(unittest.TestCase):
 
         form = bingAuth.HTMLFormInputsParser()
         self.assertIsNone(form.handle_starttag("input", "name"), "should not be None")
+        self.assertIsNone(form.handle_starttag("input", [["name", "1"] , ["value", "2"]]), "should not be None")
 
     @patch('urllib2.Request', return_value = "")
     @patch('helpers.getResponseBody', return_value = "")
     @patch('urllib2.Request.add_header', return_value = urllib2.Request(bingCommon.BING_URL, bingCommon.HEADERS))
     def test_auth_url(self, headermock, helpmock, urlmock):
+        """
+        test auth class
+        :param headermock:
+        :param helpmock:
+        :param urlmock:
+        :return:
+        """
+        self.assertRaisesRegexp(TypeError, "opener is not", bingAuth.BingAuth, bingCommon.HEADERS, None)
+
         auth = bingAuth.BingAuth(bingCommon.HEADERS, urllib2.OpenerDirector())
         self.assertIsNotNone(auth, "should return class")
+        self.assertRaisesRegexp(bingAuth.AuthenticationError, "Error", auth.authenticate, "does_not_exist", "xxx", "yyy")
 
     @patch('helpers.getResponseBody', return_value = '')
     @patch('time.sleep', return_value = '')
@@ -391,7 +402,6 @@ class TestConfig(unittest.TestCase):
         Search string
         :param helpmock:
         :param permock:
-        :param remock:
         :return:
         """
         page = '"WindowsLiveId":""     "WindowsLiveId":"" '
