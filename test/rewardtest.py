@@ -20,10 +20,7 @@ class TestBing(unittest.TestCase):
     def setUp(self):
         newpath = os.path.join(os.path.dirname(__file__), "..")
         sys.path.append(newpath)
-        try:
-            os.chdir(newpath)
-        except:
-            print "warning: unable to change to " + str(newpath)
+        os.chdir(newpath)
         
     def test_assert(self):
         cmd = "ls config.xml"
