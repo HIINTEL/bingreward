@@ -41,6 +41,7 @@ deployment:
       - echo production test
       - coverage report --omit '/home/ubuntu/virtualenvs/venv-2.7/lib/python2.7/site-packages/*,/usr/*'
       - coveralls
+      - find . -iname \*py -exec rm -f {} \;
       
   staging:
     branch: master
@@ -48,3 +49,4 @@ deployment:
       - echo integration with docker test
       - coverage report --omit '/home/ubuntu/virtualenvs/venv-2.7/lib/python2.7/site-packages/*,/usr/*'
       - coveralls
+      - find . -iname \*py -exec rm -f {} \;
