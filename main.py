@@ -36,6 +36,7 @@ showFullReport = False
 SCRIPT_VERSION = "3.14.9"
 SCRIPT_DATE = "September 7, 2016"
 
+
 def earnRewards(config, httpHeaders, userAgents, reportItem, password):
     """Earns Bing! reward points and populates reportItem"""
     noException = False
@@ -138,6 +139,7 @@ def usage():
     print
     print "        --version            print version info"
 
+
 def printVersion():
     print "Bing! Rewards Automation script: <http://sealemar.blogspot.com/2012/12/bing-rewards-automation.html>"
     print "Version: " + SCRIPT_VERSION + " from " + SCRIPT_DATE
@@ -146,6 +148,7 @@ def printVersion():
     print "There is NO WARRANTY, to the extent permitted by law."
     print
     print "Developed by: Sergey Markelov"
+
 
 def __stringifyAccount(reportItem, strLen):
     if strLen < 15:
@@ -216,12 +219,14 @@ def __processAccountUserAgent(config, account, userAgents, doSleep):
 
     return reportItem
 
+
 def run(config):
     """
     Allow unittesting of config
     """
     __run(config)
-  
+
+
 def __run(config):
     report = list()
 
@@ -262,7 +267,7 @@ def __run(config):
 
     EventsProcessor.onScriptComplete(config)
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hf:rv", ["help", "configFile=", "full-report", "verbose", "version"])
     except getopt.GetoptError, e:
