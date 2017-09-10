@@ -383,10 +383,6 @@ class TestConfig(unittest.TestCase):
         """
         self.assertIsNone(self.config.getEvent("does_not_exist"))
         self.assertRaisesRegexp(ValueError, "None", self.config.getEvent, None)
-        # looks like buggy config.py
-        #self.assertRaisesRegexp(TypeError, "not of", self.config.getEvent, "does_not_exist", None)
-        #self.assertRaisesRegexp(TypeError, "not of", self.config.getEvent, "does_not_exist", AccountKey())
-
 
     def test_query(self):
         """
@@ -453,13 +449,13 @@ class TestConfig(unittest.TestCase):
 
             newbfp.Type = bfp.Reward.Type.Action.SEARCH
             rewards = [ newbfp ]
+            newbfp.isAchieved = lambda : data is 0
             self.assertIsNotNone(reward.process(rewards, True), "should return res")
 
         newbfp.isDone = True
         self.assertIsNotNone(reward.process(rewards, True), "should return res")
 
         self.config.proxy = None
-
         BingRewards(bingCommon.HEADERS, useragents, self.config)
 
     @patch('helpers.getResponseBody')
@@ -513,9 +509,12 @@ class TestConfig(unittest.TestCase):
 
         result = mock.Mock()
         result.action = bfp.Reward.Type.Action.SEARCH
-        result.isError = False
+        result.isError = True
         result.o = newbfp
         result.message = "done"
+        newbfp.progressCurrent = 1
+        newbfp.progressMax = 100
+        newbfp.url = "http:0.0.0.0"
         self.assertIsNone(reward.printResults([result], True), "should return None")
         self.assertRaisesRegexp(TypeError, "rewards is not", reward.printRewards, None)
 
