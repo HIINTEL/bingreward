@@ -25,6 +25,7 @@ import bingHistory
 import bingFlyoutParser as bfp
 import bingAuth
 from config import Config
+from config import BingRewardsReportItem
 from eventsProcessor import EventsProcessor
 from bingRewards import BingRewards
 
@@ -336,10 +337,24 @@ class TestConfig(unittest.TestCase):
         self.assertIsNotNone(Config.General(), "should return class")
         self.assertIsNotNone(ConfigError("ok"), "should return exception")
         self.assertIsNotNone(Config.Proxy(), "should return class")
-        self.assertIsNotNone(Config.Event.Specifier(), "should return class")
+
         self.assertIsNotNone(Config.EventAccount(), "should return class")
         self.assertIsNotNone(Config.Event.Notify(), "should return class")
-        self.assertIsNotNone(str(Config.Event.IfStatement()), "should return class")
+        ifs = Config.Event.IfStatement()
+        ifs.op = lambda x, y: x
+        ifs.lhs = lambda x : x
+        ifs.rhs = "b"
+        self.assertIsNotNone(str(ifs), "should return class")
+        self.assertRaisesRegexp(ValueError, "None", ifs.evaluate, None)
+        self.assertRaisesRegexp(TypeError, "is not of", ifs.evaluate, [])
+        self.assertIsNotNone(ifs.evaluate(BingRewardsReportItem()))
+
+        spec = Config.Event.Specifier()
+        self.assertIsNotNone(spec, "should return class")
+        self.assertRaisesRegexp(ValueError, "is None", spec.evaluate, None, BingRewardsReportItem())
+        self.assertRaisesRegexp(TypeError, "list", spec.evaluate, [], BingRewardsReportItem())
+        self.assertIsNotNone(spec.evaluate("%a", BingRewardsReportItem()), "should return string")
+
         dist = os.path.join(os.path.dirname(__file__), "..", "config.xml.dist")
         self.assertIsNone(configobj.parseFromFile(dist), "should be none")
 
@@ -367,6 +382,11 @@ class TestConfig(unittest.TestCase):
         :return:
         """
         self.assertIsNone(self.config.getEvent("does_not_exist"))
+        self.assertRaisesRegexp(ValueError, "None", self.config.getEvent, None)
+        # looks like buggy config.py
+        #self.assertRaisesRegexp(TypeError, "not of", self.config.getEvent, "does_not_exist", None)
+        #self.assertRaisesRegexp(TypeError, "not of", self.config.getEvent, "does_not_exist", AccountKey())
+
 
     def test_query(self):
         """
