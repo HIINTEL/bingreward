@@ -211,9 +211,8 @@ class Config:
             acc = Config.Account()
 
             acc.disabled = True if account.get("disabled", "false").lower() == "true" else False
-            acc.accountType = account.get("type")
-            if acc.accountType is None:
-                raise ConfigError("accounts.account.type is not found")
+
+            acc.accountType = "Live"
 
             val = account.find("login")
             if val is None:
