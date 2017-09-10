@@ -34,12 +34,6 @@ class TestBing(unittest.TestCase):
         output = subprocess.check_output(cmds, stderr=subprocess.STDOUT)
         self.assertRegexpMatches(output, "AuthenticationError", "should have seen invalid account auth\n" + output)
 
-    def test_configxml(self):
-        cmd = "coverage run main.py -v -r -f config.xml"
-        cmds = cmd.split()
-        status = subprocess.check_call(cmds, stderr=subprocess.STDOUT)
-        self.assertEqual(status, 0, "failed to execute " + str(status))
-
     def test_confighelp(self):
         cmd = "coverage run main.py -h"
         cmds = cmd.split()

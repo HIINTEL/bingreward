@@ -27,7 +27,7 @@ dependencies:
 
 test:
   override:
-    - coverage run -p main.py
+    - coverage run -p main.py -v -r
     - nosetests -vv --with-coverage --cover-package pkg --cover-package test test/*.py
     - coverage combine
 
