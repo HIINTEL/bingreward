@@ -27,7 +27,7 @@ class AccountKey:
         self.accountLogin = None
 
     def getRef(self):
-        return self.accountType + "_" + self.accountLogin
+        return str(self.accountType) + "_" + str(self.accountLogin)
 
 class BingRewardsReportItem(AccountKey):
     def __init__(self):
