@@ -150,26 +150,11 @@ def __stringifyAccount(reportItem, strLen):
     if strLen < 15:
         raise ValueError("strLen too small. Must be > " + 15)
 
-    s = ""
-    if reportItem.accountType == "Facebook":
-        s += " fb "
-    elif reportItem.accountType == "Live":
-        s += "live"
-    else:
-        raise ValueError("Account type (" + reportItem.accountType + ") is not supported")
-
-    s += " - "
-
-    l = strLen - len(s)
-
-    if len(reportItem.accountLogin) < l:
-        s += reportItem.accountLogin
-    else:
-        s += reportItem.accountLogin[:(l - 3)]
-        s += "..."
+    s = reportItem.accountLogin
+    if len(s) > strLen:
+        s = "{}...".format(s[:(strLen - 3)])
 
     return s
-
 
 def __processAccount(config, httpHeaders, userAgents, reportItem, accountPassword):
     global totalPoints
