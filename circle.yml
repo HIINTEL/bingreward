@@ -26,7 +26,8 @@ dependencies:
 
 test:
   override:
-    - nosetests -vv --with-coverage --cover-erase --cover-package pkg --cover-package test test/*.py
+    - coverage run -p main.py
+    - nosetests -vv --with-coverage --cover-package pkg --cover-package test test/*.py
 
   post:
     - rm -f config.xml
@@ -36,12 +37,14 @@ deployment:
     branch: production
     commands:
       - echo production test
-      - coverage report
+      - coverage combine
+      - coverage report --omit '/usr/*'
       - coveralls
       
   staging:
     branch: master
     commands:
       - echo integration with docker test
-      - coverage report
+      - coverage combine
+      - coverage report --omit '/usr/*'
       - coveralls
