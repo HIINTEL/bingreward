@@ -27,8 +27,9 @@ import bingAuth
 from config import Config
 from eventsProcessor import EventsProcessor
 from bingRewards import BingRewards
-import re
 
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "pkg", "queryGenerators"))
+import googleTrends
 
 """
   Test xml is correctly stored
@@ -248,7 +249,9 @@ class TestConfig(unittest.TestCase):
         output = bingHistory.parse("")
         self.assertIsNotNone(output, "missing output " + str(output))
 
-        page = '<div id="results_area"></div><div id="sidebar"></div>'
+
+        page = '<span class="query_t">'
+        page += '<div id="results_area"></div><div id="sidebar"></div>'
         output = bingHistory.parse(page)
         self.assertIsNotNone(output, "missing output " + str(output))
 
@@ -265,21 +268,6 @@ class TestConfig(unittest.TestCase):
         output = bingHistory.getBingHistoryTodayURL()
         self.assertRegexpMatches(output, "https", "missing url " + str(output))
 
-#""" need to figure out to patch str """
-#@patch('str.find', return_value = 0)
-#def test_history_area(self):
-#    """
-#    test history area
-#    :return:
-#    """
-#    page = '<span class="query_t">'
-#    page += '<span class="sh_item_qu_query"> value == 0'
-#    page += '<ul class="sh_dayul"> </ul><a>test</a></span></span>'
-#    import pdb
-#    pdb.set_trace()
-#    output = bingHistory.parse(page)
-#    self.assertIsNotNone(output, "missing output " + str(output))
-
     @patch('helpers.getResponseBody', return_value = '"WindowsLiveId":""     "WindowsLiveId":""')
     @patch('time.sleep', return_value = '')
     def test_auth(self, timemock, helpmock):
@@ -290,9 +278,7 @@ class TestConfig(unittest.TestCase):
         self._redirectOut()
         main.run(self.config)
         output = ""
-        for line in self.fsock.readlines():
-            print line
-            output += line
+        output.join(self.fsock.readlines())
         self.assertRegexpMatches(output, "", "should have not error,\n" + output)
 
         form = bingAuth.HTMLFormInputsParser()
@@ -332,6 +318,8 @@ class TestConfig(unittest.TestCase):
         """
         newbfp = bfp.Reward()
         self.assertIsNotNone(newbfp.isAchieved(), "should not be None")
+        newbfp.progressCurrent = 1
+        newbfp.progressMax = 100
         self.assertIsNotNone(newbfp.progressPercentage(), "should not be None")
         page = '<div id="messageContainer"></div>'
         page += '<div id="bottomContainer"></div>'
@@ -379,6 +367,16 @@ class TestConfig(unittest.TestCase):
         :return:
         """
         self.assertIsNone(self.config.getEvent("does_not_exist"))
+
+    def test_query(self):
+        """
+        test google queryGenerator
+        :return:
+        """
+        q = googleTrends.queryGenerator(1)
+        q.br = None
+        q.unusedQueries = set()
+        self.assertIsNotNone(q.generateQueries(10, set()))
 
     @patch('bingFlyoutParser.Reward.progressPercentage', return_value = "100")
     @patch('helpers.getResponseBody')
@@ -435,10 +433,7 @@ class TestConfig(unittest.TestCase):
 
             newbfp.Type = bfp.Reward.Type.Action.SEARCH
             rewards = [ newbfp ]
-            try:
-                self.assertIsNotNone(reward.process(rewards, True), "should return res")
-            except urllib2.URLError:
-                pass
+            self.assertIsNotNone(reward.process(rewards, True), "should return res")
 
         newbfp.isDone = True
         self.assertIsNotNone(reward.process(rewards, True), "should return res")
@@ -502,6 +497,8 @@ class TestConfig(unittest.TestCase):
         result.o = newbfp
         result.message = "done"
         self.assertIsNone(reward.printResults([result], True), "should return None")
+        self.assertRaisesRegexp(TypeError, "rewards is not", reward.printRewards, None)
+
         self.assertIsNone(reward.printRewards(rewards), "should return None")
 
         self.assertRaisesRegexp(TypeError, "reward is not", reward.RewardResult, None)
