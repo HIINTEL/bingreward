@@ -249,14 +249,14 @@ class TestConfig(unittest.TestCase):
         output = bingHistory.parse("")
         self.assertIsNotNone(output, "missing output " + str(output))
 
-
         page = '<span class="query_t">'
         page += '<div id="results_area"></div><div id="sidebar"></div>'
         output = bingHistory.parse(page)
         self.assertIsNotNone(output, "missing output " + str(output))
 
-        page = '<ul class="sh_dayul"></ul>'
-        page += '<span class="sh_item_qu_query"> value == 0'
+        page = '<span class="sh_item_qu_query">'
+        page += '<ul class="sh_dayul"></ul>'
+        page += ' value == 0'
         page += '</span>'
         output = bingHistory.parse(page)
         self.assertIsNotNone(output, "missing output " + str(output))
