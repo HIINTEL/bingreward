@@ -39,12 +39,12 @@ deployment:
     branch: production
     commands:
       - echo production test
-      - coverage report --omit '/home/ubuntu/virtualenvs/venv-2.7/lib/python2.7/site-packages/*, /usr/*'
+      - coverage report --omit '/home/ubuntu/virtualenvs/venv-2.7/lib/python2.7/site-packages/*,/usr/*'
       - coveralls
       
   staging:
     branch: master
     commands:
       - echo integration with docker test
-      - coverage report --omit '/usr/*'
+      - coverage report --omit '/home/ubuntu/virtualenvs/venv-2.7/lib/python2.7/site-packages/*,/usr/*'
       - coveralls
