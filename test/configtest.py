@@ -338,21 +338,6 @@ class TestConfig(unittest.TestCase):
         self.assertIsNotNone(bfp.parseFlyoutPage(page, "http://bing"), "should not be None")
         self.assertIsNotNone(newbfp.Type.Action.toStr(newbfp.Type.Action.PASS) , "should not be None")
 
-    #@unittest.skip("need love and care for local html parser")
-    #def test_bfp_parser(self):
-    #    """
-    #    test html parser
-    #    :return:
-    #    """
-    #    parser = bfp.__HTMLRewardsParser("http://bing.com")
-    #
-    #    # test local parser
-    #    self.assertIsNone(parser.handle_starttag(page, "div"), "should not be None")
-    #    self.assertIsNone(parser.handle_endtag(page, "div"), "should not be None")
-    #    self.assertIsNone(parser.handle_data(page, "maintain gold"), "should not be None")
-    #    self.assertIsNone(parser.assignRewardType(), "should not be None")
-    #    self.assertIsNone(parser.close(), "should not be None")
-
     def test_config(self):
         """
         test config.py
@@ -423,8 +408,8 @@ class TestConfig(unittest.TestCase):
         newbfp = bfp.Reward()
         reward.RewardResult(newbfp)
 
-        newbfp.progressCurrent = 0
-        newbfp.progressMax = 0
+        newbfp.progressCurrent = 1
+        newbfp.progressMax = 100
         newbfp.description = "Up to 10 points today, 10 points per search"
 
         newbfp.isDone = False
@@ -446,13 +431,21 @@ class TestConfig(unittest.TestCase):
             newbfp.Type.THURSDAY_BONUS       ,
             newbfp.Type.RE_QUIZ ]:
             newbfp.tp = data
+            newbfp.url = "www.espn.com"
 
             newbfp.Type = bfp.Reward.Type.Action.SEARCH
             rewards = [ newbfp ]
             try:
                 self.assertIsNotNone(reward.process(rewards, True), "should return res")
-            except urllib2.URLError, e:
-                print str(e)
+            except urllib2.URLError:
+                pass
+
+        newbfp.isDone = True
+        self.assertIsNotNone(reward.process(rewards, True), "should return res")
+
+        self.config.proxy = None
+
+        BingRewards(bingCommon.HEADERS, useragents, self.config)
 
     @patch('helpers.getResponseBody')
     def test_rewards_hit(self, helpmock):
@@ -460,6 +453,7 @@ class TestConfig(unittest.TestCase):
         test rewards object
         :return:
         """
+        self.config.proxy = False
         reward = BingRewards(bingCommon.HEADERS, "", self.config)
         self.assertIsNotNone(reward.requestFlyoutPage(), "should not be None")
 
@@ -521,5 +515,5 @@ class TestConfig(unittest.TestCase):
         self.config.proxy = proxy
         self.assertIsNotNone(BingRewards(bingCommon.HEADERS, "", self.config), "should return class")
 
-if __name__ == '__main__':
+if __name__ == '__main__': # pragma: no cover
     unittest.main(verbosity=3)

@@ -114,7 +114,7 @@ def parseFlyoutPage(page, bing_url):
 ######################################################
 # local classes & functions
 ######################################################
-class __HTMLRewardsParser(HTMLParser.HTMLParser):
+class __HTMLRewardsParser(HTMLParser.HTMLParser): # pragma: no cover
     """
     Gets Bing! flyout page starting from tag
     <div id="messageContainer"> to the tag

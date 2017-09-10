@@ -55,5 +55,5 @@ class TestBing(unittest.TestCase):
         status = subprocess.check_call(cmds, stderr=subprocess.STDOUT)
         self.assertEqual(status, 0, "failed to execute " + str(status))
 
-if __name__ == '__main__':
+if __name__ == '__main__': # pragma: no cover
         unittest.main(verbosity=3)
