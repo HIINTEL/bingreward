@@ -12,6 +12,7 @@ dependencies:
     # - vnc4server -geometry 1280x1024 -depth 24
     - pip install --upgrade pip 
     - openssl aes-256-cbc -d -in config.xml.encrypted -k "${KEY}" >> config.xml
+    - chmod og-r config.xml
     - pip install -r requirements.txt
 
   post:
@@ -28,6 +29,7 @@ test:
   override:
     - coverage run -p main.py
     - nosetests -vv --with-coverage --cover-package pkg --cover-package test test/*.py
+    - coverage combine
 
   post:
     - rm -f config.xml
@@ -37,14 +39,12 @@ deployment:
     branch: production
     commands:
       - echo production test
-      - coverage combine
-      - coverage report --omit '/usr/*'
+      - coverage report --omit '/home/ubuntu/virtualenvs/venv-2.7/lib/python2.7/site-packages/*, /usr/*'
       - coveralls
       
   staging:
     branch: master
     commands:
       - echo integration with docker test
-      - coverage combine
       - coverage report --omit '/usr/*'
       - coveralls
