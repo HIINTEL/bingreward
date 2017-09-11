@@ -37,6 +37,10 @@
             <login>gogo@hotmail.com</login>
             <password>xxx</password>
         </account>
+        <account type="Live" disabled="true">
+            <login>johnsmith@gmail.com</login>
+            <password>xxx</password>
+        </account>
     </accounts>
 
     <events>
@@ -61,6 +65,8 @@
                         cmd="~/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
                 <notify if="%P gt 475"
                         cmd="~/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
+            </account>
+            <account ref="Live_johnsmith@gmail.com">
             </account>
         </onComplete>
         <onScriptComplete>
