@@ -28,6 +28,7 @@ dependencies:
 test:
   override:
     - coverage run -p main.py -v -r
+    - mv .coverage .coverage.1 
     - nosetests -vv --with-coverage --cover-package pkg --cover-package test test/*.py
     - coverage combine
 
