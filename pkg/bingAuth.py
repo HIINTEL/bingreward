@@ -2,7 +2,6 @@
 # developed by Sergey Markelov (2013)
 #
 
-import HTMLParser
 import random
 import urllib
 import urllib2
@@ -16,22 +15,6 @@ import helpers
 class AuthenticationError(Exception):
     def __init__(self, message):
         Exception.__init__(self, message)
-
-class HTMLFormInputsParser(HTMLParser.HTMLParser):
-    def __init__(self):
-        HTMLParser.HTMLParser.__init__(self)
-        self.inputs = {}
-
-    def handle_starttag(self, tag, attrs):
-        if tag == "input":
-            name = value = ""
-            for attr in attrs:
-                if attr[0] == "name":
-                    name = attr[1]
-                elif attr[0] == "value":
-                    value = attr[1]
-            if name != "" and value != "":
-                self.inputs[name] = value.encode("utf-8")
 
 class BingAuth:
     inputNameValue = re.compile(r"<input.+?name=\"(.+?)\".+?value=\"(.+?)\"")
