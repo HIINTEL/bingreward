@@ -31,6 +31,7 @@ from bingRewards import BingRewards
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "pkg", "queryGenerators"))
 import googleTrends
+import wikipedia
 
 """
   Test xml is correctly stored
@@ -390,6 +391,14 @@ class TestConfig(unittest.TestCase):
         :return:
         """
         q = googleTrends.queryGenerator(1)
+        q.br = None
+        q.unusedQueries = set()
+        self.assertIsNotNone(q.generateQueries(10, set()))
+
+        self.assertRaisesRegexp(ValueError, "is not", wikipedia.queryGenerator, None)
+        useragents = bingCommon.UserAgents().generate(self.config.accounts)
+        b = BingRewards(bingCommon.HEADERS, useragents, self.config)
+        q = wikipedia.queryGenerator(b)
         q.br = None
         q.unusedQueries = set()
         self.assertIsNotNone(q.generateQueries(10, set()))
