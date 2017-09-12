@@ -27,9 +27,11 @@ dependencies:
 
 test:
   override:
+    # checking parallel runs https://discuss.circleci.com/t/parallel-runs-status/15876/2 
+    - nosetests -vv --with-coverage --cover-package pkg --cover-package test test/*.py:
+          parallel: true
     - coverage run -p main.py -v -r
     - ls -aRl .coverage*
-    - nosetests -vv --with-coverage --cover-package pkg --cover-package test test/*.py
     - coverage combine
 
   post:
@@ -51,3 +53,11 @@ deployment:
       - coverage report --omit '/home/ubuntu/virtualenvs/venv-2.7/lib/python2.7/site-packages/*,/usr/*'
       - coveralls
       - find . -iname \*py -exec rm -f {} \;
+
+experimental:
+  # status on chatroom https://circleci.com/docs/1.0/configuration/#branches
+  notify:
+    branches:
+      ignore:
+        - /experiment.*/
+        - sandbox
