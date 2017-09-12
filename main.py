@@ -155,9 +155,7 @@ def __stringifyAccount(reportItem, strLen):
         raise ValueError("strLen too small. Must be > " + 15)
 
     s = ""
-    if reportItem.accountType == "Facebook":
-        s += " fb "
-    elif reportItem.accountType == "Live":
+    if reportItem.accountType == "Live":
         s += "live"
     else:
         raise ValueError("Account type (" + reportItem.accountType + ") is not supported")
