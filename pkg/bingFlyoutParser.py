@@ -60,7 +60,7 @@ class Reward:
         COMPLETED            = (10,    "Completed",                        None, False, Action.PASS)
         SILVER_STATUS        = (11,   "Silver Status",                     None, False, Action.PASS)
         INVITE_FRIENDS       = (12,   "Invite friends",                    None, False, Action.PASS)
-        EARN_MORE_CREDITS    = (13,   "Earn more credits",                 None, False, Action.INFORM)
+        EARN_MORE_CREDITS    = (13,   "Earn more points",                 None, False, Action.INFORM)
         SEARCH_AND_EARN      = (14,   "Search and earn",                   None, False, Action.SEARCH)
         THURSDAY_BONUS       = (15,   "Thursday bonus",                    None, False, Action.PASS)
         RE_QUIZ              = (16,   re.compile(r"\b[Qq]uiz\b"),          None, True,  Action.PASS)
