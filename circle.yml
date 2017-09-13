@@ -27,10 +27,10 @@ dependencies:
 
 test:
   override:
+    - coverage run -p main.py -v -r
     # checking parallel runs https://discuss.circleci.com/t/parallel-runs-status/15876/2 
     - nosetests -vv --with-coverage --cover-package pkg --cover-package test test/*.py:
-          parallel: true
-    - coverage run -p main.py -v -r
+          parallel: false
     - ls -aRl .coverage*
     - coverage combine
 
