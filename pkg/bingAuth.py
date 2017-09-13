@@ -37,7 +37,8 @@ class BingAuth:
 
     inputNameValue = re.compile(r"<input.+?name=\"(.+?)\".+?value=\"(.+?)\"")
     formAction = re.compile(r"<form.+action=\"(.+?)\"")
-    ppsxValue = re.compile(r",t:'(.+?)',")
+    ppsxValue = re.compile(r",r:'(.+?)',")
+
 
     def __init__(self, httpHeaders, opener):
         """
@@ -110,11 +111,8 @@ class BingAuth:
         e = page.index('"', s)
         PPFT = page[s:e]
 
-# get PPSX parameter
-        ppsxSearch = self.ppsxValue.search(page)
-        if ppsxSearch == None:
-            raise AuthenticationError("Could not find variable 't' on Live login page")
-        PPSX = ppsxSearch.group(1)
+        PPSXs = ["P","Pa","Pas","Pass","Passp","Passpo","Passpor","Passport","PassportR","PassportRN"]
+        PPSX = random.choice(PPSXs)
 
 # generate ClientLoginTime
         clt = 20000 + int(random.uniform(0, 1000))
