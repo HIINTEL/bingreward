@@ -1,4 +1,8 @@
-Current version 3.14.9
+Current version 3.15.0
+
+3.15.0  *) @amayer5125, Remove Facebook auth
+           Small refactor in main.py
+           Remove unused functions
 
 3.14.9  *) @reganface, Updated to work with the new Microsoft Rewards
 
