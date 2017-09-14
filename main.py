@@ -122,7 +122,6 @@ def earnRewards(config, httpHeaders, userAgents, reportItem, password):
             print
             print "-" * 80
 
-
 def usage():
     print "Usage:"
     print "    -h, --help               show this help"
@@ -178,28 +177,6 @@ def __processAccount(config, httpHeaders, userAgents, reportItem, accountPasswor
             print "Unexpected result from eventsProcessor.processReportItem() = ( %s, %s )" % (result, extra)
             break
 
-def __processAccountUserAgent(config, account, userAgents, doSleep):
-# sleep between two accounts logins
-    if doSleep:
-        extra = config.general.betweenAccountsInterval + random.uniform(0, config.general.betweenAccountsSalt)
-        if verbose:
-            print
-            print("Pausing between accounts for {0} seconds".format(int(extra)))
-        time.sleep(extra)
-
-    reportItem = BingRewardsReportItem()
-    reportItem.accountType  = account.accountType
-    reportItem.accountLogin = account.accountLogin
-
-    agents = bingCommon.UserAgents.generate(account)
-
-    httpHeaders = bingCommon.HEADERS
-    httpHeaders["User-Agent"] = agents.pc
-
-    __processAccount(config, httpHeaders, agents, reportItem, account.password)
-
-    return reportItem
-
 def __run(config):
     report = list()
 
@@ -209,10 +186,26 @@ def __run(config):
         if account.disabled:
             continue
 
-        reportItem = __processAccountUserAgent(config, account, bingCommon.USER_AGENTS_PC, doSleep)
+        # sleep between two accounts logins
+        if doSleep:
+            extra = config.general.betweenAccountsInterval + random.uniform(0, config.general.betweenAccountsSalt)
+            if verbose:
+                print("\nPausing between accounts for {0} seconds".format(int(extra)))
+            time.sleep(extra)
+
+        reportItem = BingRewardsReportItem()
+        reportItem.accountType  = account.accountType
+        reportItem.accountLogin = account.accountLogin
+
+        agents = bingCommon.UserAgents.generate(account)
+
+        httpHeaders = bingCommon.HEADERS
+        httpHeaders["User-Agent"] = agents.pc
+
+        __processAccount(config, httpHeaders, agents, reportItem, account.password)
+
         report.append(reportItem)
         doSleep = True
-
 
     #
     # trigger full report if needed
