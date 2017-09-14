@@ -147,8 +147,8 @@ def printVersion():
     print "Developed by: Sergey Markelov"
 
 def __stringifyAccount(reportItem, strLen):
-    if strLen < 15:
-        raise ValueError("strLen too small. Must be > " + 15)
+    if strLen < 4:
+        raise ValueError("strLen too small. Must be > 4")
 
     s = reportItem.accountLogin
     if len(s) > strLen:
