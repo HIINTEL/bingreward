@@ -20,7 +20,7 @@ class BingAuth:
     inputNameValue = re.compile(r"<input.+?name=\"(.+?)\".+?value=\"(.+?)\"")
     formAction = re.compile(r"<form.+action=\"(.+?)\"")
     ppftValue = re.compile(r"sFTTag:'.+value=\"(.+?)\"")
-    ppsxValue = re.compile(r",t:'(.+?)',")
+    ppsxValue = re.compile(r":'(Pa?s?s?p?o?r?t?R?N?)'")
     winLiveId = re.compile(r"\"WindowsLiveId\":\"(.+?)\"")
     urlPostValue = re.compile(r"urlPost:'(.+?)'")
 
@@ -75,7 +75,7 @@ class BingAuth:
         # get PPSX parameter
         ppsxSearch = self.ppsxValue.search(page)
         if ppsxSearch == None:
-            raise AuthenticationError("Could not find variable 't' on Live login page")
+            raise AuthenticationError("Could not find PassportRN variable on Live login page")
         PPSX = ppsxSearch.group(1)
 
         # generate ClientLoginTime
