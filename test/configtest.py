@@ -1,7 +1,6 @@
 #!/usr/bin/env python -B
 
 import unittest
-import subprocess
 import sys
 import os
 
@@ -28,14 +27,21 @@ from config import Config
 from config import BingRewardsReportItem
 from eventsProcessor import EventsProcessor
 from bingRewards import BingRewards
+from socket import error as SocketError
+from HTMLParser import HTMLParser
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "pkg", "queryGenerators"))
 import googleTrends
 import wikipedia
+import HTMLParser
 
 """
   Test xml is correctly stored
 """
+
+
+def _auth_exceptions():
+    raise SocketError
 
 
 class TestConfig(unittest.TestCase):
@@ -286,6 +292,30 @@ class TestConfig(unittest.TestCase):
         form = bingAuth.HTMLFormInputsParser()
         self.assertIsNone(form.handle_starttag("input", "name"), "should not be None")
         self.assertIsNone(form.handle_starttag("input", [["name", "1"] , ["value", "2"]]), "should not be None")
+
+    @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=SocketError()))
+    def test_auth_exceptionSock(self):
+        self.assertRaisesRegexp(SocketError, "", main.run, self.config)
+
+    @unittest.skip("need love")
+    @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=helpers.BingAccountError(None)))
+    def test_auth_exceptionBing(self):
+        self.assertRaisesRegexp(helpers.BingAccountError, "", main.run, self.config)
+
+    @unittest.skip("need love")
+    @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=urllib2.URLError("")))
+    def test_auth_exceptionURL(self):
+        self.assertRaisesRegexp(urllib2.URLError, "", main.run, self.config)
+
+    @unittest.skip("need love")
+    @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=HTMLParser.HTMLParseError("error")))
+    def test_auth_exceptionParser(self):
+        self.assertRaisesRegexp(Exception, "", main.run, self.config)
+
+    @unittest.skip("need love")
+    @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=urllib2.HTTPError("", "", "", "", open("tmp", "a+"))))
+    def test_auth_exceptionHTTP(self):
+        self.assertRaisesRegexp(urllib2.HTTPError, "", main.run, self.config)
 
     @patch('urllib2.Request', return_value = "")
     @patch('helpers.getResponseBody', return_value = "")
@@ -539,6 +569,7 @@ class TestConfig(unittest.TestCase):
         proxy.protocols = "http"
         self.config.proxy = proxy
         self.assertIsNotNone(BingRewards(bingCommon.HEADERS, "", self.config), "should return class")
+
 
 if __name__ == '__main__': # pragma: no cover
     unittest.main(verbosity=3)
