@@ -4,8 +4,8 @@ import unittest
 import sys
 import os
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "pkg"))
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(os.path.abspath("pkg"))
+sys.path.append(os.path.abspath("."))
 
 import main
 import urllib2
@@ -30,33 +30,13 @@ from bingRewards import BingRewards
 from socket import error as SocketError
 from HTMLParser import HTMLParser
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "pkg", "queryGenerators"))
+sys.path.append(os.path.abspath("pkg/queryGenerators"))
 import googleTrends
 import wikipedia
 import HTMLParser
 
 
-def run(config):
-    return main.__run(config)
-
-
-class TestConfig(unittest.TestCase):
-    fsock = None
-    mockdate = "2017-09-06 00:44:47.7"
-
-    def _redirectOut(self):
-        self.fsock = open('out.log', 'a+')
-        sys.stdout = self.fsock
-
-    def tearDown(self):
-        if self.fsock is not None:
-            self.fsock.close()
-            self.fsock = None
-            sys.stdout = sys.__stdout__
-
-    def setUp(self):
-        self.config = Config()
-        self.configXMLString = """
+XMLString = """
     <configuration>
         <general
             betweenQueriesInterval="12.271"
@@ -105,8 +85,7 @@ class TestConfig(unittest.TestCase):
         <queries generator="googleTrends" />
     </configuration>
             """
-        self.config.parseFromString(self.configXMLString)
-        self.configFBXML = """
+FBXML = """
     <configuration>
         <general
             betweenQueriesInterval="12.271"
@@ -150,6 +129,33 @@ class TestConfig(unittest.TestCase):
         <queries generator="wikipedia" />
     </configuration>
             """
+
+
+def run(config):
+    return main.__run(config)
+
+
+class TestConfig(unittest.TestCase):
+
+    fsock = None
+    mockdate = "2017-09-06 00:44:47.7"
+
+    def _redirectOut(self):
+        self.fsock = open('out.log', 'a+')
+        sys.stdout = self.fsock
+
+    def tearDown(self):
+        if self.fsock is not None:
+            self.fsock.close()
+            self.fsock = None
+            sys.stdout = sys.__stdout__
+
+    def setUp(self):
+        self.config = Config()
+        self.configXMLString = XMLString
+
+        self.config.parseFromString(self.configXMLString)
+        self.configFBXML = FBXML
 
     def test_timestamp(self):
         """
@@ -407,6 +413,91 @@ class TestConfig(unittest.TestCase):
         self.assertIsNone(self.config.getEvent("does_not_exist"))
         self.assertRaisesRegexp(ValueError, "None", self.config.getEvent, None)
 
+    @patch('helpers.getResponseBody')
+    def test_rewards_hit(self, helpmock):
+        """
+        test rewards object
+        :return:
+        """
+        self.config.proxy = False
+        reward = BingRewards(bingCommon.HEADERS, "", self.config)
+        self.assertIsNotNone(reward.requestFlyoutPage(), "should not be None")
+
+        page = '"WindowsLiveId":""     "WindowsLiveId":"" '
+        page += 'action="0" value="0" '
+        page += 'value= "0" NAP value="0" '
+        page += 'ANON value="0" '
+        page += 'id="t" value="0" '
+        page += '<div> 999 livetime points</div> '
+
+        helpmock.return_value = page
+
+        # if not login should have not found error for url
+        self.assertRaisesRegexp(ValueError, "unknown", reward.getLifetimeCredits)
+
+        page = "t.innerHTML='100'"
+        helpmock.return_value = page
+        self.assertIsNotNone(reward.getRewardsPoints(), "should not be None")
+        self.assertRaisesRegexp(TypeError, "not an instance", reward.process, None, True)
+
+        # NONE case
+        newbfp = bfp.Reward()
+        newbfp.tp = None
+        rewards = [ newbfp ]
+        self.assertRaisesRegexp(ValueError, "unknown", reward.process, rewards, True)
+
+        # HIT case
+        newbfp.tp = mock.Mock()
+        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.Action.HIT ]
+
+        rewards = [ newbfp ]
+        self.assertRaisesRegexp(ValueError, "unknown", reward.process, rewards, True)
+
+        # SEARCH case
+        newbfp.tp = mock.Mock()
+        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.Action.SEARCH ]
+        newbfp.progressCurrent = 100
+        rewards = [ newbfp ]
+        self.assertIsNotNone(reward.process(rewards, True), "should return res")
+
+        self.assertRaisesRegexp(TypeError, "not an instance", reward.printResults, None, True)
+
+        result = mock.Mock()
+        result.action = bfp.Reward.Type.Action.SEARCH
+        result.isError = True
+        result.o = newbfp
+        result.message = "done"
+        newbfp.progressCurrent = 1
+        newbfp.progressMax = 100
+        newbfp.url = "http:0.0.0.0"
+        self.assertIsNone(reward.printResults([result], True), "should return None")
+        self.assertRaisesRegexp(TypeError, "rewards is not", reward.printRewards, None)
+
+        self.assertIsNone(reward.printRewards(rewards), "should return None")
+
+        self.assertRaisesRegexp(TypeError, "reward is not", reward.RewardResult, None)
+        self.assertIsNotNone(reward.RewardResult(newbfp), "should return class")
+
+        proxy = mock.Mock()
+        proxy.login = True
+        proxy.password = "xxx"
+        proxy.url = "http://127.0.0.1"
+        proxy.protocols = "http"
+        self.config.proxy = proxy
+        self.assertIsNotNone(BingRewards(bingCommon.HEADERS, "", self.config), "should return class")
+
+
+class TestLong(unittest.TestCase):
+    """
+    Test that takes near 30s
+    """
+    def setUp(self):
+        self.config = Config()
+        self.configXMLString = XMLString
+
+        self.config.parseFromString(self.configXMLString)
+        self.configFBXML = FBXML
+
     def test_query(self):
         """
         test google queryGenerator
@@ -489,78 +580,6 @@ class TestConfig(unittest.TestCase):
         self.config.proxy = None
         BingRewards(bingCommon.HEADERS, useragents, self.config)
 
-    @patch('helpers.getResponseBody')
-    def test_rewards_hit(self, helpmock):
-        """
-        test rewards object
-        :return:
-        """
-        self.config.proxy = False
-        reward = BingRewards(bingCommon.HEADERS, "", self.config)
-        self.assertIsNotNone(reward.requestFlyoutPage(), "should not be None")
-
-        page = '"WindowsLiveId":""     "WindowsLiveId":"" '
-        page += 'action="0" value="0" '
-        page += 'value= "0" NAP value="0" '
-        page += 'ANON value="0" '
-        page += 'id="t" value="0" '
-        page += '<div> 999 livetime points</div> '
-
-        helpmock.return_value = page
-
-        # if not login should have not found error for url
-        self.assertRaisesRegexp(ValueError, "unknown", reward.getLifetimeCredits)
-
-        page = "t.innerHTML='100'"
-        helpmock.return_value = page
-        self.assertIsNotNone(reward.getRewardsPoints(), "should not be None")
-        self.assertRaisesRegexp(TypeError, "not an instance", reward.process, None, True)
-
-        # NONE case
-        newbfp = bfp.Reward()
-        newbfp.tp = None
-        rewards = [ newbfp ]
-        self.assertRaisesRegexp(ValueError, "unknown", reward.process, rewards, True)
-
-        # HIT case
-        newbfp.tp = mock.Mock()
-        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.Action.HIT ]
-
-        rewards = [ newbfp ]
-        self.assertRaisesRegexp(ValueError, "unknown", reward.process, rewards, True)
-
-        # SEARCH case
-        newbfp.tp = mock.Mock()
-        newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.Action.SEARCH ]
-        newbfp.progressCurrent = 100
-        rewards = [ newbfp ]
-        self.assertIsNotNone(reward.process(rewards, True), "should return res")
-
-        self.assertRaisesRegexp(TypeError, "not an instance", reward.printResults, None, True)
-
-        result = mock.Mock()
-        result.action = bfp.Reward.Type.Action.SEARCH
-        result.isError = True
-        result.o = newbfp
-        result.message = "done"
-        newbfp.progressCurrent = 1
-        newbfp.progressMax = 100
-        newbfp.url = "http:0.0.0.0"
-        self.assertIsNone(reward.printResults([result], True), "should return None")
-        self.assertRaisesRegexp(TypeError, "rewards is not", reward.printRewards, None)
-
-        self.assertIsNone(reward.printRewards(rewards), "should return None")
-
-        self.assertRaisesRegexp(TypeError, "reward is not", reward.RewardResult, None)
-        self.assertIsNotNone(reward.RewardResult(newbfp), "should return class")
-
-        proxy = mock.Mock()
-        proxy.login = True
-        proxy.password = "xxx"
-        proxy.url = "http://127.0.0.1"
-        proxy.protocols = "http"
-        self.config.proxy = proxy
-        self.assertIsNotNone(BingRewards(bingCommon.HEADERS, "", self.config), "should return class")
 
 
 if __name__ == '__main__': # pragma: no cover
