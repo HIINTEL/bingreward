@@ -28,11 +28,12 @@ dependencies:
 test:
   override:
     # checking parallel runs https://discuss.circleci.com/t/parallel-runs-status/15876/2 and test file for highest timeout
-    - nosetests -v  --processes=4 --process-timeout=60 --with-coverage --cover-package pkg --cover-package test test/*.py
+    - nosetests -v  --processes=4 --process-timeout=60 --with-coverage --cover-package pkg --cover-package test test/*.py:
           parallel: false
     - mv .coverage .coverage.1
     - coverage run -p main.py -v -r
     - ls -aRl .coverage*
+    # combine with two processes running coverage seems broken
     - coverage combine
 
   post:
