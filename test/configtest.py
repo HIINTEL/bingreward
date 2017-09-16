@@ -297,25 +297,21 @@ class TestConfig(unittest.TestCase):
     def test_auth_exceptionSock(self):
         self.assertRaisesRegexp(SocketError, "", main.run, self.config)
 
-    @unittest.skip("need love")
     @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=helpers.BingAccountError(None)))
     def test_auth_exceptionBing(self):
-        self.assertRaisesRegexp(helpers.BingAccountError, "", main.run, self.config)
+        self.assertIsNone(main.run(self.config), "should not return anything")
 
-    @unittest.skip("need love")
     @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=urllib2.URLError("")))
     def test_auth_exceptionURL(self):
-        self.assertRaisesRegexp(urllib2.URLError, "", main.run, self.config)
+        self.assertIsNone(main.run(self.config), "should not return anything")
 
-    @unittest.skip("need love")
     @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=HTMLParser.HTMLParseError("error")))
     def test_auth_exceptionParser(self):
-        self.assertRaisesRegexp(Exception, "", main.run, self.config)
+        self.assertIsNone(main.run(self.config), "should not return anything")
 
-    @unittest.skip("need love")
     @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=urllib2.HTTPError("", "", "", "", open("tmp", "a+"))))
     def test_auth_exceptionHTTP(self):
-        self.assertRaisesRegexp(urllib2.HTTPError, "", main.run, self.config)
+        self.assertIsNone(main.run(self.config), "should not return anything")
 
     @patch('urllib2.Request', return_value = "")
     @patch('helpers.getResponseBody', return_value = "")
