@@ -218,13 +218,6 @@ def __processAccountUserAgent(config, account, userAgents, doSleep):
     return reportItem
 
 
-def run(config): # pragma: no cover
-    """
-    Allow unittesting of config
-    """
-    __run(config)
-
-
 def __run(config):
     report = list()
 

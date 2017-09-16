@@ -35,13 +35,9 @@ import googleTrends
 import wikipedia
 import HTMLParser
 
-"""
-  Test xml is correctly stored
-"""
 
-
-def _auth_exceptions():
-    raise SocketError
+def run(config):
+    return main.__run(config)
 
 
 class TestConfig(unittest.TestCase):
@@ -245,7 +241,7 @@ class TestConfig(unittest.TestCase):
         Should throw Not supported value for facebook parameters
         """
         self.config.parseFromString(self.configFBXML)
-        self.assertRaisesRegexp(ValueError, "Not supported", main.run, self.config)
+        self.assertRaisesRegexp(ValueError, "Not supported", run, self.config)
 
     def test_history(self):
         """
@@ -284,7 +280,7 @@ class TestConfig(unittest.TestCase):
         :return:
         """
         self._redirectOut()
-        main.run(self.config)
+        run(self.config)
         output = ""
         output.join(self.fsock.readlines())
         self.assertRegexpMatches(output, "", "should have not error,\n" + output)
@@ -293,25 +289,25 @@ class TestConfig(unittest.TestCase):
         self.assertIsNone(form.handle_starttag("input", "name"), "should not be None")
         self.assertIsNone(form.handle_starttag("input", [["name", "1"] , ["value", "2"]]), "should not be None")
 
-    @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=SocketError()))
+    @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=SocketError("")))
     def test_auth_exceptionSock(self):
-        self.assertRaisesRegexp(SocketError, "", main.run, self.config)
+        self.assertRaisesRegexp(SocketError, "", run, self.config)
 
     @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=helpers.BingAccountError(None)))
     def test_auth_exceptionBing(self):
-        self.assertIsNone(main.run(self.config), "should not return anything")
+        self.assertIsNone(run(self.config), "should not return anything")
 
     @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=urllib2.URLError("")))
     def test_auth_exceptionURL(self):
-        self.assertIsNone(main.run(self.config), "should not return anything")
+        self.assertIsNone(run(self.config), "should not return anything")
 
     @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=HTMLParser.HTMLParseError("error")))
     def test_auth_exceptionParser(self):
-        self.assertIsNone(main.run(self.config), "should not return anything")
+        self.assertIsNone(run(self.config), "should not return anything")
 
     @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=urllib2.HTTPError("", "", "", "", open("tmp", "a+"))))
     def test_auth_exceptionHTTP(self):
-        self.assertIsNone(main.run(self.config), "should not return anything")
+        self.assertIsNone(run(self.config), "should not return anything")
 
     @patch('urllib2.Request', return_value = "")
     @patch('helpers.getResponseBody', return_value = "")
@@ -337,7 +333,7 @@ class TestConfig(unittest.TestCase):
         test authentication decoding error
         :return:
         """
-        self.assertRaisesRegexp(ValueError, "substring not found", main.run, self.config)
+        self.assertRaisesRegexp(ValueError, "substring not found", run, self.config)
 
     def test_bfp(self):
         """
