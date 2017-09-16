@@ -8,8 +8,9 @@ import os
 """
 Add pkg and parent directory for mock testing of authentication errors
 """
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "pkg"))
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(os.path.abspath("pkg"))
+sys.path.append(os.path.abspath("."))
+
 
 """
   Testing bing reward in root dir with configuration files below
@@ -17,6 +18,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 
 class TestBing(unittest.TestCase):
+
     def setUp(self):
         newpath = os.path.join(os.path.dirname(__file__), "..")
         sys.path.append(newpath)
