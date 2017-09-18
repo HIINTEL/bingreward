@@ -3,7 +3,6 @@ import sys
 import os
 import main
 
-import dill as pickle
 from pathos.multiprocessing import ProcessingPool
 
 sys.path.append(os.path.abspath("pkg"))
@@ -11,6 +10,11 @@ sys.path.append(os.path.abspath("."))
 
 from config import Config
 
+import re
+PATTERN_SEL = re.compile(r'<login.*?>(.+?)</login>', re.MULTILINE)
+PATTERN_ACCS = re.compile(r'<accounts>(.+?)</accounts>', re.MULTILINE)
+PATTERN_ACC = re.compile(r'<account(ref|type).*?>(.+?)</account>', re.MULTILINE)
+PATTERN_REF = re.compile(r'<account ref.*?>(.+?)</account>', re.MULTILINE)
 
 XMLString = """
     <configuration>
@@ -63,8 +67,39 @@ XMLString = """
             """
 
 
-def run(config):
+def run_v1(config):
     return main.__run(config)
+
+
+def wrapper(args):
+    """
+    return XML string for running just that account
+    :param XMLString: XML with all account
+    :param selector:
+    :return:
+    """
+    class runnable:
+        def __init__(self):
+            self.config = Config()
+
+    (XMLString, selector) = args
+    newXML = " ".join(XMLString.rsplit())
+
+    for i in PATTERN_ACCS.finditer(newXML):
+        (strgp) = i.group(1)
+        if not i.re.search(selector):
+            newXML = PATTERN_ACCS.sub("", newXML)
+            break
+
+    for i in PATTERN_REF.finditer(newXML):
+        (strgp) = i.group(1)
+        if not i.re.search(selector):
+            newXML = PATTERN_REF.sub("", newXML)
+            break
+
+    run = runnable()
+    run.config.parseFromString(newXML)
+    run_v1(run.config)
 
 
 class TestMP(unittest.TestCase):
@@ -85,11 +120,36 @@ class TestMP(unittest.TestCase):
             self.config.accounts[key] = account
             self.assertIsNotNone(self.config.accounts[key], "should be one account")
 
-    @unittest.skip("need love with pickle")
-    def test_pool(self):
-        pool = ProcessingPool(nodes=1)
-        result = pool.map(run, [self.config])
+    def test_selector(self):
+        newXML = " ".join(XMLString.rsplit())
 
+        for i in PATTERN_ACCS.finditer(newXML):
+            (strgp) = i.group(1)
+            if not i.re.search(r"ms@ps.com"):
+                newXML = PATTERN_ACCS.sub("", newXML)
+                break
+
+        for i in PATTERN_REF.finditer(newXML):
+            (strgp) = i.group(1)
+            if not i.re.search(r"ms@ps.com"):
+                newXML = PATTERN_REF.sub("", newXML)
+                break
+        print newXML
+
+        self.config.parseFromString(newXML)
+        run_v1(self.config)
+
+    def test_pool(self):
+        """
+        test process pool of one
+        :return:
+        """
+        pool = ProcessingPool(nodes=1)
+        result = pool.map(wrapper, [(XMLString, "ms@ps.com")])
+        self.assertIsNotNone(result, "missing output")
+
+        # should test
+        #self.assertRegexpMatches(result, "Total points earned", "missing output")
 
 if __name__ == "__main__":
     unittest.main(verbosity=3)
