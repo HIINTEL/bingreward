@@ -2,18 +2,18 @@ import unittest
 import sys
 import os
 import main
-
 from pathos.multiprocessing import ProcessingPool
-
+import re
 sys.path.append(os.path.abspath("pkg"))
 sys.path.append(os.path.abspath("."))
 
 from config import Config
 
-import re
 PATTERN_SEL = re.compile(r'<login.*?>(.+?)</login>', re.MULTILINE)
 PATTERN_ACCS = re.compile(r'<accounts>(.+?)</accounts>', re.MULTILINE)
 PATTERN_ACC = re.compile(r'<account.*?>(.+?)</account>', re.MULTILINE)
+PATTERN_REFS = re.compile(r'<account ref.*Live_.*</account>', re.MULTILINE)
+PATTERN_REF = re.compile(r'<account ref.*Live_.*</account> |.*', re.MULTILINE)
 
 XMLString = """
     <configuration>
@@ -53,6 +53,12 @@ XMLString = """
                     <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
                 </account>
 
+                <account ref="Live_abc@ps.com">
+                    <retry if="%p lt 31" interval="5" salt="3.5" count="1" />
+                    <notify if="%l gt 10000" cmd="echo complete %a %p %r %P %l %i" />
+                    <notify if="%p ne 31" cmd="echo complete %a %p %r %P %l %i" />
+                    <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
+                </account>
             </onComplete>
             <onScriptComplete>
                 <notify cmd="echo" />
@@ -70,9 +76,9 @@ def run_v1(config):
     return main.__run(config)
 
 
-def run(nodes):
+def run(nodes=1, filename="config.xml"):
     file_xml = ""
-    with open("config.xml", "r") as fd:
+    with open(filename, "r") as fd:
         lines = fd.readlines()
         for line in lines:
             file_xml += line
@@ -80,18 +86,31 @@ def run(nodes):
 
     pool = ProcessingPool(nodes)
     runlist = [[xml, value] for value in PATTERN_SEL.findall(xml)]
-    return pool.map(single, runlist)
+    single(runlist[0])
+    single(runlist[1])
+    #return pool.map(single, runlist)
 
 
 def replace(xml, selector):
+    """
+    replace xml accounts with only selector inside
+    :param xml:
+    :param selector:
+    :return:
+    """
     newXML = " ".join(xml.rsplit())
     accounts = PATTERN_ACCS.findall(newXML)[0]
     type = accounts.split(">")[0] + ">"
     for account in PATTERN_ACC.findall(accounts):
         if selector in account:
             break
-    # TODO verify intact account ref
     newXML = PATTERN_ACCS.sub('<accounts> ' + type + account + "</account> </accounts>", newXML)
+
+    accounts = PATTERN_REFS.findall(newXML)[0]
+    for account in PATTERN_REF.findall(accounts):
+        if selector in account:
+            break
+    newXML = PATTERN_REFS.sub(account, newXML)
     return newXML
 
 
@@ -106,9 +125,8 @@ def single(args):
         def __init__(self):
             self.config = Config()
 
-    [xml, selector]= args
+    [xml, selector] = args
     newXML = replace(xml, selector)
-
     run = runnable()
     run.config.parseFromString(newXML)
     run_v1(run.config)
@@ -122,7 +140,6 @@ class TestMP(unittest.TestCase):
     def setUp(self):
         self.config = Config()
         self.configXMLString = XMLString
-        self.config.parseFromString(self.configXMLString)
 
     def test_accounts(self):
         import copy
@@ -133,10 +150,12 @@ class TestMP(unittest.TestCase):
             self.assertIsNotNone(self.config.accounts[key], "should be one account")
 
     def test_selector(self):
+        """
+        test replacement functions and replace account ref/type if they are not account
+        :return:
+        """
         newXML = replace(XMLString, "ms@ps.com")
-
         self.assertIsNone(self.config.parseFromString(newXML), "should be none")
-
 
     def test_pool(self):
         """
@@ -148,13 +167,12 @@ class TestMP(unittest.TestCase):
         self.assertRaisesRegexp(ValueError, "not found", single, [XMLString, "ms@ps.com"])
         self.assertRaisesRegexp(ValueError, "not found", pool.map, single, [[XMLString, "ms@ps.com"]])
 
-
     def test_pool_file(self):
         """
-        test process pool of one from a file
+        test process pool of two from a file
         :return:
         """
-        run(2)
+        run(2, "config.xml.dist")
 
 if __name__ == "__main__":
     unittest.main(verbosity=0)

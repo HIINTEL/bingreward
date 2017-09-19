@@ -67,6 +67,13 @@
                         cmd="~/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
             </account>
             <account ref="Live_johnsmith@gmail.com">
+                <retry if="%p lt 16" interval="15" salt="13.5" count="3" />
+                <notify if="%l gt 750"
+                        cmd='~/BingRewards/notify/onComplete_reached.sh %a %p %r %P %l %i "Gold with %l Life Credits"' />
+                <notify if="%p ne 16"
+                        cmd="~/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
+                <notify if="%P gt 475"
+                        cmd="~/BingRewards/notify/onComplete.sh %a %p %r %P %l %i" />
             </account>
         </onComplete>
         <onScriptComplete>
