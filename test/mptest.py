@@ -86,9 +86,7 @@ def run(nodes=1, filename="config.xml"):
 
     pool = ProcessingPool(nodes)
     runlist = [[xml, value] for value in PATTERN_SEL.findall(xml)]
-    single(runlist[0])
-    single(runlist[1])
-    #return pool.map(single, runlist)
+    return pool.map(helper, runlist)
 
 
 def replace(xml, selector):
@@ -114,7 +112,7 @@ def replace(xml, selector):
     return newXML
 
 
-def single(args):
+def helper(args):
     """
     return XML string for running just that account
     :param XMLString: XML with all account
@@ -164,8 +162,8 @@ class TestMP(unittest.TestCase):
         """
         pool = ProcessingPool(nodes=1)
 
-        self.assertRaisesRegexp(ValueError, "not found", single, [XMLString, "ms@ps.com"])
-        self.assertRaisesRegexp(ValueError, "not found", pool.map, single, [[XMLString, "ms@ps.com"]])
+        self.assertRaisesRegexp(ValueError, "not found", helper, [XMLString, "ms@ps.com"])
+        self.assertRaisesRegexp(ValueError, "not found", pool.map, helper, [[XMLString, "ms@ps.com"]])
 
     def test_pool_file(self):
         """
