@@ -42,7 +42,7 @@ deployment:
     branch: production
     commands:
       - echo production test
-      - coverage report --omit '/home/ubuntu/virtualenvs/*,/usr/*,mpmain.py'
+      - coverage report --omit '/home/ubuntu/*/*/*/*,/usr/*,mpmain.py'
       - coveralls
       - find . -iname \*py -exec rm -f {} \;
       
@@ -50,7 +50,7 @@ deployment:
     branch: master
     commands:
       - echo integration with docker test
-      - coverage report --omit '/home/ubuntu/virtualenvs/*,/usr/*,mpmain.py'
+      - coverage report --omit '/home/ubuntu/*/*/*/*,/usr/*,mpmain.py'
       - coveralls
       - find . -iname \*py -exec rm -f {} \;
 
