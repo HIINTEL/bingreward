@@ -13,8 +13,7 @@ from config import Config
 import re
 PATTERN_SEL = re.compile(r'<login.*?>(.+?)</login>', re.MULTILINE)
 PATTERN_ACCS = re.compile(r'<accounts>(.+?)</accounts>', re.MULTILINE)
-PATTERN_ACC = re.compile(r'<account(ref|type).*?>(.+?)</account>', re.MULTILINE)
-PATTERN_REF = re.compile(r'<account ref.*?>(.+?)</account>', re.MULTILINE)
+PATTERN_ACC = re.compile(r'<account.*?>(.+?)</account>', re.MULTILINE)
 
 XMLString = """
     <configuration>
@@ -71,7 +70,32 @@ def run_v1(config):
     return main.__run(config)
 
 
-def wrapper(args):
+def run(nodes):
+    file_xml = ""
+    with open("config.xml", "r") as fd:
+        lines = fd.readlines()
+        for line in lines:
+            file_xml += line
+    xml = " ".join(file_xml.rsplit())
+
+    pool = ProcessingPool(nodes)
+    runlist = [[xml, value] for value in PATTERN_SEL.findall(xml)]
+    return pool.map(single, runlist)
+
+
+def replace(xml, selector):
+    newXML = " ".join(xml.rsplit())
+    accounts = PATTERN_ACCS.findall(newXML)[0]
+    type = accounts.split(">")[0] + ">"
+    for account in PATTERN_ACC.findall(accounts):
+        if selector in account:
+            break
+    # TODO verify intact account ref
+    newXML = PATTERN_ACCS.sub('<accounts> ' + type + account + "</account> </accounts>", newXML)
+    return newXML
+
+
+def single(args):
     """
     return XML string for running just that account
     :param XMLString: XML with all account
@@ -82,20 +106,8 @@ def wrapper(args):
         def __init__(self):
             self.config = Config()
 
-    (XMLString, selector) = args
-    newXML = " ".join(XMLString.rsplit())
-
-    for i in PATTERN_ACCS.finditer(newXML):
-        (strgp) = i.group(1)
-        if not i.re.search(selector):
-            newXML = PATTERN_ACCS.sub("", newXML)
-            break
-
-    for i in PATTERN_REF.finditer(newXML):
-        (strgp) = i.group(1)
-        if not i.re.search(selector):
-            newXML = PATTERN_REF.sub("", newXML)
-            break
+    [xml, selector]= args
+    newXML = replace(xml, selector)
 
     run = runnable()
     run.config.parseFromString(newXML)
@@ -110,9 +122,9 @@ class TestMP(unittest.TestCase):
     def setUp(self):
         self.config = Config()
         self.configXMLString = XMLString
+        self.config.parseFromString(self.configXMLString)
 
     def test_accounts(self):
-        self.config.parseFromString(self.configXMLString)
         import copy
         saved = copy.copy(self.config.accounts)
         for key, account in saved.iteritems():
@@ -121,23 +133,10 @@ class TestMP(unittest.TestCase):
             self.assertIsNotNone(self.config.accounts[key], "should be one account")
 
     def test_selector(self):
-        newXML = " ".join(XMLString.rsplit())
+        newXML = replace(XMLString, "ms@ps.com")
 
-        for i in PATTERN_ACCS.finditer(newXML):
-            (strgp) = i.group(1)
-            if not i.re.search(r"ms@ps.com"):
-                newXML = PATTERN_ACCS.sub("", newXML)
-                break
+        self.assertIsNone(self.config.parseFromString(newXML), "should be none")
 
-        for i in PATTERN_REF.finditer(newXML):
-            (strgp) = i.group(1)
-            if not i.re.search(r"ms@ps.com"):
-                newXML = PATTERN_REF.sub("", newXML)
-                break
-        print newXML
-
-        self.config.parseFromString(newXML)
-        run_v1(self.config)
 
     def test_pool(self):
         """
@@ -145,12 +144,18 @@ class TestMP(unittest.TestCase):
         :return:
         """
         pool = ProcessingPool(nodes=1)
-        result = pool.map(wrapper, [(XMLString, "ms@ps.com")])
-        self.assertIsNotNone(result, "missing output")
 
-        # should test
-        #self.assertRegexpMatches(result, "Total points earned", "missing output")
+        self.assertRaisesRegexp(ValueError, "not found", single, [XMLString, "ms@ps.com"])
+        self.assertRaisesRegexp(ValueError, "not found", pool.map, single, [[XMLString, "ms@ps.com"]])
+
+
+    def test_pool_file(self):
+        """
+        test process pool of one from a file
+        :return:
+        """
+        run(2)
 
 if __name__ == "__main__":
-    unittest.main(verbosity=3)
+    unittest.main(verbosity=0)
 
