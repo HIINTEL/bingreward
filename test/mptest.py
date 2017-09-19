@@ -172,6 +172,6 @@ class TestMP(unittest.TestCase):
         """
         run(2, "config.xml.dist")
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover
     unittest.main(verbosity=0)
 

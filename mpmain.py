@@ -3,7 +3,7 @@
 #
 # developed by kenneyhe@gmail.com (2017)
 #
-
+# pragma: no cover
 import sys
 import os
 import main
@@ -90,7 +90,7 @@ def helper(args):
     run.config.parseFromString(new_xml)
     run_v1(run.config)
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover
     if len(sys.argv) > 1 and int(sys.argv[1])> 0:
         run(int(sys.argv[1]), "config.xml")
     else:
