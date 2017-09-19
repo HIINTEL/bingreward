@@ -22,6 +22,7 @@ dependencies:
 test:
   override:
     # checking parallel runs https://discuss.circleci.com/t/parallel-runs-status/15876/2 and test file for highest timeout
+    # https://github.com/dlanger/nose-parallel
     - nosetests -v  --processes=4 --process-timeout=120 --with-coverage --cover-package pkg --cover-package test test/*.py:
           parallel: false
     - mv .coverage .coverage.1
@@ -41,7 +42,7 @@ deployment:
     branch: production
     commands:
       - echo production test
-      - coverage report --omit '/home/ubuntu/virtualenvs/venv-2.7/lib/python2.7/site-packages/*,/usr/*'
+      - coverage report --omit '/home/ubuntu/virtualenvs/*,/usr/*,mpmain.py'
       - coveralls
       - find . -iname \*py -exec rm -f {} \;
       
@@ -49,7 +50,7 @@ deployment:
     branch: master
     commands:
       - echo integration with docker test
-      - coverage report --omit '/home/ubuntu/virtualenvs/venv-2.7/lib/python2.7/site-packages/*,/usr/*'
+      - coverage report --omit '/home/ubuntu/virtualenvs/*,/usr/*,mpmain.py'
       - coveralls
       - find . -iname \*py -exec rm -f {} \;
 
