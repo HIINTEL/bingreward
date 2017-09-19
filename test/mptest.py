@@ -1,7 +1,7 @@
 import unittest
 import sys
 import os
-import main
+import mpmain
 from pathos.multiprocessing import ProcessingPool
 import re
 sys.path.append(os.path.abspath("pkg"))
@@ -86,7 +86,7 @@ def run(nodes=1, filename="config.xml"):
 
     pool = ProcessingPool(nodes)
     runlist = [[xml, value] for value in PATTERN_SEL.findall(xml)]
-    return pool.map(helper, runlist)
+    return pool.map(mpmain.helper, runlist)
 
 
 def replace(xml, selector):
@@ -110,24 +110,6 @@ def replace(xml, selector):
             break
     newXML = PATTERN_REFS.sub(account, newXML)
     return newXML
-
-
-def helper(args):
-    """
-    return XML string for running just that account
-    :param XMLString: XML with all account
-    :param selector:
-    :return:
-    """
-    class runnable:
-        def __init__(self):
-            self.config = Config()
-
-    [xml, selector] = args
-    newXML = replace(xml, selector)
-    run = runnable()
-    run.config.parseFromString(newXML)
-    run_v1(run.config)
 
 
 class TestMP(unittest.TestCase):
@@ -162,8 +144,8 @@ class TestMP(unittest.TestCase):
         """
         pool = ProcessingPool(nodes=1)
 
-        self.assertRaisesRegexp(ValueError, "not found", helper, [XMLString, "ms@ps.com"])
-        self.assertRaisesRegexp(ValueError, "not found", pool.map, helper, [[XMLString, "ms@ps.com"]])
+        self.assertRaisesRegexp(ValueError, "not found", mpmain.helper, [XMLString, "ms@ps.com"])
+        self.assertRaisesRegexp(ValueError, "not found", pool.map, mpmain.helper, [[XMLString, "ms@ps.com"]])
 
     def test_pool_file(self):
         """
