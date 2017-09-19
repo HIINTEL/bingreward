@@ -26,7 +26,8 @@ test:
           parallel: false
     - mv .coverage .coverage.1
     - coverage run --concurrency multiprocessing -p mpmain.py 3
-    - mv .coverage .coverage.2
+    # need more loving from circleci coverage plugin
+    #- mv .coverage .coverage.2
     - coverage run -p main.py -v -r
     - ls -aRl .coverage*
     # combine with two processes running coverage seems broken
