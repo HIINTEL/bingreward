@@ -12,6 +12,7 @@ dependencies:
     # - touch /home/ubuntu/.Xauthority
     # - echo "firefox &" >> ~/.vnc/xstartup 
     # - vnc4server -geometry 1280x1024 -depth 24
+    # if need to syncup with upstream: https://gist.github.com/Chaser324/ce0505fbed06b947d962
     - pip install --upgrade pip 
     - openssl aes-256-cbc -d -in config.xml.encrypted -k "${KEY}" >> config.xml
     - chmod og-r config.xml
@@ -26,10 +27,10 @@ test:
     - nosetests -v  --processes=4 --process-timeout=120 --with-coverage --cover-package pkg --cover-package test test/*.py:
           parallel: false
     - mv .coverage .coverage.1
-    - coverage run --concurrency multiprocessing -p mpmain.py 3
+    - coverage run --omit '/home/ubuntu/*/*/*/*,/usr/*,mpmain.py' -p mpmain.py 3
     # need more loving from circleci coverage plugin
     #- mv .coverage .coverage.2
-    - coverage run -p main.py -v -r
+    - coverage run --omit '/home/ubuntu/*/*/*/*,/usr/*,mpmain.py' -p main.py -v -r
     - ls -aRl .coverage*
     # combine with two processes running coverage seems broken
     - coverage combine
