@@ -33,8 +33,8 @@ verbose = False
 totalPoints = 0
 showFullReport = False
 
-SCRIPT_VERSION = "3.14.9"
-SCRIPT_DATE = "September 7, 2016"
+SCRIPT_VERSION = "3.15.1"
+SCRIPT_DATE = "September 13, 2017"
 
 
 def earnRewards(config, httpHeaders, userAgents, reportItem, password):
@@ -124,7 +124,6 @@ def earnRewards(config, httpHeaders, userAgents, reportItem, password):
             print
             print "-" * 80
 
-
 def usage():
     print "Usage:"
     print "    -h, --help               show this help"
@@ -151,27 +150,15 @@ def printVersion():
 
 
 def __stringifyAccount(reportItem, strLen):
-    if strLen < 15:
-        raise ValueError("strLen too small. Must be > " + 15)
 
-    s = ""
-    if reportItem.accountType == "Live":
-        s += "live"
-    else:
-        raise ValueError("Account type (" + reportItem.accountType + ") is not supported")
+    if strLen < 4:
+        raise ValueError("strLen too small. Must be > 4")
 
-    s += " - "
-
-    l = strLen - len(s)
-
-    if len(reportItem.accountLogin) < l:
-        s += reportItem.accountLogin
-    else:
-        s += reportItem.accountLogin[:(l - 3)]
-        s += "..."
+    s = reportItem.accountLogin
+    if len(s) > strLen:
+        s = "{}...".format(s[:(strLen - 3)])
 
     return s
-
 
 def __processAccount(config, httpHeaders, userAgents, reportItem, accountPassword):
     global totalPoints
@@ -195,29 +182,6 @@ def __processAccount(config, httpHeaders, userAgents, reportItem, accountPasswor
             print "Unexpected result from eventsProcessor.processReportItem() = ( %s, %s )" % (result, extra)
             break
 
-def __processAccountUserAgent(config, account, userAgents, doSleep):
-# sleep between two accounts logins
-    if doSleep:
-        extra = config.general.betweenAccountsInterval + random.uniform(0, config.general.betweenAccountsSalt)
-        if verbose:
-            print
-            print("Pausing between accounts for {0} seconds".format(int(extra)))
-        time.sleep(extra)
-
-    reportItem = BingRewardsReportItem()
-    reportItem.accountType  = account.accountType
-    reportItem.accountLogin = account.accountLogin
-
-    agents = bingCommon.UserAgents.generate(account)
-
-    httpHeaders = bingCommon.HEADERS
-    httpHeaders["User-Agent"] = agents.pc
-
-    __processAccount(config, httpHeaders, agents, reportItem, account.password)
-
-    return reportItem
-
-
 def __run(config):
     report = list()
 
@@ -227,10 +191,26 @@ def __run(config):
         if account.disabled:
             continue
 
-        reportItem = __processAccountUserAgent(config, account, bingCommon.USER_AGENTS_PC, doSleep)
+        # sleep between two accounts logins
+        if doSleep:
+            extra = config.general.betweenAccountsInterval + random.uniform(0, config.general.betweenAccountsSalt)
+            if verbose:
+                print("\nPausing between accounts for {0} seconds".format(int(extra)))
+            time.sleep(extra)
+
+        reportItem = BingRewardsReportItem()
+        reportItem.accountType  = account.accountType
+        reportItem.accountLogin = account.accountLogin
+
+        agents = bingCommon.UserAgents.generate(account)
+
+        httpHeaders = bingCommon.HEADERS
+        httpHeaders["User-Agent"] = agents.pc
+
+        __processAccount(config, httpHeaders, agents, reportItem, account.password)
+
         report.append(reportItem)
         doSleep = True
-
 
     #
     # trigger full report if needed

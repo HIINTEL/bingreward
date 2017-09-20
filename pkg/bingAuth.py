@@ -2,7 +2,6 @@
 # developed by Sergey Markelov (2013)
 #
 
-import HTMLParser
 import random
 import urllib
 import urllib2
@@ -17,28 +16,15 @@ class AuthenticationError(Exception):
     def __init__(self, message):
         Exception.__init__(self, message)
 
-class HTMLFormInputsParser(HTMLParser.HTMLParser):
-    def __init__(self):
-        HTMLParser.HTMLParser.__init__(self)
-        self.inputs = {}
-
-    def handle_starttag(self, tag, attrs):
-        if tag == 'input':
-            name = value = ''
-            for attr in attrs:
-                if attr[0] == 'name':
-                    name = attr[1]
-                elif attr[0] == 'value':
-                    value = attr[1]
-            if name != '' and value != '':
-                self.inputs[name] = value.encode("utf-8")
-
 class BingAuth:
 
     inputNameValue = re.compile(r"<input.+?name=\"(.+?)\".+?value=\"(.+?)\"")
     formAction = re.compile(r"<form.+action=\"(.+?)\"")
-    ppsxValue = re.compile(r",r:'(.+?)',")
 
+    ppftValue = re.compile(r"sFTTag:'.+value=\"(.+?)\"")
+    ppsxValue = re.compile(r":'(Pa?s?s?p?o?r?t?R?N?)'")
+    winLiveId = re.compile(r"\"WindowsLiveId\":\"(.+?)\"")
+    urlPostValue = re.compile(r"urlPost:'(.+?)'")
 
     def __init__(self, httpHeaders, opener):
         """
@@ -50,32 +36,15 @@ class BingAuth:
         self.opener = opener
         self.httpHeaders = httpHeaders
 
-    @staticmethod
-    def _escapeString(s):
-        t = (
-            # encoding          marker
-            ( 'unicode_escape', re.compile("\\\\u[0-9a-fA-F]{4}") ),
-            ( 'string-escape',  re.compile("\\\\x[0-9a-fA-F]{2}") )
-        )
-
-        for encoding, marker in t:
-            if marker.search(s):
-                return s.decode(encoding)
-
-        raise AuthenticationError( "s = '%s' can not be decoded with these encodings: [ %s ]" % ( s, ", ".join( ( e for e, m in t ) ) ) )
-
-    def __authenticateFacebook(self, login, password):
+    def authenticate(self, authType, login, password):
         """
-        Authenticates a user on bing.com with his/her Facebook account.
-
-        throws AuthenticationError if authentication can not be passed
-        throws HTMLParser.HTMLParseError
-        throws urllib2.HTTPError if the server couldn't fulfill the request
-        throws urllib2.URLError if failed to reach the server
+        throws ValueError if login or password is None
+        throws AuthenticationError
         """
-        raise ValueError("Not supported")
 
-    def __authenticateLive(self, login, password):
+        if login is None: raise ValueError("login is None")
+        if password is None: raise ValueError("password is None")
+
         """
         Authenticates a user on bing.com with his/her Live account.
 
@@ -83,45 +52,44 @@ class BingAuth:
         throws urllib2.HTTPError if the server couldn't fulfill the request
         throws urllib2.URLError if failed to reach the server
         """
-#        print "Requesting bing.com"
-
-# request http://www.bing.com
+        # request http://www.bing.com
         request = urllib2.Request(url = bingCommon.BING_URL, headers = self.httpHeaders)
         with self.opener.open(request) as response:
             page = helpers.getResponseBody(response)
 
-# get connection URL for provider Live
-        s = page.index('"WindowsLiveId":"')
-        s += len('"WindowsLiveId":"')
-        e = page.index('"', s)
-
-        url = BingAuth._escapeString(page[s:e])
+        # get connection URL for provider Live
+        urlSearch = self.winLiveId.search(page)
+        if urlSearch == None:
+            raise AuthenticationError("Could not find variable 'WindowsLiveId' on Live login page")
+        url = urlSearch.group(1).decode("unicode_escape")
 
         request = urllib2.Request(url = url, headers = self.httpHeaders)
         request.add_header("Referer", bingCommon.BING_URL)
         with self.opener.open(request) as response:
             referer = response.geturl()
-# get Facebook authenctication form action url
             page = helpers.getResponseBody(response)
 
-# get PPFT parameter
-        s = page.index("sFTTag")
-        s = page.index('value="', s)
-        s += len('value="')
-        e = page.index('"', s)
-        PPFT = page[s:e]
+        # get PPFT parameter
+        PPFTSearch = self.ppftValue.search(page)
+        if PPFTSearch == None:
+            raise AuthenticationError("Could not find variable 'PPFT' on Live login page")
+        PPFT = PPFTSearch.group(1)
 
-        PPSXs = ["P","Pa","Pas","Pass","Passp","Passpo","Passpor","Passport","PassportR","PassportRN"]
-        PPSX = random.choice(PPSXs)
 
-# generate ClientLoginTime
+        # get PPSX parameter
+        ppsxSearch = self.ppsxValue.search(page)
+        if ppsxSearch == None:
+            raise AuthenticationError("Could not find PassportRN variable on Live login page")
+        PPSX = ppsxSearch.group(1)
+
+        # generate ClientLoginTime
         clt = 20000 + int(random.uniform(0, 1000))
 
-# get url to post data to
-        s = page.index(",urlPost:'")
-        s += len(",urlPost:'")
-        e = page.index("'", s)
-        url = page[s:e]
+        # get url to post data to
+        urlSearch = self.urlPostValue.search(page)
+        if urlSearch == None:
+            raise AuthenticationError("Could not find variable 'urlPost' on Live login page")
+        url = urlSearch.group(1)
 
         timestamp = int(round(time.time() * 1000))
         # TODO: randomize times a bit?
@@ -171,7 +139,6 @@ class BingAuth:
         })
 
         # get Passport page
-
         request = urllib2.Request(url, postFields, self.httpHeaders)
         request.add_header("Referer", referer)
         with self.opener.open(request) as response:
@@ -179,10 +146,10 @@ class BingAuth:
             page = helpers.getResponseBody(response)
 
         # Checking for bad usernames and password
-        helpers.errorOnText(page, 'That password is incorrect.', 'Authentication has not been passed: Invalid password')
-        helpers.errorOnText(page, "That Microsoft account doesn\\'t exist", 'Authentication has not been passed: Invalid username')
+        helpers.errorOnText(page, "That password is incorrect.", "Authentication has not been passed: Invalid password")
+        helpers.errorOnText(page, "That Microsoft account doesn't exist", "Authentication has not been passed: Invalid username")
         # check if there is a new terms of use
-        helpers.errorOnText(page, '//account.live.com/tou/accrue', 'Please log in (log out first if necessary) through a browser and accept the Terms Of Use')
+        helpers.errorOnText(page, "//account.live.com/tou/accrue", "Please log in (log out first if necessary) through a browser and accept the Terms Of Use")
 
         contSubmitUrl = self.formAction.search(page)
         if contSubmitUrl == None:
@@ -208,27 +175,11 @@ class BingAuth:
         with self.opener.open(request) as response:
             referer = response.geturl()
 
-# if that's not bingCommon.BING_URL => authentication wasn't pass => write the page to the file and report
+            # if that's not bingCommon.BING_URL => authentication wasn't pass => write the page to the file and report
             if referer.find(bingCommon.BING_URL) == -1:
                 try:
                     filename = helpers.dumpErrorPage(helpers.getResponseBody(response))
-                    s = "check " + filename + " file for more information"
+                    s = "check {} file for more information".format(filename)
                 except IOError:
-                    s = "no further information could be provided - failed to write a file into " + \
-                        helpers.RESULTS_DIR + " subfolder"
-                raise AuthenticationError("Authentication has not been passed:\n" + s)
-
-    def authenticate(self, authType, login, password):
-        """
-        throws ValueError if login or password is None
-        throws AuthenticationError
-        """
-        if login is None: raise ValueError("login is None")
-        if password is None: raise ValueError("password is None")
-
-        try:
-            authMethod = getattr(self, "_" + self.__class__.__name__ + "__authenticate" + authType)
-        except AttributeError:
-            raise AuthenticationError("Configuration Error: authentication type " + authType + " is not supported")
-
-        authMethod(login, password)
+                    s = "no further information could be provided - failed to write a file into {} subfolder".format(helpers.RESULTS_DIR)
+                raise AuthenticationError("Authentication has not been passed:\n{}".format(s))

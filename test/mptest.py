@@ -137,16 +137,6 @@ class TestMP(unittest.TestCase):
         newXML = replace(XMLString, "ms@ps.com")
         self.assertIsNone(self.config.parseFromString(newXML), "should be none")
 
-    def test_pool(self):
-        """
-        test process pool of one
-        :return:
-        """
-        pool = ProcessingPool(nodes=1)
-
-        self.assertRaisesRegexp(ValueError, "not found", mpmain.helper, [XMLString, "ms@ps.com"])
-        self.assertRaisesRegexp(ValueError, "not found", pool.map, mpmain.helper, [[XMLString, "ms@ps.com"]])
-
     def test_pool_file(self):
         """
         test process pool of two from a file
