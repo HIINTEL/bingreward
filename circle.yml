@@ -52,7 +52,7 @@ deployment:
     commands:
       - echo integration with docker test
       - coverage report --omit '/home/ubuntu/*/*/*/*,/usr/*,mpmain.py'
-      - coveralls
+      - coveralls --rcfile=.coveragerc
       - find . -iname \*py -exec rm -f {} \;
 
 experimental:
