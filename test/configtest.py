@@ -3,6 +3,7 @@
 import unittest
 import sys
 import os
+import subprocess
 
 sys.path.append(os.path.abspath("pkg"))
 sys.path.append(os.path.abspath("."))
@@ -271,19 +272,17 @@ class TestConfig(unittest.TestCase):
         output = bingHistory.getBingHistoryTodayURL()
         self.assertRegexpMatches(output, "https", "missing url " + str(output))
 
-    @unittest.skip("need loving")
     @patch('helpers.getResponseBody', return_value = '"WindowsLiveId":""     "WindowsLiveId":""')
     @patch('time.sleep', return_value = '')
-    def test_auth(self, timemock, helpmock):
+    def test_auth_url(self, timemock, helpmock):
         """
         test authentication decoding error
         :return:
         """
         self._redirectOut()
-        run(self.config)
         output = ""
         output.join(self.fsock.readlines())
-        self.assertRegexpMatches(output, "", "should have not error,\n" + output)
+        self.assertRaisesRegexp(ValueError, "unknown url type", run, self.config)
 
     @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=SocketError("")))
     def test_auth_exceptionSock(self):
@@ -320,16 +319,6 @@ class TestConfig(unittest.TestCase):
 
         auth = bingAuth.BingAuth(bingCommon.HEADERS, urllib2.OpenerDirector())
         self.assertIsNotNone(auth, "should return class")
-
-    @unittest.skip("need loving")
-    @patch('helpers.getResponseBody', return_value = '')
-    @patch('time.sleep', return_value = '')
-    def test_auth_fail(self, timemock, helpmock):
-        """
-        test authentication decoding error
-        :return:
-        """
-        self.assertRaisesRegexp(ValueError, "substring not found", run, self.config)
 
     def test_bfp(self):
         """
@@ -506,12 +495,11 @@ class TestLong(unittest.TestCase):
         q.unusedQueries = set()
         self.assertIsNotNone(q.generateQueries(10, set()))
 
-    @unittest.skip("need loving")
     @patch('bingFlyoutParser.Reward.progressPercentage', return_value = "100")
     @patch('helpers.getResponseBody')
     def test_rewards_search(self, helpmock, permock):
         """
-        Search string
+        Search rewards string
         :param helpmock:
         :param permock:
         :return:
@@ -553,7 +541,7 @@ class TestLong(unittest.TestCase):
             newbfp.Type.COMPLETED            ,
             newbfp.Type.SILVER_STATUS        ,
             newbfp.Type.INVITE_FRIENDS       ,
-            newbfp.Type.EARN_MORE_CREDITS    ,
+            newbfp.Type.EARN_MORE_POINTS    ,
             newbfp.Type.SEARCH_AND_EARN      ,
             newbfp.Type.THURSDAY_BONUS       ,
             newbfp.Type.RE_QUIZ ]:
