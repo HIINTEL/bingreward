@@ -3,7 +3,7 @@
 import unittest
 import sys
 import os
-import subprocess
+import errno
 
 sys.path.append(os.path.abspath("pkg"))
 sys.path.append(os.path.abspath("."))
@@ -29,7 +29,6 @@ from config import BingRewardsReportItem
 from eventsProcessor import EventsProcessor
 from bingRewards import BingRewards
 from socket import error as SocketError
-from HTMLParser import HTMLParser
 
 sys.path.append(os.path.abspath("pkg/queryGenerators"))
 import googleTrends
@@ -136,12 +135,19 @@ def run(config):
     return main.__run(config)
 
 
+def resultarea1(str):
+    bingHistory.__parseResultsArea1(str)
+
+
+def resultarea2(str):
+    bingHistory.__parseResultsArea2(str)
+
 class TestConfig(unittest.TestCase):
 
     fsock = None
     mockdate = "2017-09-06 00:44:47.7"
 
-    def _redirectOut(self):
+    def _redirectOut(self): # pragma: no cover
         self.fsock = open('out.log', 'a+')
         sys.stdout = self.fsock
 
@@ -173,6 +179,22 @@ class TestConfig(unittest.TestCase):
          """
         helpers.createResultsDir("none")
         self.assertEqual(os.path.isdir(helpers.RESULTS_DIR), True, "missing directory " + helpers.RESULTS_DIR)
+
+    @patch('os.path.dirname', new=Mock(side_effect=OSError("fail to mock a write", errno.EACCES)))
+    def test_createdir_raise(self):
+        """
+         test dir raise error
+         :return:
+         """
+        self.assertRaisesRegexp(OSError, "fail to mock", helpers.createResultsDir, "none")
+
+    @patch('os.path.dirname', new=Mock(side_effect=OSError("fail to mock a write", errno.EEXIST)))
+    def test_createdir_fail(self):
+        """
+         test dir with failing oserror
+         :return:
+         """
+        self.assertRaisesRegexp(OSError, "fail to mock", helpers.createResultsDir, "none")
 
     def test_dump_none(self):
         """
@@ -288,6 +310,10 @@ class TestConfig(unittest.TestCase):
     def test_auth_exceptionSock(self):
         self.assertRaisesRegexp(SocketError, "", run, self.config)
 
+    @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=SocketError(errno.ECONNRESET)))
+    def test_auth_exceptionSockReset(self):
+        self.assertRaisesRegexp(SocketError, "", run, self.config)
+
     @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=helpers.BingAccountError(None)))
     def test_auth_exceptionBing(self):
         self.assertIsNone(run(self.config), "should not return anything")
@@ -334,6 +360,10 @@ class TestConfig(unittest.TestCase):
         page += '<div id="bottomContainer"></div>'
         self.assertIsNotNone(bfp.parseFlyoutPage(page, "http://bing"), "should not be None")
         self.assertIsNotNone(newbfp.Type.Action.toStr(newbfp.Type.Action.PASS) , "should not be None")
+
+        newbfp.progressCurrent = 1
+        newbfp.progressMax = 0
+        self.assertIsNotNone(newbfp.progressPercentage(), "should not be None")
 
     def test_config(self):
         """
@@ -464,7 +494,6 @@ class TestConfig(unittest.TestCase):
         proxy.protocols = "http"
         self.config.proxy = proxy
         self.assertIsNotNone(BingRewards(bingCommon.HEADERS, "", self.config), "should return class")
-
 
 class TestLong(unittest.TestCase):
     """

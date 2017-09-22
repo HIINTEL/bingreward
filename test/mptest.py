@@ -72,7 +72,7 @@ XMLString = """
             """
 
 
-def run_v1(config):
+def run_v1(config): # pragma: no cover
     return main.__run(config)
 
 
@@ -120,14 +120,6 @@ class TestMP(unittest.TestCase):
     def setUp(self):
         self.config = Config()
         self.configXMLString = XMLString
-
-    def test_accounts(self):
-        import copy
-        saved = copy.copy(self.config.accounts)
-        for key, account in saved.iteritems():
-            self.config.accounts.clear()
-            self.config.accounts[key] = account
-            self.assertIsNotNone(self.config.accounts[key], "should be one account")
 
     def test_selector(self):
         """
