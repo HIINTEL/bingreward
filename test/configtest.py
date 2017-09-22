@@ -130,17 +130,21 @@ FBXML = """
     </configuration>
             """
 
+InvalidXML = """
+    <configuration>
+        <abc> invalid </abc>
+    </configuration>
+            """
+
+
+def validateSpecifier(specifier, specifierType=None):
+    spec = Config.Event.Specifier()
+    return spec._Specifier__validateSpecifier(specifier, specifierType=None)
+
 
 def run(config):
     return main.__run(config)
 
-
-def resultarea1(str):
-    bingHistory.__parseResultsArea1(str)
-
-
-def resultarea2(str):
-    bingHistory.__parseResultsArea2(str)
 
 class TestConfig(unittest.TestCase):
 
@@ -391,10 +395,15 @@ class TestConfig(unittest.TestCase):
         self.assertIsNotNone(spec, "should return class")
         self.assertRaisesRegexp(ValueError, "is None", spec.evaluate, None, BingRewardsReportItem())
         self.assertRaisesRegexp(TypeError, "list", spec.evaluate, [], BingRewardsReportItem())
+        self.assertRaisesRegexp(ValueError, "is None", spec.evaluate, [], None)
+        self.assertRaisesRegexp(TypeError, "not of BingRewardsReportItem type", spec.evaluate, [], self.config)
         self.assertIsNotNone(spec.evaluate("%a", BingRewardsReportItem()), "should return string")
 
         dist = os.path.join(os.path.dirname(__file__), "..", "config.xml.dist")
         self.assertIsNone(configobj.parseFromFile(dist), "should be none")
+        self.assertRaisesRegexp(ValueError, "_configFile_ is None", configobj.parseFromFile, None)
+        self.assertRaisesRegexp(ConfigError, "Invalid subnode", configobj.parseFromString, InvalidXML)
+        self.assertRaisesRegexp(KeyError, "_specifier_ is not", validateSpecifier, "%not")
 
     def test_event(self):
         """
@@ -481,7 +490,7 @@ class TestConfig(unittest.TestCase):
         newbfp.url = "http:0.0.0.0"
         self.assertIsNone(reward.printResults([result], True), "should return None")
         self.assertRaisesRegexp(TypeError, "rewards is not", reward.printRewards, None)
-
+        rewards[0].isDone = True
         self.assertIsNone(reward.printRewards(rewards), "should return None")
 
         self.assertRaisesRegexp(TypeError, "reward is not", reward.RewardResult, None)
@@ -494,6 +503,11 @@ class TestConfig(unittest.TestCase):
         proxy.protocols = "http"
         self.config.proxy = proxy
         self.assertIsNotNone(BingRewards(bingCommon.HEADERS, "", self.config), "should return class")
+
+        proxy.login = False
+        self.config.proxy = proxy
+        self.assertIsNotNone(BingRewards(bingCommon.HEADERS, "", self.config), "should return class")
+
 
 class TestLong(unittest.TestCase):
     """
@@ -518,6 +532,12 @@ class TestLong(unittest.TestCase):
 
         self.assertRaisesRegexp(ValueError, "is not", wikipedia.queryGenerator, None)
         useragents = bingCommon.UserAgents().generate(self.config.accounts)
+
+        # test with proxy
+        b = BingRewards(bingCommon.HEADERS, useragents, self.config)
+        self.config.login = None
+
+        # test without proxy
         b = BingRewards(bingCommon.HEADERS, useragents, self.config)
         q = wikipedia.queryGenerator(b)
         q.br = None
