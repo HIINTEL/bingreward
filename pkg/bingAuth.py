@@ -177,9 +177,4 @@ class BingAuth:
 
             # if that's not bingCommon.BING_URL => authentication wasn't pass => write the page to the file and report
             if referer.find(bingCommon.BING_URL) == -1:
-                try:
-                    filename = helpers.dumpErrorPage(helpers.getResponseBody(response))
-                    s = "check {} file for more information".format(filename)
-                except IOError:
-                    s = "no further information could be provided - failed to write a file into {} subfolder".format(helpers.RESULTS_DIR)
-                raise AuthenticationError("Authentication has not been passed:\n{}".format(s))
+               raise AuthenticationError("Authentication has not been passed:\n")
