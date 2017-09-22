@@ -23,19 +23,7 @@ def __parseResultsArea1(resultsArea):
     while True:
         s = resultsArea.find(startMarker, s)
         if s == -1: break
-
-# locate a query
-        s += startMarkerLen
-        s = resultsArea.index("<a ", s)
-        s += 3
-        s = resultsArea.index(">", s)
-        s += 1
-        e = resultsArea.index("</a>", s)
-
-# resultsArea[s:e] now contains a query from history
-        history.append(htmlParser.unescape(resultsArea[s:e]).strip())
-
-        s = e + 4
+        raise TypeError("not supported")
 
     return history
 
@@ -61,15 +49,7 @@ def __parseResultsArea2(resultsArea):
     while True:
         s = resultsArea.find(startMarker, s)
         if s == -1: break
-
-# locate a query
-        s += startMarkerLen
-        e = resultsArea.index("</span>", s)
-
-# resultsArea[s:e] now contains a query from history
-        history.append(htmlParser.unescape(resultsArea[s:e]).strip())
-
-        s = e + 7
+        raise TypeError("not supported")
 
     return history
 
