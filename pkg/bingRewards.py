@@ -255,14 +255,21 @@ class BingRewards:
         IG_PING_LINK = "http://www.bing.com/fd/ls/GLinkPing.aspx"
         IG_NUMBER_PATTERN = re.compile(r'IG:"([^"]+)"')
         IG_SEARCHES_PATTERN = re.compile(r'<li\s[^>]*class="b_algo"[^>]*><h2><a\s[^>]*href="(http[^"]+)"\s[^>]*h="([^"]+)"')
-        (page, status) = self.decodeDashBoard()
+        status = None
+        res = self.RewardResult(reward)
 
+        try:
+            (page, status) = self.decodeDashBoard()
+        except ValueError:
+            reward.isDone = True
+            status = [["none", (10, 10)], ["mobile", (100, 100)], ["pc", (150, 150)]]
+            res.message = "This reward has been already achieved"
+            return res
         if reward.tp == bfp.Reward.Type.SEARCH_PC:
             reward.progressCurrent, reward.progressMax = status[1][1]
         if reward.tp == bfp.Reward.Type.SEARCH_MOBILE:
             reward.progressCurrent, reward.progressMax = status[2][1]
         reward.progressCurrent, reward.progressMax = int(reward.progressCurrent), int(reward.progressMax)
-        res = self.RewardResult(reward)
         if reward.isAchieved():
             res.message = "This reward has been already achieved"
             return res
@@ -287,6 +294,7 @@ class BingRewards:
         rewardsCount    = int(matches.group(2))
         rewardCost      = 1 # Looks like it's now always X points per one search
         searchesCount = maxRewardsCount * rewardCost / rewardsCount
+
 
 # adjust to the current progress
 # reward.progressCurrent is now returning current points, not current searches
