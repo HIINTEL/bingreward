@@ -23,6 +23,8 @@ import helpers
 # extend urllib.addinfourl like it defines @contextmanager (to use with "with" keyword)
 urllib.addinfourl.__enter__ = lambda self: self
 urllib.addinfourl.__exit__  = lambda self, type, value, traceback: self.close()
+RE_DASHBD_POINTS = re.compile(r"(\d+) of? (\d+) points?")
+
 
 class HTTPRefererHandler(urllib2.HTTPRedirectHandler):
     def http_error_302(self, req, fp, code, msg, headers):
@@ -111,19 +113,14 @@ class BingRewards:
             page = helpers.getResponseBody(response)
         return page
 
-    def getLifetimeCredits(self):
-        """
-        Returns https://account.microsoft.com/rewards Lifetime Credits
-        The number of credits earned since day one of the account
-        """
+    def decodeDashBoard(self):
         url = "https://account.microsoft.com/rewards"
         request = urllib2.Request(url = url, headers = self.httpHeaders)
         request.add_header("Referer", bingCommon.BING_URL)
         with self.opener.open(request) as response:
             referer = response.geturl()
             page = helpers.getResponseBody(response)
-
-# get form data
+        # get form data
         s = page.index('action="')
         s += len('action="')
         e = page.index('"', s)
@@ -157,6 +154,21 @@ class BingRewards:
         request.add_header("Referer", referer)
         with self.opener.open(request) as response:
             page = helpers.getResponseBody(response)
+
+        status = [ [tag] for tag in [ "Browse", "Mobile", "PC" ] if tag in page ]
+
+        for n, tup in enumerate(RE_DASHBD_POINTS.findall(page)):
+            # print tuple of completion
+            status[n].append(tup)
+        return page, status
+
+    def getLifetimeCredits(self):
+        """
+        Returns https://account.microsoft.com/rewards Lifetime Credits
+        The number of credits earned since day one of the account
+        """
+        (page, status) = self.decodeDashBoard()
+        print status
 
 # find lifetime points
         s = page.find(' lifetime points</div>') - 20
@@ -243,7 +255,13 @@ class BingRewards:
         IG_PING_LINK = "http://www.bing.com/fd/ls/GLinkPing.aspx"
         IG_NUMBER_PATTERN = re.compile(r'IG:"([^"]+)"')
         IG_SEARCHES_PATTERN = re.compile(r'<li\s[^>]*class="b_algo"[^>]*><h2><a\s[^>]*href="(http[^"]+)"\s[^>]*h="([^"]+)"')
+        (page, status) = self.decodeDashBoard()
 
+        if reward.tp == bfp.Reward.Type.SEARCH_PC:
+            reward.progressCurrent, reward.progressMax = status[1][1]
+        if reward.tp == bfp.Reward.Type.SEARCH_MOBILE:
+            reward.progressCurrent, reward.progressMax = status[2][1]
+        reward.progressCurrent, reward.progressMax = int(reward.progressCurrent), int(reward.progressMax)
         res = self.RewardResult(reward)
         if reward.isAchieved():
             res.message = "This reward has been already achieved"
