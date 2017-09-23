@@ -117,49 +117,54 @@ class BingRewards:
         url = "https://account.microsoft.com/rewards"
         request = urllib2.Request(url = url, headers = self.httpHeaders)
         request.add_header("Referer", bingCommon.BING_URL)
+        page = ""
         with self.opener.open(request) as response:
             referer = response.geturl()
             page = helpers.getResponseBody(response)
-        # get form data
-        s = page.index('action="')
-        s += len('action="')
-        e = page.index('"', s)
-        action = page[s:e]
+        try:
+            # get form data
+            s = page.index('action="')
+            s += len('action="')
+            e = page.index('"', s)
+            action = page[s:e]
 
-        s = page.index("NAP")
-        s = page.index('value="', s)
-        s += len('value="')
-        e = page.index('"', s)
-        nap = page[s:e]
+            # could raise error for non-encrypted
+            s = page.index("NAP")
+            s = page.index('value="', s)
+            s += len('value="')
+            e = page.index('"', s)
+            nap = page[s:e]
 
-        s = page.index("ANON")
-        s = page.index('value="', s)
-        s += len('value="')
-        e = page.index('"', s)
-        anon = page[s:e]
+            s = page.index("ANON")
+            s = page.index('value="', s)
+            s += len('value="')
+            e = page.index('"', s)
+            anon = page[s:e]
 
-        s = page.index('id="t"')
-        s = page.index('value="', s)
-        s += len('value="')
-        e = page.index('"', s)
-        t = page[s:e]
+            s = page.index('id="t"')
+            s = page.index('value="', s)
+            s += len('value="')
+            e = page.index('"', s)
+            t = page[s:e]
 
-        postFields = urllib.urlencode({
-            "NAP"    : nap,
-            "ANON"   : anon,
-            "t"      : t
-        })
+            postFields = urllib.urlencode({
+                "NAP"    : nap,
+                "ANON"   : anon,
+                "t"      : t
+            })
 
-        request = urllib2.Request(action, postFields, self.httpHeaders)
-        request.add_header("Referer", referer)
-        with self.opener.open(request) as response:
-            page = helpers.getResponseBody(response)
-
-        status = [ [tag] for tag in [ "Browse", "Mobile", "PC" ] if tag in page ]
-
+            request = urllib2.Request(action, postFields, self.httpHeaders)
+            request.add_header("Referer", referer)
+            with self.opener.open(request) as response:
+                page = helpers.getResponseBody(response)
+        except ValueError:
+            # Ignore valueerror
+            pass
+        status = [[tag] for tag in [ "Browse", "Mobile", "PC" ] if tag in page]
         for n, tup in enumerate(RE_DASHBD_POINTS.findall(page)):
             # print tuple of completion
             status[n].append(tup)
+
         return page, status
 
     def getLifetimeCredits(self):
@@ -168,7 +173,6 @@ class BingRewards:
         The number of credits earned since day one of the account
         """
         (page, status) = self.decodeDashBoard()
-        print status
 
 # find lifetime points
         s = page.find(' lifetime points</div>') - 20
@@ -258,22 +262,6 @@ class BingRewards:
         status = None
         res = self.RewardResult(reward)
 
-        try:
-            (page, status) = self.decodeDashBoard()
-        except ValueError:
-            reward.isDone = True
-            status = [["none", (10, 10)], ["mobile", (100, 100)], ["pc", (150, 150)]]
-            res.message = "This reward has been already achieved"
-            return res
-        if reward.tp == bfp.Reward.Type.SEARCH_PC:
-            reward.progressCurrent, reward.progressMax = status[1][1]
-        if reward.tp == bfp.Reward.Type.SEARCH_MOBILE:
-            reward.progressCurrent, reward.progressMax = status[2][1]
-        reward.progressCurrent, reward.progressMax = int(reward.progressCurrent), int(reward.progressMax)
-        if reward.isAchieved():
-            res.message = "This reward has been already achieved"
-            return res
-
         indCol = bfp.Reward.Type.Col.INDEX
 
 # get a set of queries from today's Bing! history
@@ -283,23 +271,57 @@ class BingRewards:
             page = helpers.getResponseBody(response)
         history = bingHistory.parse(page)
 
-# find out how many searches need to be performed
-        matches = bfp.Reward.Type.SEARCH_AND_EARN_DESCR_RE.search(reward.description)
-        if matches is None:
-            print "No RegEx matches found for this search and earn"
-            res.isError = True
-            res.message = "No RegEx matches found for this search and earn"
-            return res
-        maxRewardsCount = int(matches.group(1))
-        rewardsCount    = int(matches.group(2))
-        rewardCost      = 1 # Looks like it's now always X points per one search
-        searchesCount = maxRewardsCount * rewardCost / rewardsCount
+        try:
+            (page, status) = self.decodeDashBoard()
+            reward.progressCurrent, reward.progressMax = 150, 150
 
+            if reward.tp == bfp.Reward.Type.SEARCH_MOBILE:
+                reward.progressCurrent, reward.progressMax = status[1][1]
+            if reward.tp == bfp.Reward.Type.SEARCH_PC:
+                reward.progressCurrent, reward.progressMax = status[2][1]
+            reward.progressCurrent, reward.progressMax = int(reward.progressCurrent), int(reward.progressMax)
+        except IndexError:
+            print status
+            # let BFP handle it when dashboard is bad
+        except ValueError:
+            # let BFP handle it when dashboard is bad
+            print status
+
+        # above replace the BFP isAchieved() because the scoreboard has higher accuracy
+        if reward.isAchieved():
+            res.message = "This reward has been already achieved"
+            return res
+
+        if re.search("earning.*free.*credits", reward.description):
+            maxRewardsCount = 12
+            rewardsCount    = 30
+            rewardCost      = 1 # Looks like it's now always X points per one search
+            searchesCount = maxRewardsCount * rewardCost / rewardsCount
+            if reward.progressCurrent == 0:
+                reward.tp = bfp.Reward.Type.SEARCH_MOBILE
+            else:
+                reward.tp == bfp.Reward.Type.SEARCH_PC
+        else:
+# find out how many searches need to be performed
+            matches = bfp.Reward.Type.SEARCH_AND_EARN_DESCR_RE.search(reward.description)
+            if matches is None:
+                print "No RegEx matches found for this search and earn"
+                res.isError = True
+                res.message = "No RegEx matches found for this search and earn"
+                return res
+            maxRewardsCount = int(matches.group(1))
+            rewardsCount    = int(matches.group(2))
+            rewardCost      = 1 # Looks like it's now always X points per one search
+            searchesCount = maxRewardsCount * rewardCost / rewardsCount
 
 # adjust to the current progress
 # reward.progressCurrent is now returning current points, not current searches
 # so divide it by points per search (rewardsCount) to get correct search count needed
         searchesCount -= (reward.progressCurrent * rewardCost) / rewardsCount
+        if searchesCount < 0:
+            res.isError = True
+            res.message = "Not searchable"
+            return res
 
         headers = self.httpHeaders
 

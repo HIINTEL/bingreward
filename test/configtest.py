@@ -451,7 +451,7 @@ class TestConfig(unittest.TestCase):
         helpmock.return_value = page
 
         # if not login should have not found error for url
-        self.assertRaisesRegexp(ValueError, "unknown", reward.getLifetimeCredits)
+        self.assertIsNotNone(reward.getLifetimeCredits, "Should return int")
 
         page = "t.innerHTML='100'"
         helpmock.return_value = page
