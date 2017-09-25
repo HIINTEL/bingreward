@@ -160,11 +160,17 @@ class BingRewards:
         except ValueError:
             # Ignore valueerror
             pass
-        status = [[tag] for tag in [ "Browse", "Mobile", "PC" ] if tag in page]
+
+        status = [[tag] for tag in ["Browse", "Mobile", "PC"] if tag in page]
         for n, tup in enumerate(RE_DASHBD_POINTS.findall(page)):
             # print tuple of completion
-            status[n].append(tup)
+            if tup[1] == '150':
+                status[n].append(tup)
+                continue
 
+            if tup[1] == '100':
+                status[1].append(tup)
+                continue
         return page, status
 
     def getLifetimeCredits(self):
@@ -270,15 +276,15 @@ class BingRewards:
         with self.opener.open(request) as response:
             page = helpers.getResponseBody(response)
         history = bingHistory.parse(page)
-
         try:
             (page, status) = self.decodeDashBoard()
             reward.progressCurrent, reward.progressMax = 150, 150
-
-            if reward.tp == bfp.Reward.Type.SEARCH_MOBILE:
+            if status[1][1][0] == '0':
                 reward.progressCurrent, reward.progressMax = status[1][1]
-            if reward.tp == bfp.Reward.Type.SEARCH_PC:
+                reward.tp = bfp.Reward.Type.SEARCH_MOBILE
+            else:
                 reward.progressCurrent, reward.progressMax = status[2][1]
+                reward.tp = bfp.Reward.Type.SEARCH_PC
             reward.progressCurrent, reward.progressMax = int(reward.progressCurrent), int(reward.progressMax)
         except IndexError:
             print status
@@ -286,21 +292,17 @@ class BingRewards:
         except ValueError:
             # let BFP handle it when dashboard is bad
             print status
-
         # above replace the BFP isAchieved() because the scoreboard has higher accuracy
         if reward.isAchieved():
             res.message = "This reward has been already achieved"
             return res
-
+        print status
         if re.search("earning.*free.*credits", reward.description):
             maxRewardsCount = 12
             rewardsCount    = 30
             rewardCost      = 1 # Looks like it's now always X points per one search
             searchesCount = maxRewardsCount * rewardCost / rewardsCount
-            if reward.progressCurrent == 0:
-                reward.tp = bfp.Reward.Type.SEARCH_MOBILE
-            else:
-                reward.tp == bfp.Reward.Type.SEARCH_PC
+
         else:
 # find out how many searches need to be performed
             matches = bfp.Reward.Type.SEARCH_AND_EARN_DESCR_RE.search(reward.description)
