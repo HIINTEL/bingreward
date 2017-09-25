@@ -164,10 +164,12 @@ class BingRewards:
         status = [[tag] for tag in ["Browse", "Mobile", "PC"] if tag in page]
         for n, tup in enumerate(RE_DASHBD_POINTS.findall(page)):
             # print tuple of completion
-            if tup[1] == '150':
-                status[n].append(tup)
+            if tup[1] == '150' and len(status[0]) == 1:
+                status[0].append(tup)
                 continue
-
+            if tup[1] == '150' and len(status[0]) == 2:
+                status[2].append(tup)
+                continue
             if tup[1] == '100':
                 status[1].append(tup)
                 continue
@@ -296,7 +298,7 @@ class BingRewards:
         if reward.isAchieved():
             res.message = "This reward has been already achieved"
             return res
-        print status
+
         if re.search("earning.*free.*credits", reward.description):
             maxRewardsCount = 12
             rewardsCount    = 30
