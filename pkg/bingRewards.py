@@ -164,10 +164,10 @@ class BingRewards:
         status = [[tag] for tag in ["Browse", "Mobile", "PC"] if tag in page]
         for n, tup in enumerate(RE_DASHBD_POINTS.findall(page)):
             # print tuple of completion
-            if tup[1] == '150' and len(status[0]) == 1:
+            if len(status[0]) == 1:
                 status[0].append(tup)
                 continue
-            if tup[1] == '150' and len(status[0]) == 2:
+            if tup[1] == '150' and len(status[2]) == 1:
                 status[2].append(tup)
                 continue
             if tup[1] == '100':
@@ -294,6 +294,7 @@ class BingRewards:
         except ValueError:
             # let BFP handle it when dashboard is bad
             print status
+
         # above replace the BFP isAchieved() because the scoreboard has higher accuracy
         if reward.isAchieved():
             res.message = "This reward has been already achieved"
