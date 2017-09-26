@@ -91,7 +91,10 @@ def helper(args):
     run_v1(run.config)
 
 if __name__ == "__main__": # pragma: no cover
+    file = "config.xml"
     if len(sys.argv) > 1 and int(sys.argv[1])> 0:
-        run(int(sys.argv[1]), "config.xml")
+        if len(sys.argv) == 3:
+            file = sys.argv[2]
+        run(int(sys.argv[1]), file)
     else:
         run(1, "config.xml")
