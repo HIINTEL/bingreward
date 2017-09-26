@@ -278,6 +278,7 @@ class BingRewards:
         with self.opener.open(request) as response:
             page = helpers.getResponseBody(response)
         history = bingHistory.parse(page)
+
         try:
             (page, status) = self.decodeDashBoard()
             reward.progressCurrent, reward.progressMax = 150, 150
@@ -301,11 +302,7 @@ class BingRewards:
             return res
 
         if re.search("earning.*free.*credits", reward.description):
-            maxRewardsCount = 12
-            rewardsCount    = 30
-            rewardCost      = 1 # Looks like it's now always X points per one search
-            searchesCount = maxRewardsCount * rewardCost / rewardsCount
-
+            searchesCount   = (reward.progressMax - reward.progressCurrent) / 5
         else:
 # find out how many searches need to be performed
             matches = bfp.Reward.Type.SEARCH_AND_EARN_DESCR_RE.search(reward.description)
@@ -319,14 +316,10 @@ class BingRewards:
             rewardCost      = 1 # Looks like it's now always X points per one search
             searchesCount = maxRewardsCount * rewardCost / rewardsCount
 
-# adjust to the current progress
-# reward.progressCurrent is now returning current points, not current searches
-# so divide it by points per search (rewardsCount) to get correct search count needed
-        searchesCount -= (reward.progressCurrent * rewardCost) / rewardsCount
-        if searchesCount < 0:
-            res.isError = True
-            res.message = "Not searchable"
-            return res
+        # adjust to the current progress
+        # reward.progressCurrent is now returning current points, not current searches
+        # so divide it by points per search (rewardsCount) to get correct search count needed
+            searchesCount -= (reward.progressCurrent * rewardCost) / rewardsCount
 
         headers = self.httpHeaders
 
