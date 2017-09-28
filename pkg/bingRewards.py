@@ -213,10 +213,9 @@ class BingRewards:
         s += len("t.innerHTML='")
         e = page.index("'", s)
         rewardsText = page[s:e]
-        if rewardsText == 'Rewards': # The account is banned
-            raise helpers.BingAccountError("Banned from BingRewards: Could not get the number of rewards.")
-        else:
-            return int(rewardsText)
+        if rewardsText == 'Rewards':
+            return 0
+        return int(rewardsText)
 
     def __processHit(self, reward):
         """Processes bfp.Reward.Type.Action.HIT and returns self.RewardResult"""
@@ -302,7 +301,7 @@ class BingRewards:
             return res
 
         if re.search("earning.*free.*credits", reward.description):
-            searchesCount   = (reward.progressMax - reward.progressCurrent) / 5
+            searchesCount   = 2 * (reward.progressMax - reward.progressCurrent) / 5
         else:
 # find out how many searches need to be performed
             matches = bfp.Reward.Type.SEARCH_AND_EARN_DESCR_RE.search(reward.description)
@@ -320,6 +319,10 @@ class BingRewards:
         # reward.progressCurrent is now returning current points, not current searches
         # so divide it by points per search (rewardsCount) to get correct search count needed
             searchesCount -= (reward.progressCurrent * rewardCost) / rewardsCount
+            if searchesCount < 0:
+                res.isError = True
+                res.message = "Invalid reward progress count"
+                return res
 
         headers = self.httpHeaders
 
