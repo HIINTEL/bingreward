@@ -280,8 +280,9 @@ class BingRewards:
 
         try:
             (page, status) = self.decodeDashBoard()
+
             reward.progressCurrent, reward.progressMax = 150, 150
-            if status[1][1][0] == '0':
+            if int(status[1][1][0]) < int(status[1][1][1]):
                 reward.progressCurrent, reward.progressMax = status[1][1]
                 reward.tp = bfp.Reward.Type.SEARCH_MOBILE
             else:
