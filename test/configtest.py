@@ -102,14 +102,12 @@ FBXML = """
 
         <events>
             <onError>
+                <invalidretry if="%p lt 16" interval="5" salt="3.5" count="1" />
                 <retry interval="5" salt="3.5" count="1" />
                 <notify cmd="echo error %a %p %r %l %i" />
             </onError>
             <onComplete>
-                <retry if="%p lt 16" interval="5" salt="3.5" count="1" />
-                <notify if="%l gt 3000" cmd="echo complete %a %p %r %P %l %i" />
-                <notify if="%p ne 16" cmd="echo complete %a %p %r %P %l %i" />
-                <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
+                <invalidretry if="%p lt 16" interval="5" salt="3.5" count="1" />
 
                 <account ref="Facebook_john.smith@gmail.com">
                     <retry if="%p lt 31" interval="5" salt="3.5" count="1" />
@@ -117,12 +115,13 @@ FBXML = """
                     <notify if="%p ne 31" cmd="echo complete %a %p %r %P %l %i" />
                     <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
                 </account>
-
             </onComplete>
             <onScriptComplete>
+                <invalidretry if="%p lt 16" interval="5" salt="3.5" count="1" />
                 <notify cmd="./mail.sh" />
             </onScriptComplete>
             <onScriptFailure>
+                <invalidretry if="%p lt 16" interval="5" salt="3.5" count="1" />
                 <notify cmd="./onScriptFailure.sh" />
             </onScriptFailure>
         </events>
@@ -136,6 +135,81 @@ InvalidXML = """
     </configuration>
             """
 
+LOGINXML = """
+    <configuration>
+        <general
+            betweenQueriesInterval="12.271"
+            betweenQueriesSalt="5.7"
+            betweenAccountsInterval="404.1"
+            betweenAccountsSalt="40.52" />
+
+        <accounts>
+            <account type="Live" disabled="false">
+                <password>xxx</password>
+            </account>
+        </accounts>
+    </configuration>
+            """
+
+PWDXML = """
+    <configuration>
+        <general
+            betweenQueriesInterval="12.271"
+            betweenQueriesSalt="5.7"
+            betweenAccountsInterval="404.1"
+            betweenAccountsSalt="40.52" />
+
+        <accounts>
+            <account type="Live" disabled="false">
+                <login>john.smith@gmail.com</login>
+            </account>
+        </accounts>
+    </configuration>
+            """
+
+
+PROTXML = """
+    <configuration>
+        <general
+            betweenQueriesInterval="12.271"
+            betweenQueriesSalt="5.7"
+            betweenAccountsInterval="404.1"
+            betweenAccountsSalt="40.52" />
+        <proxy
+               url="www.bing.com"
+               login="xxx"
+               password="yyy" />
+    </configuration>
+            """
+
+
+URLXML = """
+    <configuration>
+        <general
+            betweenQueriesInterval="12.271"
+            betweenQueriesSalt="5.7"
+            betweenAccountsInterval="404.1"
+            betweenAccountsSalt="40.52" />
+        <proxy protocols="http"
+
+               login="xxx"
+               password="yyy" />
+    </configuration>
+            """
+
+PROXYLOGINXML = """
+    <configuration>
+        <general
+            betweenQueriesInterval="12.271"
+            betweenQueriesSalt="5.7"
+            betweenAccountsInterval="404.1"
+            betweenAccountsSalt="40.52" />
+        <proxy protocols="http"
+               url="www.bing.com"
+               password="yyy" />
+    </configuration>
+            """
+
 
 def validateSpecifier(specifier, specifierType=None):
     spec = Config.Event.Specifier()
@@ -144,6 +218,10 @@ def validateSpecifier(specifier, specifierType=None):
 
 def run(config):
     return main.__run(config)
+
+
+def stringify(report_item, len):
+    return main.__stringifyAccount(report_item, len)
 
 
 class TestConfig(unittest.TestCase):
@@ -155,7 +233,7 @@ class TestConfig(unittest.TestCase):
         self.fsock = open('out.log', 'a+')
         sys.stdout = self.fsock
 
-    def tearDown(self):
+    def tearDown(self):  # pragma: no cover
         if self.fsock is not None:
             self.fsock.close()
             self.fsock = None
@@ -300,7 +378,7 @@ class TestConfig(unittest.TestCase):
 
     @patch('helpers.getResponseBody', return_value = '"WindowsLiveId":""     "WindowsLiveId":""')
     @patch('time.sleep', return_value = '')
-    def test_auth_url(self, timemock, helpmock):
+    def test_auth_url(self, timemock, helpmock):  # pragma: no cover
         """
         test authentication decoding error
         :return:
@@ -310,7 +388,7 @@ class TestConfig(unittest.TestCase):
         output.join(self.fsock.readlines())
         self.assertRaisesRegexp(ValueError, "unknown url type", run, self.config)
 
-    @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=SocketError("")))
+    @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=SocketError(errno.ECONNREFUSED)))
     def test_auth_exceptionSock(self):
         self.assertRaisesRegexp(SocketError, "", run, self.config)
 
@@ -333,6 +411,9 @@ class TestConfig(unittest.TestCase):
     @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=urllib2.HTTPError("", "", "", "", open("tmp", "a+"))))
     def test_auth_exceptionHTTP(self):
         self.assertIsNone(run(self.config), "should not return anything")
+
+    def test_stringify(self):
+        self.assertRaisesRegexp(ValueError, "too small", stringify, None, -1)
 
     @patch('urllib2.Request', return_value = "")
     @patch('helpers.getResponseBody', return_value = "")
@@ -403,7 +484,11 @@ class TestConfig(unittest.TestCase):
         self.assertIsNone(configobj.parseFromFile(dist), "should be none")
         self.assertRaisesRegexp(ValueError, "_configFile_ is None", configobj.parseFromFile, None)
         self.assertRaisesRegexp(ConfigError, "Invalid subnode", configobj.parseFromString, InvalidXML)
+        self.assertRaisesRegexp(ConfigError, "is not found", configobj.parseFromString, LOGINXML)
+        self.assertRaisesRegexp(ConfigError, "is not found", configobj.parseFromString, PWDXML)
+        self.assertRaisesRegexp(ConfigError, "should be either set", self.config.parseFromString, PROXYLOGINXML)
         self.assertRaisesRegexp(KeyError, "_specifier_ is not", validateSpecifier, "%not")
+        self.assertRaisesRegexp(ConfigError, "Invalid subnode", self.config.parseFromString, FBXML)
 
     def test_event(self):
         """
@@ -508,6 +593,9 @@ class TestConfig(unittest.TestCase):
         self.config.proxy = proxy
         self.assertIsNotNone(BingRewards(bingCommon.HEADERS, "", self.config), "should return class")
 
+        self.assertRaisesRegexp(ConfigError, "not found", self.config.parseFromString, PROTXML)
+        self.assertRaisesRegexp(ConfigError, "not found", self.config.parseFromString, URLXML)
+
 
 class TestLong(unittest.TestCase):
     """
@@ -599,7 +687,7 @@ class TestLong(unittest.TestCase):
 
             newbfp.Type = bfp.Reward.Type.Action.SEARCH
             rewards = [ newbfp ]
-            newbfp.isAchieved = lambda : data is 0
+            newbfp.isAchieved = lambda : data is False
             self.assertIsNotNone(reward.process(rewards, True), "should return res")
 
         newbfp.isDone = True
