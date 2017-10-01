@@ -383,9 +383,6 @@ class TestConfig(unittest.TestCase):
         test authentication decoding error
         :return:
         """
-        self._redirectOut()
-        output = ""
-        output.join(self.fsock.readlines())
         self.assertRaisesRegexp(ValueError, "unknown url type", run, self.config)
 
     @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=SocketError(errno.ECONNREFUSED)))

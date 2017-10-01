@@ -233,10 +233,9 @@ class BingRewards:
             pointsExpected = int(matches.group(1))
             if pointsExpected != pointsEarned:
                 filename = helpers.dumpErrorPage(page)
-                res.isError = True
-                res.message = "Expected to earn " + str(pointsExpected) + " points, but earned " + \
-                              str(pointsEarned) + " points. Check " + filename + " for further information"
-        return res
+                (res.isError, res.message) = (True, "Expected to earn {%s} points, but earned + {%s} points. Check " +
+                        "{%s} for further information".format(str(pointsExpected), str(pointsEarned), filename))
+                return res
 
     def __processWarn(self, reward):
         """Processes bfp.Reward.Type.Action.WARN and returns self.RewardResult"""
@@ -307,9 +306,8 @@ class BingRewards:
 # find out how many searches need to be performed
             matches = bfp.Reward.Type.SEARCH_AND_EARN_DESCR_RE.search(reward.description)
             if matches is None:
-                print "No RegEx matches found for this search and earn"
-                res.isError = True
-                res.message = "No RegEx matches found for this search and earn"
+                (res.message, res.isError) = ("No RegEx matches found for this search and earn", True)
+                print res.message
                 return res
             maxRewardsCount = int(matches.group(1))
             rewardsCount    = int(matches.group(2))
@@ -340,13 +338,11 @@ class BingRewards:
             print "Running mobile searches"
             print
         else:
-            res.isError = True
-            res.message = "Don't know how to process this search"
+            (res.isError, res.message) = (True, "Don't know how to process this search")
             return res
 
         if verbose:
-            print("User-Agent: {0}".format(bingCommon.HEADERS["User-Agent"]))
-            print
+            print "User-Agent: {0}\n".format(bingCommon.HEADERS["User-Agent"])
 
         # Import the query generator
         try:
@@ -359,9 +355,8 @@ class BingRewards:
         queries = queryGenerator.generateQueries(searchesCount, history)
 
         if len(queries) < searchesCount:
-            print "Warning: not enough queries to run were generated!"
-            print "Requested:", searchesCount
-            print "Generated:", len(queries)
+            print "Warning: not enough queries to run were generated!\nRequested: {%s}\nGenerated: {%s}\n" \
+                .format(searchesCount, len(queries))
 
         successfullQueries = 0
         i = 1
@@ -387,10 +382,7 @@ class BingRewards:
 
             if not found:
                 filename = helpers.dumpErrorPage(page)
-                print "Warning! Query:"
-                print "\t" + query
-                print "returned no results, check " + filename + " file for more information"
-
+                print "Warning! Query:\n\t {%s}\n returned no results, check file for more information".format(query, filename)
             else:
                 successfullQueries += 1
 
@@ -427,13 +419,10 @@ class BingRewards:
                                 print("Followed Link {}".format(ig_link_num + 1))
                         else:
                             filename = helpers.dumpErrorPage(page)
-                            print "Warning! No searches were found on search results page"
-                            print "Check {0} file for more information".format(filename)
+                            print "Warning! No searches were found on search results page Check {0} file for more information".format(filename)
                     else:
                         filename = helpers.dumpErrorPage(page)
-                        print "Warning! Could not find search result IG number"
-                        print "Check {0} file for more information".format(filename)
-
+                        print "Warning! Could not find search result IG number Check {0} file for more information".format(filename)
             i += 1
 
         if successfullQueries < searchesCount:
