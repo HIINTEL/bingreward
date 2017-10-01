@@ -129,6 +129,24 @@ FBXML = """
     </configuration>
             """
 
+EVENTLESS = """
+    <configuration>
+        <general
+            betweenQueriesInterval="12.271"
+            betweenQueriesSalt="5.7"
+            betweenAccountsInterval="404.1"
+            betweenAccountsSalt="40.52" />
+
+        <accounts>
+            <account type="Live" disabled="false">
+                <login>john.smith@gmail.com</login>
+                <password>xxx</password>
+            </account>
+        </accounts>
+        <queries generator="wikipedia" />
+    </configuration>
+            """
+
 InvalidXML = """
     <configuration>
         <abc> invalid </abc>
@@ -494,6 +512,11 @@ class TestConfig(unittest.TestCase):
         """
         self.assertIsNone(EventsProcessor.onScriptFailure(self.config, Exception()), "should be none")
         self.assertIsNone(EventsProcessor.onScriptComplete(self.config), "should be none")
+        self.config.parseFromString(EVENTLESS)
+        self.assertRaisesRegexp(Exception, ".*", EventsProcessor.onScriptFailure, self.config, Exception())
+        self.assertIsNone(EventsProcessor.onScriptComplete(self.config), "should be none")
+        ep = EventsProcessor(self.config, BingRewardsReportItem())
+        self.assertIsNotNone(ep.processReportItem(), "should not be none and be done")
 
     def test_event_getEvent_returnsEvent(self):
         """
