@@ -567,7 +567,7 @@ class TestConfig(unittest.TestCase):
         newbfp = bfp.Reward()
         newbfp.tp = None
         rewards = [ newbfp ]
-        self.assertRaisesRegexp(ValueError, "unknown", reward.process, rewards, True)
+        self.assertIsNotNone(reward.process(rewards, True), "should not be none")
 
         # HIT case
         newbfp.tp = mock.Mock()
