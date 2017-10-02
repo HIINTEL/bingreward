@@ -24,7 +24,7 @@ import helpers
 urllib.addinfourl.__enter__ = lambda self: self
 urllib.addinfourl.__exit__  = lambda self, type, value, traceback: self.close()
 RE_DASHBD_POINTS = re.compile(r"(\d+) of? (\d+) points?")
-
+RE_DASHBD_START = re.compile(r"Browse & earn.*")
 
 class HTTPRefererHandler(urllib2.HTTPRedirectHandler):
     def http_error_302(self, req, fp, code, msg, headers):
@@ -48,7 +48,9 @@ class BingRewards:
             self.message = ""
 # action applied to the reward
             self.action  = bfp.Reward.Type.Action.WARN
-
+    EXTRA = bfp.Reward()
+    EXTRA.description = "see dashboard scores need more searches"
+    EXTRA.message = "extra searches starting"
     BING_FLYOUT_PAGE = "http://www.bing.com/rewardsapp/flyoutpage?style=v2"
 
     def __init__(self, httpHeaders, userAgents, config):
@@ -161,8 +163,9 @@ class BingRewards:
             # Ignore valueerror
             pass
 
-        status = [[tag] for tag in ["Browse", "Mobile", "PC"] if tag in page]
-        for n, tup in enumerate(RE_DASHBD_POINTS.findall(page)):
+        subpage = page[page.index("Browse &amp; earn"):]
+        status = [[tag] for tag in ["Browse", "Mobile", "PC"] if tag in subpage]
+        for n, tup in enumerate(RE_DASHBD_POINTS.findall(subpage)):
             # print tuple of completion
             if len(status[0]) == 1:
                 status[0].append(tup)
@@ -215,7 +218,11 @@ class BingRewards:
         rewardsText = page[s:e]
         if rewardsText == 'Rewards':
             return 0
-        return int(rewardsText)
+        try:
+            ret = int(rewardsText)
+        except:
+            ret = 0
+        return ret
 
     def __processHit(self, reward):
         """Processes bfp.Reward.Type.Action.HIT and returns self.RewardResult"""
@@ -233,18 +240,20 @@ class BingRewards:
             pointsExpected = int(matches.group(1))
             if pointsExpected != pointsEarned:
                 filename = helpers.dumpErrorPage(page)
-                (res.isError, res.message) = (True, "Expected to earn {%s} points, but earned + {%s} points. Check " +
-                        "{%s} for further information".format(str(pointsExpected), str(pointsEarned), filename))
+                (res.isError, res.message) = (True, "Expected to earn {0} points, but earned + {1} points. Check " +
+                        "{2} for further information".format(str(pointsExpected), str(pointsEarned), filename))
                 return res
 
     def __processWarn(self, reward):
         """Processes bfp.Reward.Type.Action.WARN and returns self.RewardResult"""
         res = self.RewardResult(reward)
+        if reward.url == "":
+            reward.description, reward.name = "You do not have any promotions at this time.", "No reward"
+            return res
 
         if reward.isAchieved():
             res.message = "This reward has been already achieved"
             return res
-
         pointsEarned = self.getRewardsPoints()
         request = urllib2.Request(url = reward.url, headers = self.httpHeaders)
         with self.opener.open(request) as response:
@@ -256,16 +265,12 @@ class BingRewards:
             res.message = "Didn't earn any points for click"
         return res
 
+    def __processExtra(self, reward, verbose):
+        searchesCount   = (reward.progressMax - reward.progressCurrent) / 10
+        return self.search(reward, verbose, (searchesCount,  bingHistory.parse("kangeroo"), self.RewardResult(reward)))
+
     def __processSearch(self, reward, verbose):
         """Processes bfp.Reward.Type.Action.SEARCH and returns self.RewardResult"""
-
-        BING_QUERY_URL = 'http://www.bing.com/search?q='
-        BING_QUERY_SUCCESSFULL_RESULT_MARKER_PC = '<div id="b_content">'
-        BING_QUERY_SUCCESSFULL_RESULT_MARKER_MOBILE = '<div id="content">'
-        IG_PING_LINK = "http://www.bing.com/fd/ls/GLinkPing.aspx"
-        IG_NUMBER_PATTERN = re.compile(r'IG:"([^"]+)"')
-        IG_SEARCHES_PATTERN = re.compile(r'<li\s[^>]*class="b_algo"[^>]*><h2><a\s[^>]*href="(http[^"]+)"\s[^>]*h="([^"]+)"')
-        status = None
         res = self.RewardResult(reward)
 
         indCol = bfp.Reward.Type.Col.INDEX
@@ -277,52 +282,40 @@ class BingRewards:
             page = helpers.getResponseBody(response)
         history = bingHistory.parse(page)
 
-        try:
-            (page, status) = self.decodeDashBoard()
-
-            reward.progressCurrent, reward.progressMax = 150, 150
-            if int(status[1][1][0]) < int(status[1][1][1]):
-                reward.progressCurrent, reward.progressMax = status[1][1]
-                reward.tp = bfp.Reward.Type.SEARCH_MOBILE
-            else:
-                reward.progressCurrent, reward.progressMax = status[2][1]
-                reward.tp = bfp.Reward.Type.SEARCH_PC
-            reward.progressCurrent, reward.progressMax = int(reward.progressCurrent), int(reward.progressMax)
-        except IndexError:
-            print status
-            # let BFP handle it when dashboard is bad
-        except ValueError:
-            # let BFP handle it when dashboard is bad
-            print status
-
         # above replace the BFP isAchieved() because the scoreboard has higher accuracy
         if reward.isAchieved():
             res.message = "This reward has been already achieved"
             return res
 
-        if re.search("earning.*free.*credits", reward.description):
-            searchesCount   = 2 * (reward.progressMax - reward.progressCurrent) / 5
-        else:
 # find out how many searches need to be performed
-            matches = bfp.Reward.Type.SEARCH_AND_EARN_DESCR_RE.search(reward.description)
-            if matches is None:
-                (res.message, res.isError) = ("No RegEx matches found for this search and earn", True)
-                print res.message
-                return res
-            maxRewardsCount = int(matches.group(1))
-            rewardsCount    = int(matches.group(2))
-            rewardCost      = 1 # Looks like it's now always X points per one search
-            searchesCount = maxRewardsCount * rewardCost / rewardsCount
+        matches = bfp.Reward.Type.SEARCH_AND_EARN_DESCR_RE.search(reward.description)
+        if matches is None:
+            (res.message, res.isError) = ("No RegEx matches found for this search and earn", True)
+            return res
+        maxRewardsCount = int(matches.group(1))
+        rewardsCount    = int(matches.group(2))
+        rewardCost      = 1 # Looks like it's now always X points per one search
+        searchesCount = maxRewardsCount * rewardCost / rewardsCount
 
         # adjust to the current progress
         # reward.progressCurrent is now returning current points, not current searches
         # so divide it by points per search (rewardsCount) to get correct search count needed
-            searchesCount -= (reward.progressCurrent * rewardCost) / rewardsCount
-            if searchesCount < 0:
-                res.isError = True
-                res.message = "Invalid reward progress count"
-                return res
+        searchesCount -= (reward.progressCurrent * rewardCost) / rewardsCount
+        if searchesCount < 0:
+            res.isError = True
+            res.message = "Invalid reward progress count"
+            return res
+        return self.search(reward, verbose, (searchesCount, history, res))
 
+    def search(self, reward, verbose, args):
+        BING_QUERY_URL = 'http://www.bing.com/search?q='
+        BING_QUERY_SUCCESSFULL_RESULT_MARKER_PC = '<div id="b_content">'
+        BING_QUERY_SUCCESSFULL_RESULT_MARKER_MOBILE = '<div id="content">'
+        IG_PING_LINK = "http://www.bing.com/fd/ls/GLinkPing.aspx"
+        IG_NUMBER_PATTERN = re.compile(r'IG:"([^"]+)"')
+        IG_SEARCHES_PATTERN = re.compile(r'<li\s[^>]*class="b_algo"[^>]*><h2><a\s[^>]*href="(http[^"]+)"\s[^>]*h="([^"]+)"')
+
+        searchesCount, history, res = args
         headers = self.httpHeaders
 
         if reward.tp == bfp.Reward.Type.SEARCH_PC or reward.tp == bfp.Reward.Type.SEARCH_AND_EARN:
@@ -355,7 +348,7 @@ class BingRewards:
         queries = queryGenerator.generateQueries(searchesCount, history)
 
         if len(queries) < searchesCount:
-            print "Warning: not enough queries to run were generated!\nRequested: {%s}\nGenerated: {%s}\n" \
+            print "Warning: not enough queries to run were generated!\nRequested: {0}\nGenerated: {1}\n" \
                 .format(searchesCount, len(queries))
 
         successfullQueries = 0
@@ -376,13 +369,13 @@ class BingRewards:
             with self.opener.open(request) as response:
                 page = helpers.getResponseBody(response)
 
-# check for the successfull marker
+            # check for the successfull marker
             found = page.find(BING_QUERY_SUCCESSFULL_RESULT_MARKER_PC) != -1 \
-                 or page.find(BING_QUERY_SUCCESSFULL_RESULT_MARKER_MOBILE) != -1
+                    or page.find(BING_QUERY_SUCCESSFULL_RESULT_MARKER_MOBILE) != -1
 
             if not found:
                 filename = helpers.dumpErrorPage(page)
-                print "Warning! Query:\n\t {%s}\n returned no results, check file for more information".format(query, filename)
+                print "Warning! Query:\n\t {0}\n returned no results, check {1} for more information".format(query, filename)
             else:
                 successfullQueries += 1
 
@@ -432,7 +425,6 @@ class BingRewards:
 
         # reset header to pc so pc pages return in getting life time points
         headers["User-Agent"] = self.userAgents.pc
-
         return res
 
     def process(self, rewards, verbose):
@@ -462,6 +454,34 @@ class BingRewards:
 
             res.action = action
             results.append(res)
+
+        status = None
+        try:
+            (page, status) = self.decodeDashBoard()
+            r = self.EXTRA
+            r.progressCurrent, r.progressMax, r.tp = 150, 150, bfp.Reward.Type.Action.SEARCH
+            if int(status[1][1][0]) < int(status[1][1][1]):
+                r.progressCurrent, r.progressMax = status[1][1]
+                r.progressCurrent, r.progressMax = int(r.progressCurrent), int(r.progressMax)
+                r.tp = bfp.Reward.Type.SEARCH_MOBILE
+                res = self.__processExtra(r, verbose)
+                res.action = action
+                results.append(res)
+
+            if int(status[2][1][0]) < int(status[2][1][1]):
+                r.progressCurrent, r.progressMax = status[2][1]
+                r.progressCurrent, r.progressMax = int(r.progressCurrent), int(r.progressMax)
+                r.tp = bfp.Reward.Type.SEARCH_PC
+                res = self.__processExtra(r, verbose)
+                res.action = action
+                results.append(res)
+
+        except IndexError, e:
+            print "IndexError: handling {0}".format(str(e))
+            # let BFP handle it when dashboard is bad
+        except ValueError, e:
+            # let BFP handle it when dashboard is bad
+            print "ValueError: handling {0}".format(str(e))
 
         return results
 
@@ -499,7 +519,7 @@ class BingRewards:
         """Prints a result"""
         self.__printReward(result.o)
         if result.isError:
-            print "   Error    :   true"
+            print "   Error    : true"
         print "   Message  : " + result.message
         print "   Action   : " + bfp.Reward.Type.Action.toStr(result.action)
 
