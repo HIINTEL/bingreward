@@ -27,7 +27,7 @@ test:
     - nosetests -v  --processes=4 --process-timeout=120 --with-coverage --cover-package pkg --cover-package test --cover-package . test/*.py:
           parallel: false
     - mv .coverage .coverage.1
-    - coverage run --omit '/home/ubuntu/*/*/*/*,/usr/*,mpmain.py' -p mpmain.py 2
+    - coverage run --omit '/home/ubuntu/*/*/*/*,/usr/*,mpmain.py' -p mpmain.py 3
     # need more loving from circleci coverage plugin
     - coverage run --omit '/home/ubuntu/*/*/*/*,/usr/*,mpmain.py' -p main.py -v -r
     - ls -aRl .coverage*
