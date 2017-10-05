@@ -567,7 +567,7 @@ class TestConfig(unittest.TestCase):
         newbfp = bfp.Reward()
         newbfp.tp = None
         rewards = [ newbfp ]
-        self.assertIsNotNone(reward.process(rewards, True), "should not be none")
+        self.assertIsNotNone(reward.process(rewards, True), "handle not none")
 
         # HIT case
         newbfp.tp = mock.Mock()

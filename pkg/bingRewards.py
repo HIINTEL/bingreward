@@ -24,7 +24,7 @@ import helpers
 urllib.addinfourl.__enter__ = lambda self: self
 urllib.addinfourl.__exit__  = lambda self, type, value, traceback: self.close()
 RE_DASHBD_POINTS = re.compile(r"(\d+) of? (\d+) points?")
-RE_DASHBD_START = re.compile(r"Browse & earn.*")
+
 
 class HTTPRefererHandler(urllib2.HTTPRedirectHandler):
     def http_error_302(self, req, fp, code, msg, headers):
@@ -49,8 +49,7 @@ class BingRewards:
 # action applied to the reward
             self.action  = bfp.Reward.Type.Action.WARN
     EXTRA = bfp.Reward()
-    EXTRA.description = "see dashboard scores need more searches"
-    EXTRA.message = "extra searches starting"
+    EXTRA.description = "EXTRA"
     BING_FLYOUT_PAGE = "http://www.bing.com/rewardsapp/flyoutpage?style=v2"
 
     def __init__(self, httpHeaders, userAgents, config):
@@ -162,19 +161,24 @@ class BingRewards:
         except ValueError:
             # Ignore valueerror
             pass
+        pclist = [(m.start(0), m.end(0)) for m in re.finditer("PC .*search", page)]
+        moblist = [(m.start(0), m.end(0)) for m in re.finditer("Mobile .*search", page)]
+        status = None
 
-        subpage = page[page.index("Browse &amp; earn"):]
-        status = [[tag] for tag in ["Browse", "Mobile", "PC"] if tag in subpage]
-        for n, tup in enumerate(RE_DASHBD_POINTS.findall(subpage)):
+        if pclist[0][0] < moblist[0][0]:
+            pctag, mobtag = 0, 1
+            status = [[tag] for tag in ["PC", "Mobile"] if tag in page]
+        else:
+            pctag, mobtag = 1, 0
+            status = [[tag] for tag in ["Mobile", "PC"] if tag in page]
+
+        for n, tup in enumerate(RE_DASHBD_POINTS.findall(page)):
             # print tuple of completion
-            if len(status[0]) == 1:
-                status[0].append(tup)
-                continue
-            if tup[1] == '150' and len(status[2]) == 1:
-                status[2].append(tup)
+            if int(tup[1]) >= 150:
+                status[pctag].append(tup)
                 continue
             if tup[1] == '100':
-                status[1].append(tup)
+                status[mobtag].append(tup)
                 continue
         return page, status
 
@@ -218,11 +222,7 @@ class BingRewards:
         rewardsText = page[s:e]
         if rewardsText == 'Rewards':
             return 0
-        try:
-            ret = int(rewardsText)
-        except:
-            ret = 0
-        return ret
+        return int(rewardsText)
 
     def __processHit(self, reward):
         """Processes bfp.Reward.Type.Action.HIT and returns self.RewardResult"""
@@ -240,37 +240,26 @@ class BingRewards:
             pointsExpected = int(matches.group(1))
             if pointsExpected != pointsEarned:
                 filename = helpers.dumpErrorPage(page)
-                (res.isError, res.message) = (True, "Expected to earn {0} points, but earned + {1} points. Check " +
-                        "{2} for further information".format(str(pointsExpected), str(pointsEarned), filename))
+                (res.isError, res.message) = (True, "Expected to earn {%s} points, but earned + {%s} points. Check " +
+                        "{%s} for further information".format(str(pointsExpected), str(pointsEarned), filename))
                 return res
 
     def __processWarn(self, reward):
         """Processes bfp.Reward.Type.Action.WARN and returns self.RewardResult"""
         res = self.RewardResult(reward)
-        if reward.url == "":
-            reward.description, reward.name = "You do not have any promotions at this time.", "No reward"
-            return res
 
         if reward.isAchieved():
             res.message = "This reward has been already achieved"
             return res
-        pointsEarned = self.getRewardsPoints()
-        request = urllib2.Request(url = reward.url, headers = self.httpHeaders)
-        with self.opener.open(request) as response:
-            page = helpers.getResponseBody(response)
-        pointsEarned = self.getRewardsPoints() - pointsEarned
-# check if we earned any points
-        if pointsEarned < 1:
-            res.isError = True
-            res.message = "Didn't earn any points for click"
         return res
 
     def __processExtra(self, reward, verbose):
-        searchesCount   = (reward.progressMax - reward.progressCurrent) / 10
+        searchesCount   = (reward.progressMax - reward.progressCurrent) / 5 + 2
         return self.search(reward, verbose, (searchesCount,  bingHistory.parse("kangeroo"), self.RewardResult(reward)))
 
     def __processSearch(self, reward, verbose):
         """Processes bfp.Reward.Type.Action.SEARCH and returns self.RewardResult"""
+        status = None
         res = self.RewardResult(reward)
 
         indCol = bfp.Reward.Type.Col.INDEX
@@ -291,6 +280,7 @@ class BingRewards:
         matches = bfp.Reward.Type.SEARCH_AND_EARN_DESCR_RE.search(reward.description)
         if matches is None:
             (res.message, res.isError) = ("No RegEx matches found for this search and earn", True)
+            print res.message
             return res
         maxRewardsCount = int(matches.group(1))
         rewardsCount    = int(matches.group(2))
@@ -348,7 +338,7 @@ class BingRewards:
         queries = queryGenerator.generateQueries(searchesCount, history)
 
         if len(queries) < searchesCount:
-            print "Warning: not enough queries to run were generated!\nRequested: {0}\nGenerated: {1}\n" \
+            print "Warning: not enough queries to run were generated!\nRequested: {%s}\nGenerated: {%s}\n" \
                 .format(searchesCount, len(queries))
 
         successfullQueries = 0
@@ -357,7 +347,7 @@ class BingRewards:
 
         for query in queries:
             if i > 1:
-# sleep some time between queries (don't worry Bing! ;) )
+                # sleep some time between queries (don't worry Bing! ;) )
                 t = self.betweenQueriesInterval + random.uniform(0, self.betweenQueriesSalt)
                 time.sleep(t)
 
@@ -375,7 +365,7 @@ class BingRewards:
 
             if not found:
                 filename = helpers.dumpErrorPage(page)
-                print "Warning! Query:\n\t {0}\n returned no results, check {1} for more information".format(query, filename)
+                print "Warning! Query:\n\t {%s}\n returned no results, check file for more information".format(query, filename)
             else:
                 successfullQueries += 1
 
@@ -454,22 +444,27 @@ class BingRewards:
 
             res.action = action
             results.append(res)
-
         status = None
         try:
             (page, status) = self.decodeDashBoard()
+
             r = self.EXTRA
             r.progressCurrent, r.progressMax, r.tp = 150, 150, bfp.Reward.Type.Action.SEARCH
-            if int(status[1][1][0]) < int(status[1][1][1]):
-                r.progressCurrent, r.progressMax = status[1][1]
+            if status[0][0][0] == "Mobile":
+                mobtag, pctag = 0, 1
+            else:
+                mobtag, pctag = 1, 0
+
+            if int(status[mobtag][1][0]) < int(status[mobtag][1][1]):
+                r.progressCurrent, r.progressMax = status[mobtag][1]
                 r.progressCurrent, r.progressMax = int(r.progressCurrent), int(r.progressMax)
                 r.tp = bfp.Reward.Type.SEARCH_MOBILE
                 res = self.__processExtra(r, verbose)
                 res.action = action
                 results.append(res)
 
-            if int(status[2][1][0]) < int(status[2][1][1]):
-                r.progressCurrent, r.progressMax = status[2][1]
+            if int(status[pctag][1][0]) < int(status[pctag][1][1]):
+                r.progressCurrent, r.progressMax = status[pctag][1]
                 r.progressCurrent, r.progressMax = int(r.progressCurrent), int(r.progressMax)
                 r.tp = bfp.Reward.Type.SEARCH_PC
                 res = self.__processExtra(r, verbose)
@@ -477,11 +472,12 @@ class BingRewards:
                 results.append(res)
 
         except IndexError, e:
-            print "IndexError: handling {0}".format(str(e))
+            print "detecting out of order {0} {1}".format(str(e), str(status))
             # let BFP handle it when dashboard is bad
+
         except ValueError, e:
             # let BFP handle it when dashboard is bad
-            print "ValueError: handling {0}".format(str(e))
+            print e, status
 
         return results
 
@@ -519,7 +515,7 @@ class BingRewards:
         """Prints a result"""
         self.__printReward(result.o)
         if result.isError:
-            print "   Error    : true"
+            print "   Error    :   true"
         print "   Message  : " + result.message
         print "   Action   : " + bfp.Reward.Type.Action.toStr(result.action)
 
