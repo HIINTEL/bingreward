@@ -42,7 +42,6 @@ deployment:
     commands:
       - echo production test
       - coverage report --omit '/home/ubuntu/*/*/*/*,/usr/*,mpmain.py'
-      - coveralls --rcfile=.coveragerc
       - find . -iname \*py -exec rm -f {} \;
       
   staging:
