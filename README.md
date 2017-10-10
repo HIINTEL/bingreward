@@ -65,6 +65,33 @@ onScriptComplete: A special event which occurs only once when the script finishe
 onScriptFailure: A special event which occurs only once and if the script fails with exception some time after successfully loading the config.
 
 ## Automating
+FAAS support
+```python
+
+# openfaas deploying swarm
+docker swarm init
+git clone https://github.com/openfaas/faas && \
+    cd faas && \
+    git checkout 0.6.5 && \
+    ./deploy_stack.sh
+
+
+docker build -t kenney/bingreward .
+faas-cli deploy --fprocess="/bin/entry.sh" \
+    --env read_timeout=600 --env write_timeout=600 \
+    --image kenney/bingreward --name bingreward
+
+curl http://localhost:8080/function/bingreward --data-binary @$HOME/config.xml > output.txt
+
+
+# removal steps
+# function name is service name
+docker service rm bingreward
+```
+
+
+
+
 Linux/Mac: Create cron job  
 Replace `LOCAL_CONFIG_DIR` setting with the path to your Bing Rewards folder  
 You will also need to update the paths in the command to point to your Bing Rewards folder
