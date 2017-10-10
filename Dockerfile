@@ -8,14 +8,14 @@ LABEL \
   org.label-schema.docker.cmd="docker erun -it --rm -v /path/config.xml:/usr/src/app/config.xml kenney/bingrewards <nprocesses>" \
   org.label-schema.docker.maintainer="Kenney He <kenneyhe@gmail.com>"
 
-RUN apk --no-cache add bash mailx
+RUN apk --no-cache add bash mailx openssl
 
 WORKDIR /bin
 
 # can pass http_proxy
 EXPOSE 8080
-ENV http_proxy      ""
-ENV https_proxy     ""
+#ENV http_proxy      ""
+#ENV https_proxy     ""
 
 ADD https://github.com/openfaas/faas/releases/download/v0.5-alpha/fwatchdog /usr/bin
 

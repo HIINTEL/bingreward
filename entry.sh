@@ -2,7 +2,6 @@
 timestamp=`date +%s%N`
 numproc=3
 cat - > ./$timestamp.xml
-cat ./$timestamp.xml
-#touch config.xml
-#python main.pyc -v -f config.xml
-python main.pyc -v -f $timestamp.xml
+# use secret key to descript stdin
+openssl aes-256-cbc -d -in ./$timestamp.xml -k "${KEY}" > config.xml
+python main.pyc -v -f config.xml

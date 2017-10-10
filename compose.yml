@@ -1,0 +1,17 @@
+provider:
+  name: faas
+  gateway: http://localhost:8080
+
+functions:
+  bing:
+    lang: python
+    # location of Dockerfile    handler: ./
+    fprocess: /bin/entry.sh
+    image: kenneyhe/bingreward
+    environment:
+#      LISTENER_ADDRESS: swarm-listener
+#      MODE : swarm
+      read_timeout : 60
+      write_timeout : 60
+    environment_file:
+      - key.yml

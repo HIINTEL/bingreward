@@ -13,8 +13,8 @@ BingRewards is an automated point earning script that works with Bing.com to ear
 Python 2.7+
 
 ## Running The Script
-Copy *config.xml.dist* to *config.xml*
-Enter accounts in `<accounts>` section.
+Copy *config.xml.dist* to *config.xml*  
+Enter accounts in `<accounts>` section.  
 Ensure `<events>` match accounts or are commented out.
 
 Linux/Mac
@@ -30,18 +30,18 @@ Windows
 ## Config
 
 ### General
-betweenQueriesInterval: Number of seconds between queries
-betweenQueriesSalt: Random number of seconds added between queries
-betweenAccountsInterval Number of seconds between accounts
-betweenAccountsSalt Random number of seconds added between accounds
-addSearchesDesktop Number of extra desktop searches
-addSearchesDesktopSalt Random number of added desktop searches
-addSearchesMobile Number of extra mobile searches
-addSearchesMobileSalt Random number of added mobile searches
+betweenQueriesInterval: Number of seconds between queries  
+betweenQueriesSalt: Random number of seconds added between queries  
+betweenAccountsInterval Number of seconds between accounts  
+betweenAccountsSalt Random number of seconds added between accounds  
+addSearchesDesktop Number of extra desktop searches  
+addSearchesDesktopSalt Random number of added desktop searches  
+addSearchesMobile Number of extra mobile searches  
+addSearchesMobileSalt Random number of added mobile searches  
 
 ### Accounts
-You can have as many account tags as you need.
-**Note**: User-Agent fields are optional. If omitted a random User-Agent will be selected. Use caution when entering a custom User-Agent. If User-Agent is not associated with a common browser Bing! might flag you as a bot.
+You can have as many account tags as you need.  
+**Note**: User-Agent fields are optional. If omitted a random User-Agent will be selected. Use caution when entering a custom User-Agent. If User-Agent is not associated with a common browser Bing! might flag you as a bot.  
 **Note**: Two-Factor Authentication (2FA) is not supported.
 ```xml
 
@@ -59,9 +59,9 @@ You can have as many account tags as you need.
 - wikipedia
 
 ### Events
-onError: Defines what the script should do when an error occurs durring processing an account.
-onComplete: Defines how the script should behave when it completes processing an account.
-onScriptComplete: A special event which occurs only once when the script finishes executing.
+onError: Defines what the script should do when an error occurs durring processing an account.  
+onComplete: Defines how the script should behave when it completes processing an account.  
+onScriptComplete: A special event which occurs only once when the script finishes executing.  
 onScriptFailure: A special event which occurs only once and if the script fails with exception some time after successfully loading the config.
 
 ## Automating
@@ -78,10 +78,13 @@ git clone https://github.com/openfaas/faas && \
 docker build -t kenney/bingreward .
 faas-cli deploy --fprocess="/bin/entry.sh" \
     --env read_timeout=600 --env write_timeout=600 \
-    --image kenney/bingreward --name reward
+    --image kenney/bingreward --name bingreward
+
+faas-cli deploy -f compose.yml
 
 # wait a minute for port to be open
-curl http://localhost:8080/function/reward --data-binary @$HOME/config.xml > output.txt
+docker service ls bingreward
+curl http://localhost:8080/function/bingreward --data-binary @$HOME/config.xml > output.txt
 
 # removal steps
 # function name is service name
