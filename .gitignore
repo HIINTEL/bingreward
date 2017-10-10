@@ -2,3 +2,4 @@
 *.swp
 config.xml
 codeship.aes
+key.xml

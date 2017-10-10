@@ -76,19 +76,21 @@ git clone https://github.com/openfaas/faas && \
     ./deploy_stack.sh
 
 docker build -t kenney/bingreward .
-faas-cli deploy --fprocess="/bin/entry.sh" \
-    --env read_timeout=600 --env write_timeout=600 \
-    --image kenney/bingreward --name bingreward
 
 faas-cli deploy -f compose.yml
 
-# wait a minute for port to be open
-docker service ls bingreward
-curl http://localhost:8080/function/bingreward --data-binary @$HOME/config.xml > output.txt
+# wait less than a minute for port to be open
+docker service ls reward
+
+# if not HTTPS
+openssl aes-256-cbc -e -in config.xml -k "${KEY}" | openssl enc -base64 > ~/config.enc
+curl http://localhost:8080/function/bing --data-binary @$HOME/config.enc > output.txt
 
 # removal steps
 # function name is service name
-docker service rm bingreward
+docker service rm bing
+
+# cleanup
 rm -rf faas
 
 ## References

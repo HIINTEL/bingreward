@@ -1,7 +1,6 @@
 #!bash -x
 timestamp=`date +%s%N`
 numproc=3
-cat - > ./$timestamp.xml
-# use secret key to descript stdin
-openssl aes-256-cbc -d -in ./$timestamp.xml -k "${KEY}" > config.xml
-python main.pyc -v -f config.xml
+cat - | openssl base64 -d  | openssl aes-256-cbc -d -k "${KEY}" -out config.xml
+# for debug env
+python -B main.pyc
