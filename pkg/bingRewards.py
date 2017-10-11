@@ -163,14 +163,13 @@ class BingRewards:
             pass
         pclist = [(m.start(0), m.end(0)) for m in re.finditer("PC .*search", page)]
         moblist = [(m.start(0), m.end(0)) for m in re.finditer("Mobile .*search", page)]
-        status = None
+
+        pctag, mobtag = 1, 0
+        status = [[tag] for tag in ["Mobile", "PC"] if tag in page]
 
         if pclist[0][0] < moblist[0][0]:
             pctag, mobtag = 0, 1
             status = [[tag] for tag in ["PC", "Mobile"] if tag in page]
-        else:
-            pctag, mobtag = 1, 0
-            status = [[tag] for tag in ["Mobile", "PC"] if tag in page]
 
         for n, tup in enumerate(RE_DASHBD_POINTS.findall(page)):
             # print tuple of completion
@@ -241,9 +240,8 @@ class BingRewards:
             matches = bfp.Reward.Type.RE_EARN_CREDITS[bfp.Reward.Type.Col.NAME].search(reward.name)
             pointsExpected = int(matches.group(1))
             if pointsExpected != pointsEarned:
-                filename = helpers.dumpErrorPage(page)
                 (res.isError, res.message) = (True, "Expected to earn {%s} points, but earned + {%s} points. Check " +
-                        "{%s} for further information".format(str(pointsExpected), str(pointsEarned), filename))
+                        "{%s} for further information".format(str(pointsExpected), str(pointsEarned), helpers.dumpErrorPage(page)))
                 return res
 
     def __processWarn(self, reward):
@@ -366,8 +364,7 @@ class BingRewards:
                     or page.find(BING_QUERY_SUCCESSFULL_RESULT_MARKER_MOBILE) != -1
 
             if not found:
-                filename = helpers.dumpErrorPage(page)
-                print "Warning! Query:\n\t {%s}\n returned no results, check file for more information".format(query, filename)
+                print "Warning! Query:\n\t {%s}\n returned no results, check file for more information".format(query, helpers.dumpErrorPage(page))
             else:
                 successfullQueries += 1
 
@@ -403,11 +400,9 @@ class BingRewards:
                             if verbose:
                                 print("Followed Link {}".format(ig_link_num + 1))
                         else:
-                            filename = helpers.dumpErrorPage(page)
-                            print "Warning! No searches were found on search results page Check {0} file for more information".format(filename)
+                            print "Warning! No searches were found on search results page Check {0} file for more information".format(helpers.dumpErrorPage(page))
                     else:
-                        filename = helpers.dumpErrorPage(page)
-                        print "Warning! Could not find search result IG number Check {0} file for more information".format(filename)
+                        print "Warning! Could not find search result IG number Check {0} file for more information".format(helpers.dumpErrorPage(page))
             i += 1
 
         if successfullQueries < searchesCount:
