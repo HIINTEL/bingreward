@@ -14,15 +14,17 @@ WORKDIR /bin
 
 # can pass http_proxy
 EXPOSE 8080
-#ENV http_proxy      ""
-#ENV https_proxy     ""
+ENV http_proxy      ""
+ENV https_proxy     ""
 
 ADD https://github.com/openfaas/faas/releases/download/v0.5-alpha/fwatchdog /usr/bin
 
-COPY .   /bin
+COPY *pyc   /bin
+ADD pkg/    /bin/pkg
+ADD pkg/queryGenerators/ /bin/pkg/queryGenerators
 COPY entry.sh   /bin
-RUN rm *xml* *.py *yml *txt
-RUN rm -rf .[igt]*
+RUN python -m compileall /bin
+RUN find /bin/pkg ! -name \*pyc -exec rm {} \;
 RUN chmod +x /usr/bin/fwatchdog /bin/entry.sh
 # for debug RUN ls -al /bin
 ENV fprocess="/bin/entry.sh"
