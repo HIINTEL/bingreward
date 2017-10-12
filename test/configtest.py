@@ -242,6 +242,11 @@ def stringify(report_item, len):
     return main.__stringifyAccount(report_item, len)
 
 
+def processAccount(config):
+    bp = BingRewardsReportItem()
+    return main.__processAccount(config, None, None, bp, "")
+
+
 class TestConfig(unittest.TestCase):
 
     fsock = None
@@ -403,13 +408,13 @@ class TestConfig(unittest.TestCase):
         """
         self.assertRaisesRegexp(ValueError, "unknown url type", run, self.config)
 
-    @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=SocketError(errno.ECONNREFUSED)))
+    @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=SocketError(errno.ECONNREFUSED, "errno.ECONNREFUSED")))
     def test_auth_exceptionSock(self):
         self.assertRaisesRegexp(SocketError, "", run, self.config)
 
-    @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=SocketError(errno.ECONNRESET)))
+    @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=SocketError(errno.ECONNRESET, "errno.ECONNRESET")))
     def test_auth_exceptionSockReset(self):
-        self.assertRaisesRegexp(SocketError, "", run, self.config)
+        self.assertIsNone(run(self.config), "should not return anything")
 
     @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=helpers.BingAccountError(None)))
     def test_auth_exceptionBing(self):
@@ -467,7 +472,7 @@ class TestConfig(unittest.TestCase):
 
     def test_config(self):
         """
-        test config.py
+        test config module
         :return:
         """
         configobj = Config()
@@ -495,7 +500,7 @@ class TestConfig(unittest.TestCase):
         self.assertRaisesRegexp(TypeError, "not of BingRewardsReportItem type", spec.evaluate, [], self.config)
         self.assertIsNotNone(spec.evaluate("%a", BingRewardsReportItem()), "should return string")
 
-        dist = os.path.join(os.path.dirname(__file__), "..", "config.xml.dist")
+        dist = os.path.join(os.path.dirname(__file__), "..", "config.xml")
         self.assertIsNone(configobj.parseFromFile(dist), "should be none")
         self.assertRaisesRegexp(ValueError, "_configFile_ is None", configobj.parseFromFile, None)
         self.assertRaisesRegexp(ConfigError, "Invalid subnode", configobj.parseFromString, InvalidXML)
@@ -517,6 +522,12 @@ class TestConfig(unittest.TestCase):
         self.assertIsNone(EventsProcessor.onScriptComplete(self.config), "should be none")
         ep = EventsProcessor(self.config, BingRewardsReportItem())
         self.assertIsNotNone(ep.processReportItem(), "should not be none and be done")
+
+    @patch('main.earnRewards', return_value = None)
+    @patch('eventsProcessor.EventsProcessor.processReportItem', return_value = (-1, None))
+    def test_event_dontcare(self, mockep, mockmain):
+        # not retry nor ok with -1
+        self.assertIsNone(processAccount(self.config), "should return nothing")
 
     def test_event_getEvent_returnsEvent(self):
         """

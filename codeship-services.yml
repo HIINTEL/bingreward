@@ -1,6 +1,11 @@
 version: '2'
 
 services:
+  bing-test:
+    build: test 
+    environment:
+      fprocess: /bin/entry.sh
+    encrypted_env_file: env.encrypted
   bing:
     build: .
     environment:
