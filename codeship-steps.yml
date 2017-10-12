@@ -3,6 +3,7 @@
   type: serial
   services:
       - bing
+      - python:2.7.14-alpine
 # FIXME: not pull happy Build Error: pull access denied for kenney/bingreward, repository does not exist or may require 'docker login'
 #      - bing-test
   steps:
