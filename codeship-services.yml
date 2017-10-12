@@ -2,12 +2,19 @@ version: '2'
 
 services:
   bing-test:
-    build: test 
+    build:
+        context: ./test
+        image: kenney/bingreward-test
+        dockerfile: Dockerfile
+    cached: true
     environment:
       fprocess: /bin/entry.sh
     encrypted_env_file: env.encrypted
   bing:
-    build: .
+    build:
+        image: kenney/bingreward
+        dockerfile: Dockerfile
+    cached: true
     environment:
       fprocess: /bin/entry.sh
     encrypted_env_file: env.encrypted
