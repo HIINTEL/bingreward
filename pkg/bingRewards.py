@@ -161,18 +161,19 @@ class BingRewards:
         except ValueError:
             # Ignore valueerror
             pass
-        pclist = [(m.start(0), m.end(0)) for m in re.finditer("PC .*search", page)]
-        moblist = [(m.start(0), m.end(0)) for m in re.finditer("Mobile .*search", page)]
+        pclist = [(m.start(0), m.end(0)) for m in re.finditer(">PC search<", page)]
+        moblist = [(m.start(0), m.end(0)) for m in re.finditer(">Mobile search<", page)]
 
         pctag, mobtag = 1, 0
         status = [[tag] for tag in ["Mobile", "PC"] if tag in page]
+        l = RE_DASHBD_POINTS.findall(page[moblist[0][0]: pclist[0][1] + 300])
 
         if pclist[0][0] < moblist[0][0]:
             pctag, mobtag = 0, 1
             status = [[tag] for tag in ["PC", "Mobile"] if tag in page]
+            l = RE_DASHBD_POINTS.findall(page[pclist[0][0]: moblist[0][1] + 300])
 
-        for n, tup in enumerate(RE_DASHBD_POINTS.findall(page)):
-            # print tuple of completion
+        for n, tup in enumerate(l):
             if int(tup[1]) >= 150:
                 status[pctag].append(tup)
                 continue
@@ -444,7 +445,6 @@ class BingRewards:
         status = None
         try:
             (page, status) = self.decodeDashBoard()
-
             r = self.EXTRA
             r.progressCurrent, r.progressMax, r.tp = 150, 150, bfp.Reward.Type.Action.SEARCH
             if status[0][0][0] == "Mobile":
