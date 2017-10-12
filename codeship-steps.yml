@@ -1,20 +1,33 @@
 # initial checkin
-- name: example_tagged_step
-  tag: master
-  service: codeship_example
-  command: pip install -r requirements.txt  
-  service: codeship_example
-  command: cp config.xml.dist config.xml 
-  #service: codeship_example
-  #command: python -B test/*py
-  #service: codeship_example
-  #command: coverage report
-  #service: codeship_example
-  #command:  coveralls
-- type: parallel
-  name: example_parallel_step
+- name: bing serial
+  type: serial
+  service: bing
   steps:
-    - service: codeship_example
-      command: env
-    - service: codeship_example
-      command: ls -al 
+    - name: pingable
+      command: ping -c 1 www.bing.com
+    - name: port 80 test
+      command: wget www.bing.com
+    - name: up tests
+      type: parallel
+      steps:
+        - name: bing parallel tests
+          tag: test
+          type: parallel
+          steps:
+            - name: envs
+              command: env
+            - name: send to entry
+              command: echo -n "U2FsdGVkX1+46wB3vdqBcnFeO0nkE7ULiYDUuV2vYuc=" | entry.sh
+            - name: help
+              command: python main.pyc --help
+            - name: open port
+              command: echo "" | nc localhost 8080
+            - name: run main
+              command: echo -n "U2FsdGVkX1+46wB3vdqBcnFeO0nkE7ULiYDUuV2vYuc=" > config.xml && python main.pyc
+
+#  - name: Test dockercfg Generator
+#    service: dockercfg_test
+#    type: push
+#    image_name: 870119404647.dkr.ecr.us-east-1.amazonaws.com/codeship-testing
+#    registry: https://870119404647.dkr.ecr.us-east-1.amazonaws.com
+#    dockercfg_service: dockercfg_test_generator

@@ -1,8 +1,8 @@
 version: '2'
 
 services:
-  codeship_example:
+  bing:
     build: .
     environment:
-      EXAMPLE_ENV_VAR: example-var
+      fprocess: /bin/entry.sh
     encrypted_env_file: env.encrypted
