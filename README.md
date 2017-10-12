@@ -75,16 +75,26 @@ git clone https://github.com/openfaas/faas && \
     git checkout 0.6.5 && \
     ./deploy_stack.sh
 
+# generate image and deploy
 docker build -t kenney/bingreward .
 
-faas-cli deploy -f compose.yml
+faas-cli deploy -f compose.yml -replace=true
 
 # wait less than a minute for port to be open
-docker service ls reward
+docker service ls
 
 # if not HTTPS
 openssl aes-256-cbc -e -in config.xml -k "${KEY}" | openssl enc -base64 > ~/config.enc
 curl http://localhost:8080/function/bing --data-binary @$HOME/config.enc > output.txt
+
+# test containers
+``` bash
+# send it to codeship
+jet steps
+```
+
+# create only artifacts
+python -m compileall .
 
 # removal steps
 # function name is service name
