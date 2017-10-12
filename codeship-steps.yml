@@ -3,7 +3,8 @@
   type: serial
   services:
       - bing
-      - bing-test
+# FIXME: not pull happy Build Error: pull access denied for kenney/bingreward, repository does not exist or may require 'docker login'
+#      - bing-test
   steps:
     - name: integration pingable
       command: ping -c 1 www.bing.com
@@ -36,3 +37,4 @@
 #    image_name: 870119404647.dkr.ecr.us-east-1.amazonaws.com/codeship-testing
 #    registry: https://870119404647.dkr.ecr.us-east-1.amazonaws.com
 #    dockercfg_service: dockercfg_test_generator
+k
