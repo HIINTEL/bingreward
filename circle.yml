@@ -16,6 +16,7 @@ dependencies:
     - pip install --upgrade pip 
     - openssl aes-256-cbc -d -in config.xml.encrypted -k "${KEY}" >> config.xml
     - chmod og-r config.xml
+    - python -m compileall .
     - pip install -r requirements.txt
 
   post:
