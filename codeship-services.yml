@@ -6,6 +6,8 @@ services:
         context: ./test
         image: kenney/bingreward-test
         dockerfile: Dockerfile
+    volumes:
+       - test:/bin/test
     cached: true
     environment:
       fprocess: /bin/entry.sh

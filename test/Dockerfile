@@ -16,9 +16,6 @@ EXPOSE 8080
 ENV http_proxy      ""
 ENV https_proxy     ""
 
-ADD . /bin/test/
-RUN python -m compileall /bin/
-RUN find /bin/test ! -name \*pyc -exec rm {} \;
 ADD requirements.txt /bin/
 ADD https://raw.githubusercontent.com/kenneyhe/BingRewards/master/config.xml.dist /bin/config.xml
 RUN pip install -r requirements.txt

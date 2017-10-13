@@ -1,16 +1,17 @@
 # initial checkin
 - name: bing serial
   type: serial
-  service: bing
+  tags: master
+  services:
+    - bing
+    - bing-test
   steps:
-    - name: integration pingable
-      command: ping -c 1 www.bing.com
-    - name: integration port 80 test
+    - name: health port 80 test
       command: wget www.bing.com
-    - name: integration tests
+    - name: health tests
       type: parallel
       steps:
-        - name: integration parallel tests
+        - name: health detection
           type: parallel
           steps:
             - name: envs
@@ -21,12 +22,17 @@
               command: echo "" | nc localhost 8080
             - name: run main
               command: echo -n "U2FsdGVkX1+46wB3vdqBcnFeO0nkE7ULiYDUuV2vYuc=" > config.xml && python main.pyc
-- name: bing testunittests
-  type: parallel
+
+# jet steps --debug --tag tests
+- name: container tests
+  type: serial
+  tags: tests
   service: bing-test
   steps:
     - name: unittests
-      command: bash -c "nosetests -v --process-timeout=120 test/*.pyc"
+      command: bash -c "nosetests -v --processes=4 --process-timeout=120 --with-coverage --cover-package pkg --cover-package test --cover-package . test/*.pyc"
+    - name: coverage report
+      command: coverage report -i --rcfile=.coveragerc
 
 #  - name: Test dockercfg Generator
 #    service: dockercfg_test

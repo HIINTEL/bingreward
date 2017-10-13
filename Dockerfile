@@ -19,7 +19,7 @@ ENV https_proxy     ""
 ADD requirements.txt /bin/
 RUN pip install -r requirements.txt
 ADD https://github.com/openfaas/faas/releases/download/v0.5-alpha/fwatchdog /usr/bin
-COPY *py   /bin/
+COPY *pyc   /bin/
 ADD pkg/    /bin/pkg/
 ADD pkg/queryGenerators/ /bin/pkg/queryGenerators/
 COPY entry.sh   /bin
