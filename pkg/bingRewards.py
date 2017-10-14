@@ -24,16 +24,15 @@ import helpers
 urllib.addinfourl.__enter__ = lambda self: self
 urllib.addinfourl.__exit__  = lambda self, type, value, traceback: self.close()
 
+
 class HTTPRefererHandler(urllib2.HTTPRedirectHandler):
     def http_error_302(self, req, fp, code, msg, headers):
         if not "Referer" in req.headers:
-#             if req.get_host() == "www.bing.com":
-#                 req.headers["Referer"] = "http://www.bing.com/"
-#             else:
                 req.headers["Referer"] = req.get_full_url()
         return urllib2.HTTPRedirectHandler.http_error_302(self, req, fp, code, msg, headers)
 
     http_error_301 = http_error_303 = http_error_307 = http_error_302
+
 
 class BingRewards:
     class RewardResult:
@@ -94,9 +93,9 @@ class BingRewards:
                                             urllib2.HTTPCookieProcessor(cookies))     # keep cookies
 
     def getLifetimeCredits(self):
-	page = self.getDashboardPage() 
-	
-	# find lifetime points
+        page = self.getDashboardPage()
+
+        # find lifetime points
         s = page.find(' lifetime points</div>') - 20
         s = page.find('>', s) + 1
         e = page.find(' ', s)
@@ -116,11 +115,11 @@ class BingRewards:
             referer = response.geturl()
             page = helpers.getResponseBody(response)
 
-	#If we have already gone through the sign in process once, we don't need to do it again, just return the page
-	if page.find('JavaScript required to sign in') == -1:
-	    return page
+        #If we have already gone through the sign in process once, we don't need to do it again, just return the page
+        if page.find('JavaScript required to sign in') == -1:
+            return page
 
-	# get form data
+        # get form data
         s = page.index('action="')
         s += len('action="')
         e = page.index('"', s)
@@ -154,8 +153,8 @@ class BingRewards:
         request.add_header("Referer", referer)
         with self.opener.open(request) as response:
             page = helpers.getResponseBody(response)
-  	return page 
-	 
+        return page
+
     def getRewardsPoints(self):
         """
         Returns rewards points as int
@@ -206,8 +205,12 @@ class BingRewards:
 
         pointsEarned = self.getRewardsPoints()
         request = urllib2.Request(url = reward.url, headers = self.httpHeaders)
-        with self.opener.open(request) as response:
-            page = helpers.getResponseBody(response)
+        try:
+            with self.opener.open(request) as response:
+                page = helpers.getResponseBody(response)
+        except ValueError:
+            res.message = "This reward is invalid"
+            return res
         pointsEarned = self.getRewardsPoints() - pointsEarned
 # check if we earned any points
         if pointsEarned < 1:
@@ -299,7 +302,7 @@ class BingRewards:
 
         for query in queries:
             if i > 1:
-# sleep some time between queries (don't worry Bing! ;) )
+                # sleep some time between queries (don't worry Bing! ;) )
                 t = self.betweenQueriesInterval + random.uniform(0, self.betweenQueriesSalt)
                 time.sleep(t)
 
@@ -311,7 +314,7 @@ class BingRewards:
             with self.opener.open(request) as response:
                 page = helpers.getResponseBody(response)
 
-# check for the successfull marker
+            # check for the successfull marker
             found = page.find(BING_QUERY_SUCCESSFULL_RESULT_MARKER_PC) != -1 \
                  or page.find(BING_QUERY_SUCCESSFULL_RESULT_MARKER_MOBILE) != -1
 
@@ -439,7 +442,6 @@ class BingRewards:
         print "   Message  : " + result.message
         print "   Action   : " + bdp.Reward.Type.Action.toStr(result.action)
 
-
     def printResults(self, results, verbose):
         """
         Prints out results list
@@ -450,7 +452,12 @@ class BingRewards:
             raise TypeError("results is not an instance of list")
 
         i = 0
-        total = len(results)
+        total = 0
+
+        for r in results:
+            if verbose or r.isError:
+                total += 1
+                print r.message
         for r in results:
             if verbose or r.isError:
                 i += 1

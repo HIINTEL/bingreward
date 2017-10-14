@@ -462,6 +462,71 @@ PROXYLOGINXML = """
     </configuration>
             """
 
+NONIF2 = """
+    <configuration>
+        <general />
+        <accounts>
+            <account type="Live" disabled="false">
+                <login>ms@ps.com</login>
+                <password>zzz</password>
+            </account>
+        </accounts>
+
+        <events>
+            <onComplete>
+                <retry if="%p lt" interval="5" salt="3.5" count="1" />
+                <account ref="Live_ms@ps.com">
+                    <retry if="%p lt 31" interval="5" salt="3.5" count="1" />
+                </account>
+
+            </onComplete>
+        </events>
+        <queries generator="googleTrends" />
+    </configuration>
+            """
+
+NONIFRHS = """
+    <configuration>
+        <general />
+        <accounts>
+            <account type="Live" disabled="false">
+                <login>ms@ps.com</login>
+                <password>zzz</password>
+            </account>
+        </accounts>
+        <events>
+            <onComplete>
+                <notify if="%l gt adfsdf" cmd="echo complete %a %p %r %P %l %i" />
+                <account ref="Live_ms@ps.com">
+                    <retry if="%p lt 31" interval="5" salt="3.5" count="1" />
+                </account>
+            </onComplete>
+        </events>
+        <queries generator="googleTrends" />
+    </configuration>
+            """
+
+NONIFOP = """
+    <configuration>
+        <general />
+        <accounts>
+            <account type="Live" disabled="false">
+                <login>ms@ps.com</login>
+                <password>zzz</password>
+            </account>
+        </accounts>
+        <events>
+            <onComplete>
+                <notify if="%l gt adfsdf" cmd="echo complete %a %p %r %P %l %i" />
+                <account ref="Live_ms@ps.com">
+                    <retry if="%p zt 0.001" interval="5" salt="3.5" count="1" />
+                </account>
+            </onComplete>
+        </events>
+        <queries generator="googleTrends" />
+    </configuration>
+            """
+
 
 def validateSpecifier(specifier, specifierType=None):
     spec = Config.Event.Specifier()
@@ -764,6 +829,11 @@ class TestConfig(unittest.TestCase):
         self.assertRaisesRegexp(ConfigError, "must be", self.config.parseFromString, INVRETRYCNT)
         self.assertRaisesRegexp(ConfigError, "MUST BE", self.config.parseFromString, NEGRETRYCNT)
 
+    def test_config_if(self):
+        self.assertRaisesRegexp(ConfigError, "is invalid", self.config.parseFromString, NONIF2)
+        self.assertRaisesRegexp(ConfigError, "is invalid", self.config.parseFromString, NONIFRHS)
+        self.assertRaisesRegexp(ConfigError, "is invalid", self.config.parseFromString, NONIFOP)
+
     def test_event(self):
         """
         test event
@@ -832,7 +902,7 @@ class TestConfig(unittest.TestCase):
         newbfp = bfp.RewardV1()
         newbfp.tp = None
         rewards = [ newbfp ]
-#        self.assertIsNotNone(reward.process(rewards, True), "handle not none")
+        self.assertIsNotNone(reward.process(rewards, True), "handle not none")
 
         # HIT case
         newbfp.tp = mock.Mock()
@@ -861,7 +931,7 @@ class TestConfig(unittest.TestCase):
         self.assertIsNone(reward.printRewards(rewards), "should return None")
 
         self.assertRaisesRegexp(TypeError, "reward is not", reward.RewardResult, None)
-#        self.assertIsNotNone(reward.RewardResult(newbfp), "should return class")
+        self.assertIsNotNone(reward.RewardResult(newbfp), "should return class")
 
         proxy = mock.Mock()
         proxy.login = True

@@ -28,7 +28,7 @@ test:
           parallel: false
     - mv .coverage .coverage.1
     # need more loving from circleci coverage plugin
-    - coverage run --omit '/home/ubuntu/*/*/*/*,/usr/*,mpmain.py' -p main.py -v -r
+    - coverage run -p main.py -v -r
     - ls -aRl .coverage*
     # combine with two processes running coverage seems broken
     - coverage combine
