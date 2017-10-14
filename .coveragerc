@@ -1,4 +1,4 @@
 [run]
-omit = /home/ubuntu/*/*/*/*,/usr/*,mpmain.py
+omit = /home/ubuntu/*/*/*/*,/usr/*,mpmain.py,pkg/bingDashboardParser.py
 concurrency = multiprocessing
 parallel = True
