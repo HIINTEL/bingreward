@@ -129,6 +129,46 @@ FBXML = """
     </configuration>
             """
 
+INT = """
+    <configuration>
+        <general
+            openLinkChance="-1"
+            betweenAccountsSalt="40.52" />
+    </configuration>
+            """
+
+FLOAT = """
+    <configuration>
+        <general
+            addSearchesMobile="-1" />
+    </configuration>
+            """
+NONINT = """
+    <configuration>
+        <general
+            openTopLinkRange="asdfd" />
+    </configuration>
+            """
+
+
+NONFLOAT = """
+    <configuration>
+        <general
+            addSearchesMobile="asdfdf" />
+    </configuration>
+            """
+
+EVENT = """
+    <configuration>
+        <general
+            betweenQueriesInterval="12.271"
+            betweenQueriesSalt="5.7"
+            betweenAccountsInterval="404.1"
+            betweenAccountsSalt="40.52" />
+        <queries/>
+    </configuration>
+            """
+
 EVENTLESS = """
     <configuration>
         <general
@@ -160,7 +200,6 @@ LOGINXML = """
             betweenQueriesSalt="5.7"
             betweenAccountsInterval="404.1"
             betweenAccountsSalt="40.52" />
-
         <accounts>
             <account type="Live" disabled="false">
                 <password>xxx</password>
@@ -472,7 +511,7 @@ class TestConfig(unittest.TestCase):
 
     def test_config(self):
         """
-        test config.py
+        test config module
         :return:
         """
         configobj = Config()
@@ -500,15 +539,22 @@ class TestConfig(unittest.TestCase):
         self.assertRaisesRegexp(TypeError, "not of BingRewardsReportItem type", spec.evaluate, [], self.config)
         self.assertIsNotNone(spec.evaluate("%a", BingRewardsReportItem()), "should return string")
 
-        dist = os.path.join(os.path.dirname(__file__), "..", "config.xml.dist")
+        dist = os.path.join(os.path.dirname(__file__), "..", "config.xml")
         self.assertIsNone(configobj.parseFromFile(dist), "should be none")
         self.assertRaisesRegexp(ValueError, "_configFile_ is None", configobj.parseFromFile, None)
+        self.assertRaisesRegexp(ValueError, "is None", self.config.parseFromString, None)
         self.assertRaisesRegexp(ConfigError, "Invalid subnode", configobj.parseFromString, InvalidXML)
         self.assertRaisesRegexp(ConfigError, "is not found", configobj.parseFromString, LOGINXML)
         self.assertRaisesRegexp(ConfigError, "is not found", configobj.parseFromString, PWDXML)
         self.assertRaisesRegexp(ConfigError, "should be either set", self.config.parseFromString, PROXYLOGINXML)
         self.assertRaisesRegexp(KeyError, "_specifier_ is not", validateSpecifier, "%not")
         self.assertRaisesRegexp(ConfigError, "Invalid subnode", self.config.parseFromString, FBXML)
+
+    def test_config_attr(self):
+        self.assertRaisesRegexp(ConfigError, "MUST", self.config.parseFromString, FLOAT)
+        self.assertRaisesRegexp(ConfigError, "MUST", self.config.parseFromString, INT)
+        self.assertRaisesRegexp(ConfigError, "must", self.config.parseFromString, NONFLOAT)
+        self.assertRaisesRegexp(ConfigError, "must", self.config.parseFromString, NONINT)
 
     def test_event(self):
         """
@@ -517,6 +563,7 @@ class TestConfig(unittest.TestCase):
         """
         self.assertIsNone(EventsProcessor.onScriptFailure(self.config, Exception()), "should be none")
         self.assertIsNone(EventsProcessor.onScriptComplete(self.config), "should be none")
+        self.assertRaisesRegexp(ConfigError, "not found", self.config.parseFromString, EVENT)
         self.config.parseFromString(EVENTLESS)
         self.assertRaisesRegexp(Exception, ".*", EventsProcessor.onScriptFailure, self.config, Exception())
         self.assertIsNone(EventsProcessor.onScriptComplete(self.config), "should be none")
@@ -583,9 +630,6 @@ class TestConfig(unittest.TestCase):
         # HIT case
         newbfp.tp = mock.Mock()
         newbfp.tp = [ 0, 1, 2, 3, bfp.Reward.Type.Action.HIT ]
-
-        rewards = [ newbfp ]
-        self.assertRaisesRegexp(ValueError, "unknown", reward.process, rewards, True)
 
         # SEARCH case
         newbfp.tp = mock.Mock()
@@ -726,7 +770,6 @@ class TestLong(unittest.TestCase):
 
         self.config.proxy = None
         BingRewards(bingCommon.HEADERS, useragents, self.config)
-
 
 
 if __name__ == '__main__': # pragma: no cover
