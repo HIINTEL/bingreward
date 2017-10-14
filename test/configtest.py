@@ -129,6 +129,201 @@ FBXML = """
     </configuration>
             """
 
+NONREF = """
+    <configuration>
+        <general />
+        <accounts>
+            <account type="Facebook" disabled="false">
+                <login>john.smith@gmail.com</login>
+                <password>xxx</password>
+            </account>
+        </accounts>
+
+        <events>
+            <onComplete>
+                <account>
+                    <retry if="%p lt 31" interval="5" salt="3.5" count="1" />
+                    <notify if="%l gt 10000" cmd="echo complete %a %p %r %P %l %i" />
+                    <notify if="%p ne 31" cmd="echo complete %a %p %r %P %l %i" />
+                    <notify if="%P gt 475" cmd="echo complete %a %p %r %P %l %i" />
+                </account>
+            </onComplete>
+        </events>
+        <queries generator="wikipedia" />
+    </configuration>
+            """
+
+NONACCREF = """
+    <configuration>
+        <general />
+        <accounts>
+            <account type="Facebook" disabled="false">
+                <login>john.smith@gmail.com</login>
+                <password>xxx</password>
+            </account>
+        </accounts>
+
+        <events>
+            <onError>
+                <retry interval="5" salt="3.5" count="1" />
+                <notify cmd="echo error %a %p %r %l %i" />
+            </onError>
+            <onComplete>
+                <account>
+                </account>
+            </onComplete>
+            <onScriptComplete>
+                <notify cmd="./mail.sh" />
+            </onScriptComplete>
+            <onScriptFailure>
+                <notify cmd="./onScriptFailure.sh" />
+            </onScriptFailure>
+        </events>
+        <queries generator="wikipedia" />
+    </configuration>
+            """
+
+NONEV = """
+    <configuration>
+        <general />
+        <accounts>
+            <account type="Facebook" disabled="false">
+                <login>john.smith@gmail.com</login>
+                <password>xxx</password>
+            </account>
+        </accounts>
+
+        <events>
+            <onErrorRetry>
+                <retry interval="5" salt="3.5" count="1" />
+                <notify cmd="echo error %a %p %r %l %i" />
+            </onErrorRetry>
+        </events>
+        <queries generator="wikipedia" />
+    </configuration>
+            """
+
+RETRY = """
+    <configuration>
+        <general />
+        <accounts>
+            <account type="Facebook" disabled="false">
+                <login>john.smith@gmail.com</login>
+                <password>xxx</password>
+            </account>
+        </accounts>
+
+        <events>
+            <onError>
+                <retry salt="3.5" count="1" />
+                <notify cmd="echo error %a %p %r %l %i" />
+            </onError>
+        </events>
+        <queries generator="wikipedia" />
+    </configuration>
+            """
+
+INVRETRY = """
+    <configuration>
+        <general />
+        <accounts>
+            <account type="Facebook" disabled="false">
+                <login>john.smith@gmail.com</login>
+                <password>xxx</password>
+            </account>
+        </accounts>
+
+        <events>
+            <onError>
+                <retry interval="asdfsf" salt="3.5" count="1" />
+                <notify cmd="echo error %a %p %r %l %i" />
+            </onError>
+        </events>
+        <queries generator="wikipedia" />
+    </configuration>
+            """
+
+NEGRETRY = """
+    <configuration>
+        <general />
+        <accounts>
+            <account type="Facebook" disabled="false">
+                <login>john.smith@gmail.com</login>
+                <password>xxx</password>
+            </account>
+        </accounts>
+
+        <events>
+            <onError>
+                <retry interval="-1" salt="3.5" count="1" />
+                <notify cmd="echo error %a %p %r %l %i" />
+            </onError>
+        </events>
+        <queries generator="wikipedia" />
+    </configuration>
+            """
+
+RETRYCNT = """
+    <configuration>
+        <general />
+        <accounts>
+            <account type="Facebook" disabled="false">
+                <login>john.smith@gmail.com</login>
+                <password>xxx</password>
+            </account>
+        </accounts>
+
+        <events>
+            <onError>
+                <retry interval="0" salt="3.5" />
+
+                <notify cmd="echo error %a %p %r %l %i" />
+            </onError>
+        </events>
+        <queries generator="wikipedia" />
+    </configuration>
+            """
+
+INVRETRYCNT = """
+    <configuration>
+        <general />
+        <accounts>
+            <account type="Facebook" disabled="false">
+                <login>john.smith@gmail.com</login>
+                <password>xxx</password>
+            </account>
+        </accounts>
+
+        <events>
+            <onError>
+                <retry interval="0" count="asdfsf" salt="3.5" />
+                <notify cmd="echo error %a %p %r %l %i" />
+            </onError>
+        </events>
+        <queries generator="wikipedia" />
+    </configuration>
+            """
+
+NEGRETRYCNT = """
+    <configuration>
+        <general />
+        <accounts>
+            <account type="Facebook" disabled="false">
+                <login>john.smith@gmail.com</login>
+                <password>xxx</password>
+            </account>
+        </accounts>
+
+        <events>
+            <onError>
+                <retry interval="0" count="-1" salt="3.5" />
+                <notify cmd="echo error %a %p %r %l %i" />
+            </onError>
+        </events>
+        <queries generator="wikipedia" />
+    </configuration>
+            """
+
 INT = """
     <configuration>
         <general
@@ -555,6 +750,19 @@ class TestConfig(unittest.TestCase):
         self.assertRaisesRegexp(ConfigError, "MUST", self.config.parseFromString, INT)
         self.assertRaisesRegexp(ConfigError, "must", self.config.parseFromString, NONFLOAT)
         self.assertRaisesRegexp(ConfigError, "must", self.config.parseFromString, NONINT)
+
+    def test_config_notify(self):
+        self.assertRaisesRegexp(ConfigError, "is not found", self.config.parseFromString, NONREF)
+        self.assertRaisesRegexp(ConfigError, "is not found", self.config.parseFromString, NONACCREF)
+        self.assertRaisesRegexp(ConfigError, "not supported", self.config.parseFromString, NONEV)
+
+    def test_config_retry(self):
+        self.assertRaisesRegexp(ConfigError, "is not found", self.config.parseFromString, RETRY)
+        self.assertRaisesRegexp(ConfigError, "must be", self.config.parseFromString, INVRETRY)
+        self.assertRaisesRegexp(ConfigError, "MUST BE", self.config.parseFromString, NEGRETRY)
+        self.assertRaisesRegexp(ConfigError, "is not found", self.config.parseFromString, RETRYCNT)
+        self.assertRaisesRegexp(ConfigError, "must be", self.config.parseFromString, INVRETRYCNT)
+        self.assertRaisesRegexp(ConfigError, "MUST BE", self.config.parseFromString, NEGRETRYCNT)
 
     def test_event(self):
         """
