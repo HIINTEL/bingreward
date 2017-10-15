@@ -18,7 +18,7 @@ Usage:
 import HTMLParser
 import re
 
-class Reward:
+class RewardV1:
     "A class to represent a Bing! reward"
 
     class Type:

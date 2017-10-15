@@ -48,5 +48,10 @@ class TestBing(unittest.TestCase):
         status = subprocess.check_call(cmds, stderr=subprocess.STDOUT)
         self.assertEqual(status, 0, "failed to execute " + str(status))
 
+    def test_configinvalid(self):
+        cmd = "coverage run -p main.py --donotexist"
+        cmds = cmd.split()
+        self.assertRaisesRegexp(subprocess.CalledProcessError, "status 1", subprocess.check_call, cmds, stderr=subprocess.STDOUT)
+
 if __name__ == '__main__': # pragma: no cover
         unittest.main(verbosity=3)

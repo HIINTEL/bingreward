@@ -5,6 +5,8 @@
 import random
 
 BING_URL = 'http://www.bing.com'
+#When links are hit from dashboard, need to use the account URL, not bing URL. Not overwriting because it could be used in other places
+ACCOUNT_URL = 'https://account.microsoft.com'
 
 # common headers for all requests
 HEADERS = {

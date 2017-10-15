@@ -25,7 +25,7 @@ from bingRewards import BingRewards
 from config import BingRewardsReportItem, Config, ConfigError
 from eventsProcessor import EventsProcessor
 import bingCommon
-import bingFlyoutParser as bfp
+import bingDashboardParser as bdp
 import helpers
 from helpers import BingAccountError
 
@@ -54,7 +54,7 @@ def earnRewards(config, httpHeaders, userAgents, reportItem, password):
         bingAuth    = BingAuth(httpHeaders, bingRewards.opener)
         bingAuth.authenticate(reportItem.accountType, reportItem.accountLogin, password)
         reportItem.oldPoints = bingRewards.getRewardsPoints()
-        rewards = bfp.parseFlyoutPage(bingRewards.requestFlyoutPage(), bingCommon.BING_URL)
+        rewards = bdp.parseDashboardPage(bingRewards.getDashboardPage(), bingCommon.ACCOUNT_URL)
 
         if verbose:
             bingRewards.printRewards(rewards)
