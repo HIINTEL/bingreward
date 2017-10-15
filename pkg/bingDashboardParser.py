@@ -135,8 +135,7 @@ def parseDashboardPage(page, bing_url):
         if progressDiv is not None:
             if progressDiv.get_text().find('of') != -1:
                 progressStuff = progressDiv.get_text().split(' ')
-                rewardProgressCurrent = int(progressStuff[0])
-                rewardProgressMax = int(progressStuff[2])
+                rewardProgressCurrent, rewardProgressMax = int(progressStuff[0]), int(progressStuff[2])
         descriptionDiv = ddiv.find('div', class_='spacer-12-top')
         if descriptionDiv is not None:
             rewardDescription = descriptionDiv.get_text()
@@ -166,21 +165,18 @@ def parseDashboardPage(page, bing_url):
             rewardDescription = links[i].find('div', class_='text-caption progress-text-height clearfix')
             if rewardDescription.get_text().find('of') != -1:
                 progressStuff = rewardDescription.get_text().split(' ')
-                rewardProgressCurrent = int(progressStuff[0])
-                rewardProgressMax = int(progressStuff[2])
+                rewardProgressCurrent, rewardProgressMax = int(progressStuff[0]), int(progressStuff[2])
                 # also need to find the new description here
                 rewardDescription = links[i].find('div',
                                                   class_='offer-description-height spacer-20-top offer-description-margin-bottom')
                 # if the reward is a quiz and fully complete
         if rewardDescription.get_text().find('You did it!') != -1:
             rDscSplit = rewardDescription.get_text().split(' ')
-            rewardProgressMax = int(rDscSplit[rDscSplit.index('points.') - 1])
-            rewardProgressCurrent = rewardProgressMax
+            rewardProgressCurrent = rewardProgressMax = int(rDscSplit[rDscSplit.index('points.') - 1])
             # Grab the point totals for 'HIT' rewards - we're using these as a marker to set the 'HIT' type
         hits = checkForHit(currAction, rewardProgressCurrent, rewardProgressMax, links[i])
         if hits is not None:
-            rewardProgressCurrent = hits[0]
-            rewardProgressMax = hits[1]
+            rewardProgressCurrent, rewardProgressMax = hits[0], hits[1]
         createReward(currentReward, rewardURL, rewardName.get_text(), rewardProgressCurrent, rewardProgressMax,
                      rewardDescription.get_text())
         allRewards.append(currentReward)
@@ -204,22 +200,20 @@ def parseDashboardPage(page, bing_url):
         rewardDescription = topLink.find('div', class_='text-caption progress-text-height clearfix')
         if rewardDescription.get_text().find('of') != -1:
             progressStuff = rewardDescription.get_text().split(' ')
-            rewardProgressCurrent = int(progressStuff[0])
-            rewardProgressMax = int(progressStuff[2])
+            rewardProgressCurrent, rewardProgressMax = int(progressStuff[0]), int(progressStuff[2])
+
             # also need to find the new description here
             rewardDescription = topLink.find('div',
                                              class_='offer-description-height spacer-20-top offer-description-margin-bottom')
     # if the reward is a quiz and fully complete
     if rewardDescription.get_text().find('You did it!') != -1:
         rDscSplit = rewardDescription.get_text().split(' ')
-        rewardProgressMax = int(rDscSplit[rDscSplit.index('points.') - 1])
-        rewardProgressCurrent = rewardProgressMax
+        rewardProgressCurrent = rewardProgressMax = int(rDscSplit[rDscSplit.index('points.') - 1])
     currAction = topLink.find('span', class_='pull-left card-button-line-height margin-right-15')
     # Grab the point totals for 'HIT' rewards - we're using these as a marker to set the 'HIT' type
     hits = checkForHit(currAction, rewardProgressCurrent, rewardProgressMax, topLink)
     if hits is not None:
-        rewardProgressCurrent = hits[0]
-        rewardProgressMax = hits[1]
+        rewardProgressCurrent, rewardProgressMax = hits[0], hits[1]
     createReward(currentReward, rewardURL, rewardName.get_text(), rewardProgressCurrent, rewardProgressMax,
                  rewardDescription.get_text())
     allRewards.append(currentReward)
