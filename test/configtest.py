@@ -23,6 +23,7 @@ import helpers
 import bingCommon
 import bingHistory
 import bingFlyoutParser as bfp
+import bingDashboardParser as bdp
 import bingAuth
 from config import Config
 from config import BingRewardsReportItem
@@ -34,7 +35,6 @@ sys.path.append(os.path.abspath("pkg/queryGenerators"))
 import googleTrends
 import wikipedia
 import HTMLParser
-
 
 XMLString = """
     <configuration>
@@ -345,7 +345,6 @@ NONINT = """
     </configuration>
             """
 
-
 NONFLOAT = """
     <configuration>
         <general
@@ -419,7 +418,6 @@ PWDXML = """
     </configuration>
             """
 
-
 PROTXML = """
     <configuration>
         <general
@@ -433,7 +431,6 @@ PROTXML = """
                password="yyy" />
     </configuration>
             """
-
 
 URLXML = """
     <configuration>
@@ -527,6 +524,7 @@ NONIFOP = """
     </configuration>
             """
 
+DASHPG = ""
 
 def validateSpecifier(specifier, specifierType=None):
     spec = Config.Event.Specifier()
@@ -547,11 +545,10 @@ def processAccount(config):
 
 
 class TestConfig(unittest.TestCase):
-
     fsock = None
     mockdate = "2017-09-06 00:44:47.7"
 
-    def _redirectOut(self): # pragma: no cover
+    def _redirectOut(self):  # pragma: no cover
         self.fsock = open('out.log', 'a+')
         sys.stdout = self.fsock
 
@@ -645,7 +642,7 @@ class TestConfig(unittest.TestCase):
 
     @patch('sys.version_info')
     def test_node_fail(self, mockver):
-        sys.version_info = [ 2, 1 ]
+        sys.version_info = [2, 1]
 
         import xml.etree.ElementTree as ET
         root = ET.fromstring(self.configXMLString)
@@ -698,8 +695,8 @@ class TestConfig(unittest.TestCase):
         output = bingHistory.getBingHistoryTodayURL()
         self.assertRegexpMatches(output, "https", "missing url " + str(output))
 
-    @patch('helpers.getResponseBody', return_value = '"WindowsLiveId":""     "WindowsLiveId":""')
-    @patch('time.sleep', return_value = '')
+    @patch('helpers.getResponseBody', return_value='"WindowsLiveId":""     "WindowsLiveId":""')
+    @patch('time.sleep', return_value='')
     def test_auth_url(self, timemock, helpmock):  # pragma: no cover
         """
         test authentication decoding error
@@ -707,7 +704,8 @@ class TestConfig(unittest.TestCase):
         """
         self.assertRaisesRegexp(ValueError, "unknown url type", run, self.config)
 
-    @patch('bingAuth.BingAuth.authenticate', new=Mock(side_effect=SocketError(errno.ECONNREFUSED, "errno.ECONNREFUSED")))
+    @patch('bingAuth.BingAuth.authenticate',
+           new=Mock(side_effect=SocketError(errno.ECONNREFUSED, "errno.ECONNREFUSED")))
     def test_auth_exceptionSock(self):
         self.assertRaisesRegexp(SocketError, "", run, self.config)
 
@@ -734,9 +732,9 @@ class TestConfig(unittest.TestCase):
     def test_stringify(self):
         self.assertRaisesRegexp(ValueError, "too small", stringify, None, -1)
 
-    @patch('urllib2.Request', return_value = "")
-    @patch('helpers.getResponseBody', return_value = "")
-    @patch('urllib2.Request.add_header', return_value = urllib2.Request(bingCommon.BING_URL, bingCommon.HEADERS))
+    @patch('urllib2.Request', return_value="")
+    @patch('helpers.getResponseBody', return_value="")
+    @patch('urllib2.Request.add_header', return_value=urllib2.Request(bingCommon.BING_URL, bingCommon.HEADERS))
     def test_auth_url(self, headermock, helpmock, urlmock):
         """
         test auth class
@@ -749,25 +747,6 @@ class TestConfig(unittest.TestCase):
 
         auth = bingAuth.BingAuth(bingCommon.HEADERS, urllib2.OpenerDirector())
         self.assertIsNotNone(auth, "should return class")
-
-    def test_bfp(self):
-        """
-        test bfp
-        :return:
-        """
-        newbfp = bfp.RewardV1()
-        self.assertIsNotNone(newbfp.isAchieved(), "should not be None")
-        newbfp.progressCurrent = 1
-        newbfp.progressMax = 100
-        self.assertIsNotNone(newbfp.progressPercentage(), "should not be None")
-        page = '<div id="messageContainer"></div>'
-        page += '<div id="bottomContainer"></div>'
-        self.assertIsNotNone(bfp.parseFlyoutPage(page, "http://bing"), "should not be None")
-        self.assertIsNotNone(newbfp.Type.Action.toStr(newbfp.Type.Action.PASS) , "should not be None")
-
-        newbfp.progressCurrent = 1
-        newbfp.progressMax = 0
-        self.assertIsNotNone(newbfp.progressPercentage(), "should not be None")
 
     def test_config(self):
         """
@@ -784,7 +763,7 @@ class TestConfig(unittest.TestCase):
         self.assertIsNotNone(Config.Event.Notify(), "should return class")
         ifs = Config.Event.IfStatement()
         ifs.op = lambda x, y: x
-        ifs.lhs = lambda x : x
+        ifs.lhs = lambda x: x
         ifs.rhs = "b"
         self.assertIsNotNone(str(ifs), "should return class")
         self.assertRaisesRegexp(ValueError, "None", ifs.evaluate, None)
@@ -848,8 +827,8 @@ class TestConfig(unittest.TestCase):
         ep = EventsProcessor(self.config, BingRewardsReportItem())
         self.assertIsNotNone(ep.processReportItem(), "should not be none and be done")
 
-    @patch('main.earnRewards', return_value = None)
-    @patch('eventsProcessor.EventsProcessor.processReportItem', return_value = (-1, None))
+    @patch('main.earnRewards', return_value=None)
+    @patch('eventsProcessor.EventsProcessor.processReportItem', return_value=(-1, None))
     def test_event_dontcare(self, mockep, mockmain):
         # not retry nor ok with -1
         self.assertIsNone(processAccount(self.config), "should return nothing")
@@ -872,8 +851,12 @@ class TestConfig(unittest.TestCase):
         self.assertIsNone(self.config.getEvent("does_not_exist"))
         self.assertRaisesRegexp(ValueError, "None", self.config.getEvent, None)
 
+    def test_reward_bfp_hit(self):
+        self._rewards_hit(bfp.RewardV1())
+        self._rewards_hit(bdp.Reward())
+
     @patch('helpers.getResponseBody')
-    def test_rewards_hit(self, helpmock):
+    def _rewards_hit(self, classobj, helpmock):
         """
         test rewards object
         :return:
@@ -899,20 +882,20 @@ class TestConfig(unittest.TestCase):
         self.assertRaisesRegexp(TypeError, "not an instance", reward.process, None, True)
 
         # NONE case
-        newbfp = bfp.RewardV1()
+        newbfp = classobj
         newbfp.tp = None
-        rewards = [ newbfp ]
+        rewards = [newbfp]
         self.assertIsNotNone(reward.process(rewards, True), "handle not none")
 
         # HIT case
         newbfp.tp = mock.Mock()
-        newbfp.tp = [ 0, 1, 2, 3, bfp.RewardV1.Type.Action.HIT ]
+        newbfp.tp = [0, 1, 2, 3, bfp.RewardV1.Type.Action.HIT]
 
         # SEARCH case
         newbfp.tp = mock.Mock()
-        newbfp.tp = [ 0, 1, 2, 3, bfp.RewardV1.Type.Action.SEARCH ]
+        newbfp.tp = [0, 1, 2, 3, bfp.RewardV1.Type.Action.SEARCH]
         newbfp.progressCurrent = 100
-        rewards = [ newbfp ]
+        rewards = [newbfp]
         self.assertIsNotNone(reward.process(rewards, True), "should return res")
 
         self.assertRaisesRegexp(TypeError, "not an instance", reward.printResults, None, True)
@@ -953,12 +936,12 @@ class TestLong(unittest.TestCase):
     """
     Test that takes near 30s
     """
+
     def setUp(self):
         self.config = Config()
         self.configXMLString = XMLString
 
         self.config.parseFromString(self.configXMLString)
-        self.configFBXML = FBXML
 
     def test_query(self):
         """
@@ -984,7 +967,35 @@ class TestLong(unittest.TestCase):
         q.unusedQueries = set()
         self.assertIsNotNone(q.generateQueries(10, set()))
 
-    @patch('bingFlyoutParser.RewardV1.progressPercentage', return_value = "100")
+    def test_bingparser(self):
+        self._bp(bfp.RewardV1())
+        self._bp(bdp.Reward())
+
+    def _bp(self, classobj):
+        """
+        test reward parser
+        :return:
+        """
+        self.assertIsNotNone(classobj.isAchieved(), "should not be None")
+        classobj.progressCurrent = 1
+        classobj.progressMax = 100
+        self.assertIsNotNone(classobj.progressPercentage(), "should not be None")
+        page = '<div id="messageContainer"></div>'
+        page += '<div id="bottomContainer"></div>'
+        if isinstance(classobj, bdp.Reward):
+            with open("test/dashhtml", "r") as fd:
+                DASHPG = fd.readlines()
+                DASHPG = "".join(DASHPG)
+                self.assertIsNotNone(bdp.parseDashboardPage(DASHPG, bingCommon.ACCOUNT_URL), "should see rewards")
+        if isinstance(classobj, bfp.RewardV1):
+            self.assertIsNotNone(bfp.parseFlyoutPage(page, "http://bing"), "should not be None")
+        self.assertIsNotNone(classobj.Type.Action.toStr(classobj.Type.Action.PASS), "should not be None")
+
+        classobj.progressCurrent = 1
+        classobj.progressMax = 0
+        self.assertIsNotNone(classobj.progressPercentage(), "should not be None")
+
+    @patch('bingFlyoutParser.RewardV1.progressPercentage', return_value="100")
     @patch('helpers.getResponseBody')
     def test_rewards_search(self, helpmock, permock):
         """
@@ -1020,26 +1031,26 @@ class TestLong(unittest.TestCase):
 
         # SEARCH case, PC, Mobile, Earn
         for data in [
-            newbfp.Type.SEARCH_MOBILE        ,
-            newbfp.Type.SEARCH_PC            ,
-            newbfp.Type.YOUR_GOAL            ,
-            newbfp.Type.MAINTAIN_GOLD        ,
-            newbfp.Type.REFER_A_FRIEND       ,
-            newbfp.Type.SEND_A_TWEET         ,
-            newbfp.Type.RE_EARNED_CREDITS    ,
-            newbfp.Type.COMPLETED            ,
-            newbfp.Type.SILVER_STATUS        ,
-            newbfp.Type.INVITE_FRIENDS       ,
-            newbfp.Type.EARN_MORE_POINTS    ,
-            newbfp.Type.SEARCH_AND_EARN      ,
-            newbfp.Type.THURSDAY_BONUS       ,
-            newbfp.Type.RE_QUIZ ]:
+            newbfp.Type.SEARCH_MOBILE,
+            newbfp.Type.SEARCH_PC,
+            newbfp.Type.YOUR_GOAL,
+            newbfp.Type.MAINTAIN_GOLD,
+            newbfp.Type.REFER_A_FRIEND,
+            newbfp.Type.SEND_A_TWEET,
+            newbfp.Type.RE_EARNED_CREDITS,
+            newbfp.Type.COMPLETED,
+            newbfp.Type.SILVER_STATUS,
+            newbfp.Type.INVITE_FRIENDS,
+            newbfp.Type.EARN_MORE_POINTS,
+            newbfp.Type.SEARCH_AND_EARN,
+            newbfp.Type.THURSDAY_BONUS,
+            newbfp.Type.RE_QUIZ]:
             newbfp.tp = data
             newbfp.url = "www.espn.com"
 
             newbfp.Type = bfp.RewardV1.Type.Action.SEARCH
-            rewards = [ newbfp ]
-            newbfp.isAchieved = lambda : data is False
+            rewards = [newbfp]
+            newbfp.isAchieved = lambda: data is False
             self.assertIsNotNone(reward.process(rewards, True), "should return res")
 
         newbfp.isDone = True
@@ -1049,5 +1060,81 @@ class TestLong(unittest.TestCase):
         BingRewards(bingCommon.HEADERS, useragents, self.config)
 
 
-if __name__ == '__main__': # pragma: no cover
+class TestBDP(unittest.TestCase):
+    """
+    Test that takes near 30s
+    """
+
+    def setUp(self):
+        self.config = Config()
+        self.configXMLString = XMLString
+
+        self.config.parseFromString(self.configXMLString)
+
+    @patch('bingDashboardParser.Reward.progressPercentage', return_value="100")
+    @patch('helpers.getResponseBody')
+    def test_bdp_search(self, helpmock, permock):
+        """
+        Search rewards string
+        :param helpmock:
+        :param permock:
+        :return:
+        """
+        page = '"WindowsLiveId":""     "WindowsLiveId":"" '
+        page += 'action="0" value="0" '
+        page += 'value= "0" NAP value="0" '
+        page += 'ANON value="0" '
+        page += 'id="t" value="0" '
+        page += '<div> 999 livetime points</div> '
+        page += "t.innerHTML='100'"
+        page += '<div id="b_content">'
+        page += '<div id="content">'
+        page += 'IG:"100"'
+        page += "http://www.bing.com/fd/ls/GLinkPing.aspx"
+
+        helpmock.return_value = page
+
+        useragents = bingCommon.UserAgents().generate(self.config.accounts)
+        reward = BingRewards(bingCommon.HEADERS, useragents, self.config)
+        newbdp = bdp.Reward()
+        reward.RewardResult(newbdp)
+
+        newbdp.progressCurrent = 1
+        newbdp.progressMax = 100
+        newbdp.description = "Up to 10 points today, 10 points per search"
+
+        newbdp.isDone = False
+
+        # SEARCH case, PC, Mobile, Earn
+        for data in [
+            newbdp.Type.SEARCH_MOBILE,
+            newbdp.Type.SEARCH_PC,
+            newbdp.Type.YOUR_GOAL,
+            newbdp.Type.MAINTAIN_GOLD,
+            newbdp.Type.REFER_A_FRIEND,
+            newbdp.Type.SEND_A_TWEET,
+            newbdp.Type.RE_EARNED_CREDITS,
+            newbdp.Type.COMPLETED,
+            newbdp.Type.SILVER_STATUS,
+            newbdp.Type.INVITE_FRIENDS,
+            newbdp.Type.EARN_MORE_POINTS,
+            newbdp.Type.SEARCH_AND_EARN,
+            newbdp.Type.THURSDAY_BONUS,
+            newbdp.Type.RE_QUIZ]:
+            newbdp.tp = data
+            newbdp.url = "www.espn.com"
+
+            newbdp.Type = bfp.RewardV1.Type.Action.SEARCH
+            rewards = [newbdp]
+            newbdp.isAchieved = lambda: data is False
+            self.assertIsNotNone(reward.process(rewards, True), "should return res")
+
+        newbdp.isDone = True
+        self.assertIsNotNone(reward.process(rewards, True), "should return res")
+
+        self.config.proxy = None
+        BingRewards(bingCommon.HEADERS, useragents, self.config)
+
+
+if __name__ == '__main__':  # pragma: no cover
     unittest.main(verbosity=3)
