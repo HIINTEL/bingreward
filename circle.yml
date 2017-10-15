@@ -31,7 +31,6 @@ test:
     - mv .coverage .coverage.1
     - cp config.xml.decrypt config.xml
     - coverage run --omit '/home/ubuntu/*/*/*/*,/usr/*' -p mpmain.py 3
-    # need more loving from circleci coverage plugin
     - ls -aRl .coverage*
     # combine with two processes running coverage seems broken
     - coverage combine
