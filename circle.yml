@@ -27,8 +27,7 @@ test:
     - nosetests -v  --processes=4 --process-timeout=120 --with-coverage --cover-package pkg --cover-package test --cover-package . test/*.py:
           parallel: false
     - mv .coverage .coverage.1
-    # need more loving from circleci coverage plugin
-    - coverage run -p main.py -v -r
+    - coverage run --omit '/home/ubuntu/*/*/*/*,/usr/*' -p python -m profile mpmain.py 3
     - ls -aRl .coverage*
     # combine with two processes running coverage seems broken
     - coverage combine

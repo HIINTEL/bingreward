@@ -173,9 +173,11 @@ NONACCREF = """
                 </account>
             </onComplete>
             <onScriptComplete>
+                <invalidretry if="%p lt 16" interval="5" salt="3.5" count="1" />
                 <notify cmd="./mail.sh" />
             </onScriptComplete>
             <onScriptFailure>
+                <invalidretry if="%p lt 16" interval="5" salt="3.5" count="1" />
                 <notify cmd="./onScriptFailure.sh" />
             </onScriptFailure>
         </events>
