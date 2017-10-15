@@ -1,20 +1,42 @@
 # initial checkin
-- name: example_tagged_step
-  tag: master
-  service: codeship_example
-  command: pip install -r requirements.txt  
-  service: codeship_example
-  command: cp config.xml.dist config.xml 
-  #service: codeship_example
-  #command: python -B test/*py
-  #service: codeship_example
-  #command: coverage report
-  #service: codeship_example
-  #command:  coveralls
-- type: parallel
-  name: example_parallel_step
+- name: bing serial
+  type: serial
+  tags: master
+  services:
+    - bing
+    - bing-test
   steps:
-    - service: codeship_example
-      command: env
-    - service: codeship_example
-      command: ls -al 
+    - name: health port 80 test
+      command: wget www.bing.com
+    - name: health tests
+      type: parallel
+      steps:
+        - name: health detection
+          type: parallel
+          steps:
+            - name: envs
+              command: env
+            - name: send to entry
+              command: echo -n "U2FsdGVkX1+46wB3vdqBcnFeO0nkE7ULiYDUuV2vYuc=" | entry.sh
+            - name: open port
+              command: echo "" | nc localhost 8080
+            - name: run main
+              command: echo -n "U2FsdGVkX1+46wB3vdqBcnFeO0nkE7ULiYDUuV2vYuc=" > config.xml && python main.pyc
+
+# jet steps --debug --tag tests
+- name: container tests
+  type: serial
+  tags: tests
+  service: bing-test
+  steps:
+    - name: unittests
+      command: bash -c "nosetests -v --processes=4 --process-timeout=120 --with-coverage --cover-package pkg --cover-package test --cover-package . test/*.pyc"
+    - name: coverage report
+      command: coverage report -i --rcfile=.coveragerc
+
+#  - name: Test dockercfg Generator
+#    service: dockercfg_test
+#    type: push
+#    image_name: 870119404647.dkr.ecr.us-east-1.amazonaws.com/codeship-testing
+#    registry: https://870119404647.dkr.ecr.us-east-1.amazonaws.com
+#    dockercfg_service: dockercfg_test_generator

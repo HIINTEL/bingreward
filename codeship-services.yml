@@ -1,8 +1,22 @@
 version: '2'
 
 services:
-  codeship_example:
-    build: .
+  bing-test:
+    build:
+        context: ./test
+        image: kenney/bingreward-test
+        dockerfile: Dockerfile
+    volumes:
+       - test:/bin/test
+    cached: true
     environment:
-      EXAMPLE_ENV_VAR: example-var
+      fprocess: /bin/entry.sh
+    encrypted_env_file: env.encrypted
+  bing:
+    build:
+        image: kenney/bingreward
+        dockerfile: Dockerfile
+    cached: true
+    environment:
+      fprocess: /bin/entry.sh
     encrypted_env_file: env.encrypted

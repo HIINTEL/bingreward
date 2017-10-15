@@ -31,19 +31,19 @@ class TestBing(unittest.TestCase):
         self.assertEqual(status, 0, "no config.xml file")
 
     def test_configdist(self):
-        cmd = "coverage run -p main.py -v -r -f config.xml.dist"
+        cmd = "python main.pyc -v -r -f config.xml"
         cmds = cmd.split()
         output = subprocess.check_output(cmds, stderr=subprocess.STDOUT)
         self.assertRegexpMatches(output, "AuthenticationError", "should have seen invalid account auth\n" + output)
 
     def test_confighelp(self):
-        cmd = "coverage run -p main.py -h"
+        cmd = "python main.pyc -h"
         cmds = cmd.split()
         status = subprocess.check_call(cmds, stderr=subprocess.STDOUT)
         self.assertEqual(status, 0, "failed to execute " + str(status))
 
     def test_configversion(self):
-        cmd = "coverage run -p main.py --version"
+        cmd = "python main.pyc --version"
         cmds = cmd.split()
         status = subprocess.check_call(cmds, stderr=subprocess.STDOUT)
         self.assertEqual(status, 0, "failed to execute " + str(status))

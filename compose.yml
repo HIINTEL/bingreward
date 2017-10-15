@@ -1,0 +1,15 @@
+provider:
+  name: faas
+  gateway: http://localhost:8080
+
+functions:
+  bing:
+    lang: python
+    fprocess: /bin/entry.sh
+    image: kenney/bingreward
+    environment:
+      read_timeout : 60
+      write_timeout : 6000
+      KEY : "DEFAULT"
+    environment_file:
+      - key.yml

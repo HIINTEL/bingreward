@@ -7,7 +7,17 @@
 import sys
 import os
 import main
-from pathos.multiprocessing import ProcessingPool
+try:
+    import mpmain
+    from pathos.multiprocessing import ProcessingPool
+except NameError, e:
+    print e
+    import sys
+    sys.exit(1)
+except ImportError:
+    print "missing multiprocessing"
+    import sys
+    sys.exit(1)
 import re
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "pkg"))

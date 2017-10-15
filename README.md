@@ -65,52 +65,45 @@ onScriptFailure: A special event which occurs only once and if the script fails 
 FAAS support
 ```python
 
-# openfaas deploying swarm
+# openfaas deploying swarm and server at http://localhost:8080
 docker swarm init
 git clone https://github.com/openfaas/faas && \
     cd faas && \
     git checkout 0.6.5 && \
     ./deploy_stack.sh
 
-
+# generate image and deploy
 docker build -t kenney/bingreward .
-faas-cli deploy --fprocess="/bin/entry.sh" \
-    --env read_timeout=600 --env write_timeout=600 \
-    --image kenney/bingreward --name bingreward
 
-curl http://localhost:8080/function/bingreward --data-binary @$HOME/config.xml > output.txt
+faas-cli deploy -f compose.yml -replace=true
 
+# wait less than a minute for port to be open
+docker service ls
+
+# if not HTTPS
+openssl aes-256-cbc -e -in config.xml -k "${KEY}" | openssl enc -base64 > ~/config.enc
+curl http://localhost:8080/function/bing --data-binary @$HOME/config.enc > output.txt
+
+# test containers
+``` bash
+# send it to codeship
+jet steps
+```
+
+# create only artifacts
+python -m compileall .
 
 # removal steps
 # function name is service name
-docker service rm bingreward
-```
+docker service rm bing
 
-
-
-
-Linux/Mac: Create cron job  
-Replace `LOCAL_CONFIG_DIR` setting with the path to your Bing Rewards folder  
-You will also need to update the paths in the command to point to your Bing Rewards folder
-The below cronjob will run at 1 am + random(120 minutes)
-It will save the console output to to a log file
-```bash
-SHELL=/bin/bash
-PATH=/usr/bin:$PATH
-LOCAL_CONFIG_DIR=/home/bingrewards/etc
-
-0   1   *   *   *   sleep $(($RANDOM \% 120))m && python2 /home/bingrewards/bin/main.py 2>&1 | gzip > /home/bingrewards/var/log/bingrewards/`date "+\%Y-\%m-\%dT\%H:\%M:\%S"`.log.gz
-```
-Windows: Use build in Task Scheduler
-
-## Known features not supported
-- Quizzes
-- Level 1 support (but see kenney/mobile project)
-- New User registration
+# cleanup
+rm -rf faas
 
 ## References
 - For more information, including how to use this, please, take a look at my blog post:
 [here](http://sealemar.blogspot.com/2012/12/bing-rewards-automation.html)
+- [here](https://github.com/openfaas/faas)
 - To find out how to convert Bing! Rewards points to cash, read my second post in this series:
 [here](http://sealemar.blogspot.com/2013/04/bing-rewards-points-to-cash.html)
 - [Bing! Rewards Automation version 2.0](http://sealemar.blogspot.com/2013/06/bing-rewards-automation-version-2.html)

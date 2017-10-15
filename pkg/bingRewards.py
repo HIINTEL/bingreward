@@ -320,8 +320,6 @@ class BingRewards:
 
             if not found:
                 print "Warning! Query:\n\t {%s}\n returned no results, check file for more information".format(query, helpers.dumpErrorPage(page))
-
-
             else:
                 successfullQueries += 1
 
@@ -358,10 +356,8 @@ class BingRewards:
                                 print("Followed Link {}".format(ig_link_num + 1))
                         else:
                             print "Warning! No searches were found on search results page Check {0} file for more information".format(helpers.dumpErrorPage(page))
-
                     else:
                         print "Warning! Could not find search result IG number Check {0} file for more information".format(helpers.dumpErrorPage(page))
-
             i += 1
 
         if successfullQueries < searchesCount:
@@ -401,7 +397,6 @@ class BingRewards:
 
             res.action = action
             results.append(res)
-
         return results
 
     def __printReward(self, reward):

@@ -1,8 +1,9 @@
 #!bash -x
 timestamp=`date +%s%N`
-numproc=3
-cat - > ./$timestamp.xml
-cat ./$timestamp.xml
-#touch config.xml
-#python main.pyc -v -f config.xml
-python main.pyc -v -f $timestamp.xml
+cat - | openssl base64 -d  | openssl aes-256-cbc -d -k "${KEY}" -out config.xml
+# for debug env
+echo "started"
+python ./main.pyc
+#cPickle.PicklingError: Can't pickle <type 'function'>: attribute lookup __builtin__.function failed
+#python ./mpmain.pyc 1
+echo "submitted"
