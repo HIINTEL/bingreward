@@ -18,13 +18,13 @@ ENV http_proxy      ""
 ENV https_proxy     ""
 ADD requirements.txt /bin/
 RUN pip install -r requirements.txt
-ADD https://github.com/openfaas/faas/releases/download/v0.5-alpha/fwatchdog /usr/bin
-COPY *pyc   /bin/
+COPY *py   /bin/
 ADD pkg/    /bin/pkg/
 ADD pkg/queryGenerators/ /bin/pkg/queryGenerators/
-COPY entry.sh   /bin
 RUN python -m compileall /bin
-RUN find /bin/pkg ! -name \*pyc -exec rm {} \;
+RUN find /bin/ ! -name \*pyc -exec rm {} \;
+COPY entry.sh   /bin
+ADD https://github.com/openfaas/faas/releases/download/v0.5-alpha/fwatchdog /usr/bin
 RUN chmod +x /usr/bin/fwatchdog /bin/entry.sh
 ENV fprocess="/bin/entry.sh"
 CMD ["fwatchdog"]
