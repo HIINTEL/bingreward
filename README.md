@@ -1,7 +1,8 @@
 # BingRewards
 
-## Coverage Badge, Container Badge
+## Coverage Badge, Container Badge, Python safety badge
 [![Coverage Status](https://coveralls.io/repos/github/kenneyhe/BingRewards/badge.svg?branch=master)](https://coveralls.io/github/kenneyhe/BingRewards?branch=master) [![Codeship Status for kenneyhe/BingRewards](https://app.codeship.com/projects/b7d1b790-7558-0135-7442-16f51719268d/status?branch=master)](https://app.codeship.com/projects/244218)
+[![Updates](https://pyup.io/repos/github/HIINTEL/bingreward/shield.svg)](https://pyup.io/repos/github/HIINTEL/bingreward/) [![Python 3](https://pyup.io/repos/github/HIINTEL/bingreward/python-3-shield.svg)](https://pyup.io/repos/github/HIINTEL/bingreward/)
 
 ## About
 BingRewards is an automated point earning script that works with Bing.com to earn points that can be redeemed for giftcards.
