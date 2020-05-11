@@ -1,4 +1,4 @@
-appdirs==1.4.3
+appdirs==1.4.4
 astroid==1.5.3
 click==6.7
 
