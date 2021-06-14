@@ -12,6 +12,6 @@ requests==2.18.4
 six==1.11.0
 wrapt==1.10.11
 setuptools==36.7.2
-multiprocess==0.70.5
+multiprocess==0.70.12
 pathos==0.2.1
 beautifulsoup4==4.6.0
