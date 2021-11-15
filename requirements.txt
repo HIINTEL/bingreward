@@ -11,7 +11,7 @@ pyparsing==2.2.0
 requests==2.18.4
 six==1.11.0
 wrapt==1.10.11
-setuptools==36.7.2
+setuptools==59.1.0
 multiprocess==0.70.5
 pathos==0.2.1
 beautifulsoup4==4.6.0
